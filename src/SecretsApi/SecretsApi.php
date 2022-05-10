@@ -23,7 +23,7 @@ class SecretsApi
      */
     public function listSecrets(string $site_id, bool $debug = false): array
     {
-        if (getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
+        if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
             if (file_exists('/tmp/secrets.json')) {
                 $this->secrets = json_decode(file_get_contents('/tmp/secrets.json'), true);
             }
@@ -64,7 +64,7 @@ class SecretsApi
         array $scopes = ['integrated-composer'],
         bool $debug = false
     ): bool {
-        if (getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
+        if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
             if (file_exists('/tmp/secrets.json')) {
                 $this->secrets = json_decode(file_get_contents('/tmp/secrets.json'), true);
             }
@@ -92,7 +92,7 @@ class SecretsApi
      */
     public function deleteSecret(string $site_id, string $name, bool $debug = false): bool
     {
-        if (getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
+        if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
             if (file_exists('/tmp/secrets.json')) {
                 $this->secrets = json_decode(file_get_contents('/tmp/secrets.json'), true);
             }

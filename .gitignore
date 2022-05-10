@@ -1,2 +1,4 @@
 vendor
-tools
+.envrc
+.phpunit.result.cache
+reports

@@ -61,37 +61,3 @@ if ($token) {
         )
     );
 }
-
-if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
-    // Create a testing runtime multidev environment.
-    $sitename = TerminusTestBase::getSiteName();
-
-    $multidev = sprintf('test-%s', substr(uniqid(), -6, 6));
-    $createMdCommand = sprintf('multidev:create %s.dev %s', $sitename, $multidev);
-    exec(
-        sprintf('%s %s', TERMINUS_BIN_FILE, $createMdCommand),
-        $output,
-        $code
-    );
-    if (0 !== $code) {
-        /** @noinspection PhpUnhandledExceptionInspection */
-        throw new Exception(sprintf('Command "%s" exited with non-zero code (%d)', $createMdCommand, $code));
-    }
-
-    TerminusTestBase::setMdEnv($multidev);
-
-    register_shutdown_function(function () use ($sitename, $multidev) {
-        // Delete a testing runtime multidev environment.
-        $deleteMdCommand = sprintf('multidev:delete %s.%s --delete-branch --yes', $sitename, $multidev);
-        exec(
-            sprintf('%s %s', TERMINUS_BIN_FILE, $deleteMdCommand),
-            $output,
-            $code
-        );
-
-        if (0 !== $code) {
-            /** @noinspection PhpUnhandledExceptionInspection */
-            throw new Exception(sprintf('Command "%s" exited with non-zero code (%d)', $deleteMdCommand, $code));
-        }
-    });
-}
