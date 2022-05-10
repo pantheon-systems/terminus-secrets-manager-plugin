@@ -24,6 +24,6 @@ abstract class CustomerSecretsBaseCommand extends TerminusCommand implements Sec
      */
     public function __construct()
     {
-       $this->setSecretsApi(new SecretsApi());
+        $this->setSecretsApi(new SecretsApi());
     }
 }

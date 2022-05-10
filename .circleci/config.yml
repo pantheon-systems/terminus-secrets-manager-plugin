@@ -7,7 +7,7 @@ defaults: &defaults
 
 version: 2
 jobs:
-    unit:
+    test:
         docker:
             - image: pantheonpublic/terminus-plugin-test:3.x
         <<: *defaults
@@ -16,53 +16,15 @@ jobs:
             - run:
                 name: Set up environment
                 command: ./.circleci/set-up-globals.sh
-            - run:
-                name: Lint
-                command: composer lint
-            - run:
-                name: Unit
-                command: composer unit
-    terminus-3:
-        docker:
-            - image: pantheonpublic/terminus-plugin-test:3.x
-        <<: *defaults
-        steps:
-            - checkout
-            - run:
-                name: Set up environment
-                command: ./.circleci/set-up-globals.sh
-            - run:
-                name: Check Terminus version
-                command: terminus --version
             - run:
                 name: Install plugin
                 command: terminus self:plugin:install /home/tester/work/terminus_plugin/
             - run:
-                name: Functional
-                command: composer functional
-    code-style:
-        docker:
-            - image: pantheonpublic/terminus-plugin-test:3.x
-        <<: *defaults
-        steps:
-            - checkout
-            - run:
-                name: Set up environment
-                command: ./.circleci/set-up-globals.sh
-            - run:
-                name: Run composer install
-                command: composer install
-            - run:
-                name: Style
-                command: composer cs
+                name: Test everything
+                command: composer test
 
 workflows:
   version: 2
   build_test:
     jobs:
-      - unit
-      - code-style
-      - terminus-3:
-          requires:
-            - unit
-
+      - test
