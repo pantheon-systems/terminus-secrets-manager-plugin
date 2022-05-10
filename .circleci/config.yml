@@ -9,7 +9,7 @@ version: 2
 jobs:
     test:
         docker:
-            - image: pantheonpublic/terminus-plugin-test:3.x
+            - image: pantheonpublic/terminus-plugin-test:4.x
         <<: *defaults
         steps:
             - checkout
