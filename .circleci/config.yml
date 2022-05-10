@@ -17,6 +17,9 @@ jobs:
                 name: Set up environment
                 command: ./.circleci/set-up-globals.sh
             - run:
+                name: Install dependencies
+                command: composer install
+            - run:
                 name: Install plugin
                 command: terminus self:plugin:install /home/tester/work/terminus_plugin/
             - run:
