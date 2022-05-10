@@ -1,10 +1,10 @@
 {
     "name": "pantheon-systems/terminus-customer-secrets-plugin",
-    "description": "An example Terminus command",
+    "description": "Customer secrets handling plugin for Terminus",
     "type": "terminus-plugin",
     "license": "MIT",
     "autoload": {
-        "psr-4": { "Pantheon\\TerminusHello\\": "src" }
+        "psr-4": { "Pantheon\\TerminusCustomerSecrets\\": "src" }
     },
     "require-dev": {
         "phpunit/phpunit": "^9",
@@ -30,7 +30,7 @@
     },
     "extra": {
         "terminus": {
-            "compatible-version": "^1||^2||^3"
+            "compatible-version": "^3"
         }
     }
 }
