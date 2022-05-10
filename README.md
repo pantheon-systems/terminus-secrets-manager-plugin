@@ -1,7 +1,6 @@
 # Terminus Customer Secrets Plugin
 
 [![CircleCI](https://circleci.com/gh/pantheon-systems/terminus-customer-secrets-plugin.svg?style=shield)](https://circleci.com/gh/pantheon-systems/terminus-customer-secrets-plugin)
-[![Terminus v2.x - v3.x Compatible](https://img.shields.io/badge/terminus-2.x%20--%203.x-green.svg)](https://github.com/pantheon-systems/terminus-plugin-example/tree/2.x)
 [![Early Access](https://img.shields.io/badge/Pantheon-Early_Access-yellow?logo=pantheon&color=FFDC28)](https://pantheon.io/docs/oss-support-levels#early-access)
 
 A plugin to handle Customer Secrets via Terminus.
