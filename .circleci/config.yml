@@ -17,9 +17,6 @@ jobs:
                 name: Set up environment
                 command: ./.circleci/set-up-globals.sh
             - run:
-                name: Dependencies
-                command: composer install
-            - run:
                 name: Lint
                 command: composer lint
             - run:

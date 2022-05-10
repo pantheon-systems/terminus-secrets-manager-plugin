@@ -17,10 +17,6 @@ touch $BASH_ENV
 ) >> $BASH_ENV
 source $BASH_ENV
 
-set -ex
-
-TERMINUS_PLUGINS_DIR=.. terminus list -n remote
-
 set +ex
 echo "Test site is $TERMINUS_SITE"
 echo "Logging in with a machine token:"
@@ -32,3 +28,10 @@ git config --global user.email "$GIT_EMAIL"
 git config --global user.name "Circle CI"
 # Ignore file permissions.
 git config --global core.fileMode false
+
+# This is just to access terminus dev dependencies.
+mkdir $HOME/terminus
+cd $HOME/terminus
+git clone https://github.com/pantheon-systems/terminus.git
+cd terminus
+composer install

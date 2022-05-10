@@ -6,6 +6,11 @@
     "autoload": {
         "psr-4": { "Pantheon\\TerminusCustomerSecrets\\": "src" }
     },
+    "autoload-dev": {
+        "psr-4": {
+          "Pantheon\\TerminusCustomerSecrets\\Tests\\Functional\\": "tests/Functional/"
+        }
+    },
     "require-dev": {
         "phpunit/phpunit": "^9",
         "symfony/yaml": "^5",
@@ -23,9 +28,8 @@
         ],
         "test": [
             "@lint",
-            "@unit",
-            "@functional",
-            "@cs"
+            "@cs",
+            "@functional"
         ]
     },
     "extra": {
