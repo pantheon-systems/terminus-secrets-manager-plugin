@@ -1,47 +1,40 @@
-# Terminus Plugin Example
+# Terminus Customer Secrets Plugin
 
-[![CircleCI](https://circleci.com/gh/pantheon-systems/terminus-plugin-example.svg?style=shield)](https://circleci.com/gh/pantheon-systems/terminus-plugin-example)
+[![CircleCI](https://circleci.com/gh/pantheon-systems/terminus-customer-secrets-plugin.svg?style=shield)](https://circleci.com/gh/pantheon-systems/terminus-customer-secrets-plugin)
 [![Terminus v2.x - v3.x Compatible](https://img.shields.io/badge/terminus-2.x%20--%203.x-green.svg)](https://github.com/pantheon-systems/terminus-plugin-example/tree/2.x)
+[![Early Access](https://img.shields.io/badge/Pantheon-Early_Access-yellow?logo=pantheon&color=FFDC28)](https://pantheon.io/docs/oss-support-levels#early-access)
 
-A simple plugin for Terminus-CLI to demonstrate how to add new commands.
+A plugin to handle Customer Secrets via Terminus.
 
-Adds commands 'hello' and 'auth:hello' to Terminus. Learn more about Terminus Plugins in the
-[Terminus Plugins documentation](https://pantheon.io/docs/terminus/plugins)
+NOTE: This is still a WORK IN PROGRESS, this plugin is NOT FUNCTIONAL yet.
 
 ## Configuration
 
-These commands require no configuration
+These commands require no configuration.
 
 ## Usage
-* `terminus hello`
-* `terminus auth:hello`
+* `terminus customer-secrets:list`
+* `terminus customer-secrets:set`
+* `terminus customer-secrets:delete`
 
 ## Installation
 
 To install this plugin using Terminus 3:
 ```
-terminus self:plugin:install terminus-plugin-example
-```
-
-On older versions of Terminus:
-```
-mkdir -p ~/.terminus/plugins
-curl https://github.com/pantheon-systems/terminus-plugin-example/archive/2.x.tar.gz -L | tar -C ~/.terminus/plugins -xvz
+terminus self:plugin:install terminus-customer-secrets-plugin
 ```
 
 ## Testing
-This example project includes four testing targets:
+This plugin includes three testing targets:
 
 * `composer lint`: Syntax-check all php source files.
 * `composer cs`: Code-style check.
-* `composer unit`: Run unit tests with phpunit
-* `composer functional`: Run functional test with bats
+* `composer functional`: Run functional test with phpunit
 
 To run all tests together, use `composer test`.
 
 Note that prior to running the tests, you should first run:
 * `composer install`
-* `composer install-tools`
 
 ## Help
-Run `terminus help auth:hello` for help.
+Run `terminus help <command>` for help.
