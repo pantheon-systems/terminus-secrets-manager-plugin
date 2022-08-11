@@ -42,7 +42,7 @@ class SetCommand extends CustomerSecretsBaseCommand implements SiteAwareInterfac
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function setSecret($site_id, string $name, string $value, array $options = [
-        'type' => 'variable',
+        'type' => 'env',
         'scope' => ['integrated-composer'],
         'debug' => false,
     ])
