@@ -92,8 +92,8 @@ class SecretsApi
         string $site_id,
         string $name,
         string $value,
-        string $type = 'variable',
-        array $scopes = ['integrated-composer'],
+        string $type = '',
+        array $scopes = ['SJR'],
         bool $debug = false
     ): bool {
         if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
@@ -106,7 +106,31 @@ class SecretsApi
             ];
             file_put_contents('/tmp/secrets.json', json_encode($this->secrets));
         }
-        return true;
+        $url = sprintf('%s/sites/%s/secret/%s', $this->getBaseURI(), $site_id, $name);
+        $body = [
+            'secret_value' => $value,
+        ];
+        if ($type) {
+            $body['secret_type'] = $type;
+        }
+        if ($scopes) {
+            $body['scopes'] = $scopes;
+        }
+        $options = [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => $this->request()->session()->get('session'),
+            ],
+            'json' => [
+                'secret_value' => $value,
+                'type' => $type,
+                'secret_scope' => reset($scopes),
+            ],
+            'method' => 'POST',
+            'debug' => $debug,
+        ];
+        $result = $this->request()->request($url, $options);
+        return !$result->isError();
     }
 
     /**
