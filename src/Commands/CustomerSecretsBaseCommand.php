@@ -8,6 +8,8 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\TerminusCustomerSecrets\SecretsApi\SecretsApiAwareTrait;
 use Pantheon\TerminusCustomerSecrets\SecretsApi\SecretsApiAwareInterface;
 use Pantheon\TerminusCustomerSecrets\SecretsApi\SecretsApi;
+use Pantheon\Terminus\Request\RequestAwareInterface;
+use Pantheon\Terminus\Request\RequestAwareTrait;
 
 /**
  * Class CustomerSecretsBaseCommand
@@ -15,9 +17,10 @@ use Pantheon\TerminusCustomerSecrets\SecretsApi\SecretsApi;
  *
  * @package Pantheon\Terminus\Commands\CustomerSecrets
  */
-abstract class CustomerSecretsBaseCommand extends TerminusCommand implements SecretsApiAwareInterface
+abstract class CustomerSecretsBaseCommand extends TerminusCommand implements SecretsApiAwareInterface, RequestAwareInterface
 {
     use SecretsApiAwareTrait;
+    use RequestAwareTrait;
 
     /**
      * Construct function to pass the required dependencies.
@@ -25,5 +28,10 @@ abstract class CustomerSecretsBaseCommand extends TerminusCommand implements Sec
     public function __construct()
     {
         $this->setSecretsApi(new SecretsApi());
+    }
+
+    protected function setupRequest()
+    {
+        $this->secretsApi()->setRequest($this->request());
     }
 }

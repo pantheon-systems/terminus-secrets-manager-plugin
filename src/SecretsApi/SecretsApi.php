@@ -2,13 +2,33 @@
 
 namespace Pantheon\TerminusCustomerSecrets\SecretsApi;
 
+use Pantheon\Terminus\Request\RequestAwareTrait;
+
 class SecretsApi
 {
+
+    use RequestAwareTrait;
 
     /**
      * Used only for testing purposes. May be removed later.
      */
     protected $secrets = [];
+
+    /**
+     * Parses the base URI for requests.
+     *
+     * @return string
+     */
+    private function getBaseURI()
+    {
+        $config = $this->request()->getConfig();
+        return sprintf(
+            '%s://%s:%s',
+            $config->get('papi_protocol'),
+            $config->get('papi_host'),
+            $config->get('papi_port')
+        );
+    }
 
     /**
      * List secrets for a given site.
@@ -29,12 +49,24 @@ class SecretsApi
             }
             return array_values($this->secrets);
         }
-        return [
-            [
-                'name' => 'foo',
-                'value' => 'bar',
+        $url = sprintf('%s/sites/%s/secrets', $this->getBaseURI(), $site_id);
+        $options = [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => $this->request()->session()->get('session'),
             ],
+            'debug' => $debug,
         ];
+        $result = $this->request()->request($url, $options);
+        $data = $result->getData();
+        $secrets = [];
+        foreach ($data->Secrets ?? [] as $secretKey => $secretValue) {
+            $secrets[] = [
+                'name' => $secretKey,
+                'value' => $secretValue,
+            ];
+        }
+        return $secrets;
     }
 
     /**
@@ -60,8 +92,8 @@ class SecretsApi
         string $site_id,
         string $name,
         string $value,
-        string $type = 'variable',
-        array $scopes = ['integrated-composer'],
+        string $type = '',
+        array $scopes = ['SJR'],
         bool $debug = false
     ): bool {
         if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
@@ -73,8 +105,29 @@ class SecretsApi
                 'value' => $value,
             ];
             file_put_contents('/tmp/secrets.json', json_encode($this->secrets));
+            return true;
         }
-        return true;
+        $url = sprintf('%s/sites/%s/secret/%s', $this->getBaseURI(), $site_id, $name);
+        $body = [
+            'secret_value' => $value,
+        ];
+        if ($type) {
+            $body['secret_type'] = $type;
+        }
+        if ($scopes) {
+            $body['scopes'] = $scopes;
+        }
+        $options = [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => $this->request()->session()->get('session'),
+            ],
+            'json' => $body,
+            'method' => 'POST',
+            'debug' => $debug,
+        ];
+        $result = $this->request()->request($url, $options);
+        return !$result->isError();
     }
 
     /**
@@ -100,7 +153,19 @@ class SecretsApi
                 unset($this->secrets[$name]);
                 file_put_contents('/tmp/secrets.json', json_encode($this->secrets));
             }
+            return true;
         }
-        return true;
+
+        $url = sprintf('%s/sites/%s/secret/%s', $this->getBaseURI(), $site_id, $name);
+        $options = [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => $this->request()->session()->get('session'),
+            ],
+            'method' => 'DELETE',
+            'debug' => $debug,
+        ];
+        $result = $this->request()->request($url, $options);
+        return !$result->isError();
     }
 }
