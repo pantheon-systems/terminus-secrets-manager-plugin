@@ -105,6 +105,7 @@ class SecretsApi
                 'value' => $value,
             ];
             file_put_contents('/tmp/secrets.json', json_encode($this->secrets));
+            return true;
         }
         $url = sprintf('%s/sites/%s/secret/%s', $this->getBaseURI(), $site_id, $name);
         $body = [
@@ -121,11 +122,7 @@ class SecretsApi
                 'Accept' => 'application/json',
                 'Authorization' => $this->request()->session()->get('session'),
             ],
-            'json' => [
-                'secret_value' => $value,
-                'type' => $type,
-                'secret_scope' => reset($scopes),
-            ],
+            'json' => $body,
             'method' => 'POST',
             'debug' => $debug,
         ];
@@ -156,7 +153,19 @@ class SecretsApi
                 unset($this->secrets[$name]);
                 file_put_contents('/tmp/secrets.json', json_encode($this->secrets));
             }
+            return true;
         }
-        return true;
+
+        $url = sprintf('%s/sites/%s/secret/%s', $this->getBaseURI(), $site_id, $name);
+        $options = [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => $this->request()->session()->get('session'),
+            ],
+            'method' => 'DELETE',
+            'debug' => $debug,
+        ];
+        $result = $this->request()->request($url, $options);
+        return !$result->isError();
     }
 }
