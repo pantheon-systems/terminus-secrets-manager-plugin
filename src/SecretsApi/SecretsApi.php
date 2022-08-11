@@ -63,7 +63,8 @@ class SecretsApi
         foreach ($data->Secrets ?? [] as $secretKey => $secretValue) {
             $secrets[] = [
                 'name' => $secretKey,
-                'value' => $secretValue,
+                'type' => $secretValue->Type,
+                'value' => $secretValue->Value,
             ];
         }
         return $secrets;
@@ -109,10 +110,10 @@ class SecretsApi
         }
         $url = sprintf('%s/sites/%s/secret/%s', $this->getBaseURI(), $site_id, $name);
         $body = [
-            'secret_value' => $value,
+            'value' => $value,
         ];
         if ($type) {
-            $body['secret_type'] = $type;
+            $body['type'] = $type;
         }
         if ($scopes) {
             $body['scopes'] = $scopes;

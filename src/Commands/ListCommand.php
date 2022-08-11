@@ -33,6 +33,7 @@ class ListCommand extends CustomerSecretsBaseCommand implements SiteAwareInterfa
      *
      * @field-labels
      *   name: Secret name
+     *   type: Secret type
      *   value: Secret value
      *
      * @option boolean $debug Run command in debug mode
