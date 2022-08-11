@@ -48,15 +48,11 @@ class ListCommand extends CustomerSecretsBaseCommand implements SiteAwareInterfa
     public function listSecrets($site_id, array $options = ['debug' => false,])
     {
         $this->setupRequest();
-        // @todo If terminus is pointing to sandbox then this should work.
-        //if ($this->getSite($site_id)) {
-            $secrets = $this->secretsApi->listSecrets($site_id, $options['debug']);
-            $print_options = [
-                'message' => 'You have no Customer Secrets.'
-            ];
-
-            return $this->getTableFromData($secrets, $print_options);
-        //}
+        $secrets = $this->secretsApi->listSecrets($site_id, $options['debug']);
+        $print_options = [
+            'message' => 'You have no Customer Secrets.'
+        ];
+        return $this->getTableFromData($secrets, $print_options);
     }
 
     /**
