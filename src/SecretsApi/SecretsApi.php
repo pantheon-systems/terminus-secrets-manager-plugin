@@ -65,6 +65,7 @@ class SecretsApi
                 'name' => $secretKey,
                 'type' => $secretValue->Type,
                 'value' => $secretValue->Value,
+                'scopes' => implode(', ', $secretValue->Scopes),
             ];
         }
         return $secrets;
