@@ -43,7 +43,7 @@ class SetCommand extends CustomerSecretsBaseCommand implements SiteAwareInterfac
      */
     public function setSecret($site_id, string $name, string $value, array $options = [
         'type' => 'env',
-        'scope' => ['integrated-composer'],
+        'scope' => ['user'],
         'debug' => false,
     ])
     {
