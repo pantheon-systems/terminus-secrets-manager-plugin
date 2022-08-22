@@ -22,11 +22,24 @@ class SecretsApi
     private function getBaseURI()
     {
         $config = $this->request()->getConfig();
+
+        $protocol = $config->get('papi_protocol') ?? $config->get('protocol');
+        $port = $config->get('papi_port') ?? $config->get('port');
+        // @todo Change to pantheonapi.svc.pantheon.io once alias is set.
+        $host = 'pantheonapi.production.general-01.us-central1.internal.k8s.pantheon.io';
+        if (!empty($config->get('papi_host'))) {
+            $host = $config->get('papi_host');
+        } else {
+            $terminusHost = $config->get('host');
+            if (strpos($terminusHost, 'hermes.sandbox-') !== FALSE) {
+                $host = 'pantheonapi.sandbox-eco.sbx01.pantheon.io';
+            }
+        }
         return sprintf(
             '%s://%s:%s',
-            $config->get('papi_protocol'),
-            $config->get('papi_host'),
-            $config->get('papi_port')
+            $protocol,
+            $host,
+            $port
         );
     }
 
