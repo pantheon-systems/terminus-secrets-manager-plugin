@@ -31,7 +31,7 @@ class SecretsApi
             $host = $config->get('papi_host');
         } else {
             $terminusHost = $config->get('host');
-            if (strpos($terminusHost, 'hermes.sandbox-') !== FALSE) {
+            if (strpos($terminusHost, 'hermes.sandbox-') !== false) {
                 $host = 'pantheonapi.sandbox-eco.sbx01.pantheon.io';
             }
         }
