@@ -26,7 +26,7 @@ class SecretsApi
         $protocol = $config->get('papi_protocol') ?? $config->get('protocol');
         $port = $config->get('papi_port') ?? $config->get('port');
         $host = $config->get('papi_host');
-        if (!$host && strpos($config->get('host'), 'hermes.sandbox-') !== FALSE) {
+        if (!$host && strpos($config->get('host'), 'hermes.sandbox-') !== false) {
             $host = 'pantheonapi.sandbox-eco.sbx01.pantheon.io';
         }
         // If host is still not set, use the default host.
