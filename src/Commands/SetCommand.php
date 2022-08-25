@@ -43,13 +43,14 @@ class SetCommand extends CustomerSecretsBaseCommand implements SiteAwareInterfac
      */
     public function setSecret($site_id, string $name, string $value, array $options = [
         'type' => 'env',
-        'scope' => ['integrated-composer'],
+        'scope' => ['user'],
         'debug' => false,
     ])
     {
+        $site = $this->getSite($site_id);
         $this->setupRequest();
         if ($this->secretsApi->setSecret(
-            $site_id,
+            $site->id,
             $name,
             $value,
             $options['type'],

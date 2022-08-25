@@ -40,8 +40,9 @@ class DeleteCommand extends CustomerSecretsBaseCommand implements SiteAwareInter
      */
     public function deleteSecret($site_id, string $name, array $options = ['debug' => false])
     {
+        $site = $this->getSite($site_id);
         $this->setupRequest();
-        if ($this->secretsApi->deleteSecret($site_id, $name, $options['debug'])) {
+        if ($this->secretsApi->deleteSecret($site->id, $name, $options['debug'])) {
             $this->log()->notice('Success');
         } else {
             $this->log()->error('An error happened when trying to delete the secret.');
