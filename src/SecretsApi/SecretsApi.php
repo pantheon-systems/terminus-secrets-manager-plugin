@@ -22,11 +22,24 @@ class SecretsApi
     private function getBaseURI()
     {
         $config = $this->request()->getConfig();
+
+        $protocol = $config->get('papi_protocol') ?? $config->get('protocol');
+        $port = $config->get('papi_port') ?? $config->get('port');
+        $host = $config->get('papi_host');
+        if (!$host && strpos($config->get('host'), 'hermes.sandbox-') !== false) {
+            $host = str_replace('hermes', 'pantheonapi', $config->get('host'));
+        }
+        // If host is still not set, use the default host.
+        if (!$host) {
+            // @todo Change to pantheonapi.svc.pantheon.io once alias is set.
+            $host = 'pantheonapi.production.general-01.us-central1.internal.k8s.pantheon.io';
+        }
+
         return sprintf(
             '%s://%s:%s',
-            $config->get('papi_protocol'),
-            $config->get('papi_host'),
-            $config->get('papi_port')
+            $protocol,
+            $host,
+            $port
         );
     }
 
@@ -95,7 +108,7 @@ class SecretsApi
         string $name,
         string $value,
         string $type = '',
-        array $scopes = ['SJR'],
+        array $scopes = ['user'],
         bool $debug = false
     ): bool {
         if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
