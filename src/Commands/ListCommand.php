@@ -35,6 +35,7 @@ class ListCommand extends CustomerSecretsBaseCommand implements SiteAwareInterfa
      *   name: Secret name
      *   type: Secret type
      *   value: Secret value
+     *   scopes: Secret scopes
      *
      * @option boolean $debug Run command in debug mode
      * @param string $site_id The name or UUID of a site to retrieve information on
