@@ -10,6 +10,8 @@ use Pantheon\TerminusCustomerSecrets\SecretsApi\SecretsApiAwareInterface;
 use Pantheon\TerminusCustomerSecrets\SecretsApi\SecretsApi;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Request\RequestAwareTrait;
+use Pantheon\Terminus\Site\SiteAwareInterface;
+use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
  * Class CustomerSecretsBaseCommand
@@ -17,10 +19,11 @@ use Pantheon\Terminus\Request\RequestAwareTrait;
  *
  * @package Pantheon\Terminus\Commands\CustomerSecrets
  */
-abstract class CustomerSecretsBaseCommand extends TerminusCommand implements SecretsApiAwareInterface, RequestAwareInterface
+abstract class CustomerSecretsBaseCommand extends TerminusCommand implements SecretsApiAwareInterface, RequestAwareInterface, SiteAwareInterface
 {
     use SecretsApiAwareTrait;
     use RequestAwareTrait;
+    use SiteAwareTrait;
 
     /**
      * Construct function to pass the required dependencies.

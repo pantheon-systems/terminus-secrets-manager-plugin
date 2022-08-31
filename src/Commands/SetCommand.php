@@ -47,9 +47,10 @@ class SetCommand extends CustomerSecretsBaseCommand implements SiteAwareInterfac
         'debug' => false,
     ])
     {
+        $site = $this->getSite($site_id);
         $this->setupRequest();
         if ($this->secretsApi->setSecret(
-            $site_id,
+            $site->id,
             $name,
             $value,
             $options['type'],

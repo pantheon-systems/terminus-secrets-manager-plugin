@@ -12,9 +12,54 @@ NOTE: This is still a WORK IN PROGRESS, this plugin is NOT FUNCTIONAL yet.
 These commands require no configuration.
 
 ## Usage
+
 * `terminus customer-secrets:list`
 * `terminus customer-secrets:set`
 * `terminus customer-secrets:delete`
+
+### Listing secrets
+
+Use `terminus customer-secrets:list` to list existing secrets for a given site:
+
+```
+terminus customer-secrets:list <site>
+
+ ------------- ------------- ---------------------------
+  Secret name   Secret type   Secret value
+ ------------- ------------- ---------------------------
+  file.json     file          contents of a secret file
+  foo           env           bar
+ ------------- ------------- ---------------------------
+```
+
+### Setting secrets
+
+Use `terminus customer-secrets:set <site> <secret_name> <secret_value> [--type=TYPE] [--scope=SCOPE]` to set a secret for a given site:
+
+```
+terminus customer-secrets:set <site> foo bar
+
+[notice] Success
+
+```
+
+```
+terminus customer-secrets:set <site> file.json "{}" --type=file
+
+[notice] Success
+
+```
+
+### Deleting secrets
+
+Use `terminus customer-secrets:delete <site> <secret_name>` to delete a secret for a given site:
+
+```
+terminus customer-secrets:delete <site> foo
+
+[notice] Success
+
+```
 
 ## Installation
 
@@ -24,6 +69,7 @@ terminus self:plugin:install terminus-customer-secrets-plugin
 ```
 
 ## Testing
+
 This plugin includes three testing targets:
 
 * `composer lint`: Syntax-check all php source files.
@@ -36,4 +82,5 @@ Note that prior to running the tests, you should first run:
 * `composer install`
 
 ## Help
+
 Run `terminus help <command>` for help.
