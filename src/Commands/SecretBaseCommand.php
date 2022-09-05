@@ -1,25 +1,25 @@
 <?php
 
-namespace Pantheon\TerminusCustomerSecrets\Commands;
+namespace Pantheon\TerminusSecretsManager\Commands;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\TerminusCustomerSecrets\SecretsApi\SecretsApiAwareTrait;
-use Pantheon\TerminusCustomerSecrets\SecretsApi\SecretsApiAwareInterface;
-use Pantheon\TerminusCustomerSecrets\SecretsApi\SecretsApi;
+use Pantheon\TerminusSecretsManager\SecretsApi\SecretsApiAwareTrait;
+use Pantheon\TerminusSecretsManager\SecretsApi\SecretsApiAwareInterface;
+use Pantheon\TerminusSecretsManager\SecretsApi\SecretsApi;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Request\RequestAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class CustomerSecretsBaseCommand
+ * Class SecretBaseCommand
  * Base class for Terminus commands that deal with customer secrets.
  *
  * @package Pantheon\Terminus\Commands\CustomerSecrets
  */
-abstract class CustomerSecretsBaseCommand extends TerminusCommand implements SecretsApiAwareInterface, RequestAwareInterface, SiteAwareInterface
+abstract class SecretBaseCommand extends TerminusCommand implements SecretsApiAwareInterface, RequestAwareInterface, SiteAwareInterface
 {
     use SecretsApiAwareTrait;
     use RequestAwareTrait;

@@ -1,11 +1,11 @@
 <?php
 
-namespace Pantheon\TerminusCustomerSecrets\Commands;
+namespace Pantheon\TerminusSecretsManager\Commands;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\TerminusCustomerSecrets\SecretsApi\SecretsApiAwareTrait;
+use Pantheon\TerminusSecretsManager\SecretsApi\SecretsApiAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
@@ -16,7 +16,7 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
  *
  * @package Pantheon\Terminus\Commands\CustomerSecrets
  */
-class DeleteCommand extends CustomerSecretsBaseCommand implements SiteAwareInterface
+class DeleteCommand extends SecretBaseCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
@@ -25,8 +25,8 @@ class DeleteCommand extends CustomerSecretsBaseCommand implements SiteAwareInter
      *
      * @authorize
      *
-     * @command customer-secrets:delete
-     * @aliases customer-secrets-delete
+     * @command secret:delete
+     * @aliases secret-delete
      *
      * @option boolean $debug Run command in debug mode
      * @param string $site_id The name or UUID of a site to retrieve information on

@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\TerminusCustomerSecrets\SecretsApi;
+namespace Pantheon\TerminusSecretsManager\SecretsApi;
 
 use Pantheon\Terminus\Request\RequestAwareTrait;
 
