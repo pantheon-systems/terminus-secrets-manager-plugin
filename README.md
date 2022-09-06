@@ -1,6 +1,6 @@
 # Terminus Secrets Manager Plugin
 
-[![CircleCI](https://circleci.com/gh/pantheon-systems/terminus-secrets-manager-plugin.svg?style=shield)](https://circleci.com/gh/pantheon-systems/terminus-secrets-manager-plugin)
+[![CircleCI](https://circleci.com/gh/pantheon-systems/terminus-customer-secrets-plugin.svg?style=shield)](https://circleci.com/gh/pantheon-systems/terminus-secrets-manager-plugin)
 [![Early Access](https://img.shields.io/badge/Pantheon-Early_Access-yellow?logo=pantheon&color=FFDC28)](https://pantheon.io/docs/oss-support-levels#early-access)
 
 A plugin to handle Secrets via Terminus.
@@ -65,7 +65,7 @@ terminus secret:delete <site> foo
 
 To install this plugin using Terminus 3:
 ```
-terminus self:plugin:install terminus-secrets-manager-plugin
+terminus self:plugin:install terminus-customer-secrets-plugin
 ```
 
 ## Testing
