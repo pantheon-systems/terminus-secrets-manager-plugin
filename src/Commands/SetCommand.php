@@ -1,11 +1,11 @@
 <?php
 
-namespace Pantheon\TerminusCustomerSecrets\Commands;
+namespace Pantheon\TerminusSecretsManager\Commands;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\TerminusCustomerSecrets\SecretsApi\SecretsApiAwareTrait;
+use Pantheon\TerminusSecretsManager\SecretsApi\SecretsApiAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
@@ -16,7 +16,7 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
  *
  * @package Pantheon\Terminus\Commands\CustomerSecrets
  */
-class SetCommand extends CustomerSecretsBaseCommand implements SiteAwareInterface
+class SetCommand extends SecretBaseCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
@@ -25,8 +25,8 @@ class SetCommand extends CustomerSecretsBaseCommand implements SiteAwareInterfac
      *
      * @authorize
      *
-     * @command customer-secrets:set
-     * @aliases customer-secrets-set
+     * @command secret:set
+     * @aliases secret-set
      *
      * @option string $type Secret type
      * @option array $scope Secret scope

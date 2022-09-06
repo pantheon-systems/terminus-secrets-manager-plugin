@@ -1,16 +1,16 @@
 <?php
 
-namespace Pantheon\TerminusCustomerSecrets\Tests\Functional;
+namespace Pantheon\TerminusSecretsManager\Tests\Functional;
 
 use Symfony\Component\Filesystem\Filesystem;
 use Pantheon\Terminus\Tests\Functional\TerminusTestBase;
 
 /**
- * Class CustomerSecretsCommandsTest.
+ * Class SecretsCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
-class CustomerSecretsCommandsTest extends TerminusTestBase
+class SecretsCommandsTest extends TerminusTestBase
 {
     protected const SECRET_NAME = 'foosecret';
     protected const SECRET_VALUE = 'secretbar';
@@ -21,26 +21,26 @@ class CustomerSecretsCommandsTest extends TerminusTestBase
      * @covers \Pantheon\Terminus\Commands\CustomerSecrets\ListCommand
      * @covers \Pantheon\Terminus\Commands\CustomerSecrets\DeleteCommand
      *
-     * @group customer-secrets
+     * @group secrets
      * @group short
      */
     public function testCustomerSecretsCommands()
     {
 
-        $this->assertCommandExists('customer-secrets:list');
-        $this->assertCommandExists('customer-secrets:set');
-        $this->assertCommandExists('customer-secrets:delete');
+        $this->assertCommandExists('secret:list');
+        $this->assertCommandExists('secret:set');
+        $this->assertCommandExists('secret:delete');
 
         // Set secret.
         $this->terminus(sprintf(
-            'customer-secrets:set %s %s %s',
+            'secret:set %s %s %s',
             $this->getSiteName(),
             self::SECRET_NAME,
             self::SECRET_VALUE
         ));
 
         // List secrets.
-        $secretsList = $this->terminusJsonResponse(sprintf('customer-secrets:list %s', $this->getSiteName()));
+        $secretsList = $this->terminusJsonResponse(sprintf('secret:list %s', $this->getSiteName()));
         $this->assertIsArray($secretsList);
         $this->assertNotEmpty($secretsList);
         $secretFound = false;
@@ -53,10 +53,10 @@ class CustomerSecretsCommandsTest extends TerminusTestBase
         $this->assertTrue($secretFound, 'Secret not found in list.');
 
         // Delete secret.
-        $this->terminus(sprintf('customer-secrets:delete %s %s', $this->getSiteName(), self::SECRET_NAME));
+        $this->terminus(sprintf('secret:delete %s %s', $this->getSiteName(), self::SECRET_NAME));
 
         // List secrets again.
-        $secretsList = $this->terminusJsonResponse(sprintf('customer-secrets:list %s', $this->getSiteName()));
+        $secretsList = $this->terminusJsonResponse(sprintf('secret:list %s', $this->getSiteName()));
         $this->assertIsArray($secretsList);
         $secretFound = false;
         foreach ($secretsList as $secret) {

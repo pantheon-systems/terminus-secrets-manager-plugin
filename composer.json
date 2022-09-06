@@ -1,14 +1,14 @@
 {
-    "name": "pantheon-systems/terminus-customer-secrets-plugin",
+    "name": "pantheon-systems/terminus-secrets-manager-plugin",
     "description": "Customer secrets handling plugin for Terminus",
     "type": "terminus-plugin",
     "license": "MIT",
     "autoload": {
-        "psr-4": { "Pantheon\\TerminusCustomerSecrets\\": "src" }
+        "psr-4": { "Pantheon\\TerminusSecretsManager\\": "src" }
     },
     "autoload-dev": {
         "psr-4": {
-          "Pantheon\\TerminusCustomerSecrets\\Tests\\Functional\\": "tests/Functional/"
+          "Pantheon\\TerminusSecretsManager\\Tests\\Functional\\": "tests/Functional/"
         }
     },
     "require-dev": {

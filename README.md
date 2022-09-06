@@ -1,9 +1,9 @@
-# Terminus Customer Secrets Plugin
+# Terminus Secrets Manager Plugin
 
-[![CircleCI](https://circleci.com/gh/pantheon-systems/terminus-customer-secrets-plugin.svg?style=shield)](https://circleci.com/gh/pantheon-systems/terminus-customer-secrets-plugin)
+[![CircleCI](https://circleci.com/gh/pantheon-systems/terminus-secrets-manager-plugin.svg?style=shield)](https://circleci.com/gh/pantheon-systems/terminus-secrets-manager-plugin)
 [![Early Access](https://img.shields.io/badge/Pantheon-Early_Access-yellow?logo=pantheon&color=FFDC28)](https://pantheon.io/docs/oss-support-levels#early-access)
 
-A plugin to handle Customer Secrets via Terminus.
+A plugin to handle Secrets via Terminus.
 
 NOTE: This is still a WORK IN PROGRESS, this plugin is NOT FUNCTIONAL yet.
 
@@ -13,16 +13,16 @@ These commands require no configuration.
 
 ## Usage
 
-* `terminus customer-secrets:list`
-* `terminus customer-secrets:set`
-* `terminus customer-secrets:delete`
+* `terminus secret:list`
+* `terminus secret:set`
+* `terminus secret:delete`
 
 ### Listing secrets
 
-Use `terminus customer-secrets:list` to list existing secrets for a given site:
+Use `terminus secret:list` to list existing secrets for a given site:
 
 ```
-terminus customer-secrets:list <site>
+terminus secret:list <site>
 
  ------------- ------------- ---------------------------
   Secret name   Secret type   Secret value
@@ -34,17 +34,17 @@ terminus customer-secrets:list <site>
 
 ### Setting secrets
 
-Use `terminus customer-secrets:set <site> <secret_name> <secret_value> [--type=TYPE] [--scope=SCOPE]` to set a secret for a given site:
+Use `terminus secret:set <site> <secret_name> <secret_value> [--type=TYPE] [--scope=SCOPE]` to set a secret for a given site:
 
 ```
-terminus customer-secrets:set <site> foo bar
+terminus secret:set <site> foo bar
 
 [notice] Success
 
 ```
 
 ```
-terminus customer-secrets:set <site> file.json "{}" --type=file
+terminus secret:set <site> file.json "{}" --type=file
 
 [notice] Success
 
@@ -52,10 +52,10 @@ terminus customer-secrets:set <site> file.json "{}" --type=file
 
 ### Deleting secrets
 
-Use `terminus customer-secrets:delete <site> <secret_name>` to delete a secret for a given site:
+Use `terminus secret:delete <site> <secret_name>` to delete a secret for a given site:
 
 ```
-terminus customer-secrets:delete <site> foo
+terminus secret:delete <site> foo
 
 [notice] Success
 
@@ -65,7 +65,7 @@ terminus customer-secrets:delete <site> foo
 
 To install this plugin using Terminus 3:
 ```
-terminus self:plugin:install terminus-customer-secrets-plugin
+terminus self:plugin:install terminus-secrets-manager-plugin
 ```
 
 ## Testing
