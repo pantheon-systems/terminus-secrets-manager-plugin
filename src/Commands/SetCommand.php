@@ -2,19 +2,15 @@
 
 namespace Pantheon\TerminusSecretsManager\Commands;
 
-use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\TerminusSecretsManager\SecretsApi\SecretsApiAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
-use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
 /**
- * Class SetCommand
+ * Class SetCommand.
+ *
  * Set secret for a given site.
  *
- * @package Pantheon\Terminus\Commands\CustomerSecrets
+ * @package Pantheon\TerminusSecretsManager\Commands
  */
 class SetCommand extends SecretBaseCommand implements SiteAwareInterface
 {
@@ -31,6 +27,7 @@ class SetCommand extends SecretBaseCommand implements SiteAwareInterface
      * @option string $type Secret type
      * @option array $scope Secret scope
      * @option boolean $debug Run command in debug mode
+     *
      * @param string $site_id The name or UUID of a site to retrieve information on
      * @param string $name The secret name
      * @param string $value The secret value
@@ -39,11 +36,12 @@ class SetCommand extends SecretBaseCommand implements SiteAwareInterface
      * @usage <site> <name> <value> Set secret <name> with value <value>.
      * @usage <site> <name> <value> --debug Set given secret (debug mode).
      *
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function setSecret($site_id, string $name, string $value, array $options = [
         'type' => 'env',
-        'scope' => ['user'],
+        'scope' => ['ic'],
         'debug' => false,
     ])
     {

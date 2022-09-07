@@ -3,7 +3,8 @@
 namespace Pantheon\TerminusSecretsManager\SecretsApi;
 
 /**
- * Interface SecretsApiAwareInterface
+ * Interface SecretsApiAwareInterface.
+ *
  * @package Pantheon\Terminus\SecretsApi
  */
 interface SecretsApiAwareInterface
@@ -11,7 +12,7 @@ interface SecretsApiAwareInterface
     /**
      * Inject a pre-configured SecretsApi object.
      *
-     * @param SecretsApi $request
+     * @param \Pantheon\TerminusSecretsManager\SecretsApi\SecretsApi $secretsApi
      */
     public function setSecretsApi(SecretsApi $secretsApi): void;
 

@@ -3,20 +3,21 @@
 namespace Pantheon\TerminusSecretsManager\SecretsApi;
 
 /**
- * Class SecretsApiAwareTrait
+ * Class SecretsApiAwareTrait.
+ *
  * @package Pantheon\Terminus\Request
  */
 trait SecretsApiAwareTrait
 {
     /**
-     * @var \Pantheon\Terminus\SecretsApi\SecretsApi
+     * @var \Pantheon\TerminusSecretsManager\SecretsApi\SecretsApi
      */
     protected $secretsApi;
 
     /**
      * Inject a pre-configured SecretsApi object.
      *
-     * @param \Pantheon\Terminus\SecretsApi\SecretsApi $request
+     * @param \Pantheon\TerminusSecretsManager\SecretsApi\SecretsApi $secretsApi
      */
     public function setSecretsApi(SecretsApi $secretsApi): void
     {
@@ -26,7 +27,7 @@ trait SecretsApiAwareTrait
     /**
      * Return the SecretsApi object.
      *
-     * @return \Pantheon\Terminus\SecretsApi\SecretsApi
+     * @return \Pantheon\TerminusSecretsManager\SecretsApi\SecretsApi
      */
     public function secretsApi(): SecretsApi
     {

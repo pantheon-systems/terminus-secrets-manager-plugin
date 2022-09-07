@@ -3,8 +3,6 @@
 namespace Pantheon\TerminusSecretsManager\Commands;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\TerminusSecretsManager\SecretsApi\SecretsApiAwareTrait;
 use Pantheon\TerminusSecretsManager\SecretsApi\SecretsApiAwareInterface;
 use Pantheon\TerminusSecretsManager\SecretsApi\SecretsApi;
@@ -14,10 +12,11 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class SecretBaseCommand
+ * Class SecretBaseCommand.
+ *
  * Base class for Terminus commands that deal with customer secrets.
  *
- * @package Pantheon\Terminus\Commands\CustomerSecrets
+ * @package Pantheon\TerminusSecretsManager\Commands
  */
 abstract class SecretBaseCommand extends TerminusCommand implements SecretsApiAwareInterface, RequestAwareInterface, SiteAwareInterface
 {
@@ -30,6 +29,8 @@ abstract class SecretBaseCommand extends TerminusCommand implements SecretsApiAw
      */
     public function __construct()
     {
+        parent::__construct();
+
         $this->setSecretsApi(new SecretsApi());
     }
 

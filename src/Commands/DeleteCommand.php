@@ -2,19 +2,15 @@
 
 namespace Pantheon\TerminusSecretsManager\Commands;
 
-use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\TerminusSecretsManager\SecretsApi\SecretsApiAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
-use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
 /**
- * Class SetCommand
+ * Class DeleteCommand.
+ *
  * Delete secret by name.
  *
- * @package Pantheon\Terminus\Commands\CustomerSecrets
+ * @package Pantheon\TerminusSecretsManager\Commands
  */
 class DeleteCommand extends SecretBaseCommand implements SiteAwareInterface
 {
@@ -29,6 +25,7 @@ class DeleteCommand extends SecretBaseCommand implements SiteAwareInterface
      * @aliases secret-delete
      *
      * @option boolean $debug Run command in debug mode
+     *
      * @param string $site_id The name or UUID of a site to retrieve information on
      * @param string $name The secret name
      * @param array $options
@@ -36,6 +33,7 @@ class DeleteCommand extends SecretBaseCommand implements SiteAwareInterface
      * @usage <site> <name> Delete given secret.
      * @usage <site> <name> --debug Delete given secret (debug mode).
      *
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function deleteSecret($site_id, string $name, array $options = ['debug' => false])

@@ -2,20 +2,17 @@
 
 namespace Pantheon\TerminusSecretsManager\Commands;
 
-use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\TerminusSecretsManager\SecretsApi\SecretsApiAwareTrait;
 use Pantheon\Terminus\Commands\StructuredListTrait;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
 /**
- * Class ListCommand
+ * Class ListCommand.
+ *
  * List secrets for a given site.
  *
- * @package Pantheon\Terminus\Commands\CustomerSecrets
+ * @package Pantheon\TerminusSecretsManager\Commands
  */
 class ListCommand extends SecretBaseCommand implements SiteAwareInterface
 {
@@ -38,14 +35,17 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
      *   scopes: Secret scopes
      *
      * @option boolean $debug Run command in debug mode
+     *
      * @param string $site_id The name or UUID of a site to retrieve information on
      * @param array $options
-     * @return RowsOfFields
      *
      * @usage <site> Lists all secrets for current site.
      * @usage <site> --debug List all secrets for current site (debug mode).
      *
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     *
+     * @return RowsOfFields
      */
     public function listSecrets($site_id, array $options = ['debug' => false,])
     {
@@ -66,17 +66,14 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
      *        function $sort A function to sort the data using
      * @return RowsOfFields Returns a RowsOfFields-type object with applied filters
      */
-    protected function getTableFromData(
-        array $data,
-        array $options = [],
-        $date_attributes = []
-    ) {
+    protected function getTableFromData(array $data, array $options = [])
+    {
         if (count($data) === 0) {
             $message = $options['message'];
-            $options = isset($options['message_options']) ? $options['message_options'] : [];
+            $options = $options['message_options'] ?? [];
             $this->log()->warning($message, $options);
         }
-        $table = new RowsOfFields($data);
-        return $table;
+
+        return new RowsOfFields($data);
     }
 }
