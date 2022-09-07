@@ -29,6 +29,8 @@ abstract class SecretBaseCommand extends TerminusCommand implements SecretsApiAw
      */
     public function __construct()
     {
+        parent::__construct();
+
         $this->setSecretsApi(new SecretsApi());
     }
 
