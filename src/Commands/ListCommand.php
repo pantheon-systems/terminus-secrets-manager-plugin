@@ -53,7 +53,7 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
         $this->setupRequest();
         $secrets = $this->secretsApi->listSecrets($site->id, $options['debug']);
         $print_options = [
-            'message' => 'You have no Customer Secrets.'
+            'message' => 'You have no Secrets.'
         ];
         return $this->getTableFromData($secrets, $print_options);
     }

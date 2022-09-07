@@ -14,7 +14,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 /**
  * Class SecretBaseCommand.
  *
- * Base class for Terminus commands that deal with customer secrets.
+ * Base class for Terminus commands that deal with secrets.
  *
  * @package Pantheon\TerminusSecretsManager\Commands
  */

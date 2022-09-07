@@ -23,7 +23,7 @@ class SecretsCommandsTest extends TerminusTestBase
      * @group secrets
      * @group short
      */
-    public function testCustomerSecretsCommands()
+    public function testSecretsCommands()
     {
 
         $this->assertCommandExists('secret:list');
