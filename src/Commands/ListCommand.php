@@ -70,7 +70,7 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
     {
         if (count($data) === 0) {
             $message = $options['message'];
-            $options = isset($options['message_options']) ? $options['message_options'] : [];
+            $options = $options['message_options'] ?? [];
             $this->log()->warning($message, $options);
         }
         $table = new RowsOfFields($data);
