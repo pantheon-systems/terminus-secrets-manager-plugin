@@ -8,10 +8,11 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
 /**
- * Class ListCommand
+ * Class ListCommand.
+ *
  * List secrets for a given site.
  *
- * @package Pantheon\Terminus\Commands\CustomerSecrets
+ * @package Pantheon\TerminusSecretsManager\Commands
  */
 class ListCommand extends SecretBaseCommand implements SiteAwareInterface
 {
@@ -34,14 +35,17 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
      *   scopes: Secret scopes
      *
      * @option boolean $debug Run command in debug mode
+     *
      * @param string $site_id The name or UUID of a site to retrieve information on
      * @param array $options
-     * @return RowsOfFields
      *
      * @usage <site> Lists all secrets for current site.
      * @usage <site> --debug List all secrets for current site (debug mode).
      *
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     *
+     * @return RowsOfFields
      */
     public function listSecrets($site_id, array $options = ['debug' => false,])
     {

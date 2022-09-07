@@ -17,9 +17,9 @@ class SecretsCommandsTest extends TerminusTestBase
 
     /**
      * @test
-     * @covers \Pantheon\Terminus\Commands\CustomerSecrets\SetCommand
-     * @covers \Pantheon\Terminus\Commands\CustomerSecrets\ListCommand
-     * @covers \Pantheon\Terminus\Commands\CustomerSecrets\DeleteCommand
+     * @covers \Pantheon\TerminusSecretsManager\Commands\SetCommand
+     * @covers \Pantheon\TerminusSecretsManager\Commands\ListCommand
+     * @covers \Pantheon\TerminusSecretsManager\Commands\DeleteCommand
      *
      * @group secrets
      * @group short

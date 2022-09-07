@@ -53,6 +53,9 @@ class SecretsApi
      *
      * @return array
      *   Secrets for given site.
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function listSecrets(string $site_id, bool $debug = false): array
     {
@@ -102,6 +105,9 @@ class SecretsApi
      *
      * @return bool
      *   Whether saving the secret was successful or not.
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function setSecret(
         string $site_id,
@@ -157,6 +163,9 @@ class SecretsApi
      *
      * @return bool
      *   Whether saving the secret was successful or not.
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function deleteSecret(string $site_id, string $name, bool $debug = false): bool
     {
