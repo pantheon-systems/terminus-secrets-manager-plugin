@@ -66,11 +66,8 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
      *        function $sort A function to sort the data using
      * @return RowsOfFields Returns a RowsOfFields-type object with applied filters
      */
-    protected function getTableFromData(
-        array $data,
-        array $options = [],
-        $date_attributes = []
-    ) {
+    protected function getTableFromData(array $data, array $options = [])
+    {
         if (count($data) === 0) {
             $message = $options['message'];
             $options = isset($options['message_options']) ? $options['message_options'] : [];
