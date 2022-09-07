@@ -2,7 +2,6 @@
 
 namespace Pantheon\TerminusSecretsManager\Tests\Functional;
 
-use Symfony\Component\Filesystem\Filesystem;
 use Pantheon\Terminus\Tests\Functional\TerminusTestBase;
 
 /**
