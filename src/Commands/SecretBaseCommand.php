@@ -3,8 +3,6 @@
 namespace Pantheon\TerminusSecretsManager\Commands;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\TerminusSecretsManager\SecretsApi\SecretsApiAwareTrait;
 use Pantheon\TerminusSecretsManager\SecretsApi\SecretsApiAwareInterface;
 use Pantheon\TerminusSecretsManager\SecretsApi\SecretsApi;

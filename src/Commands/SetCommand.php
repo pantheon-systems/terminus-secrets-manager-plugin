@@ -2,13 +2,8 @@
 
 namespace Pantheon\TerminusSecretsManager\Commands;
 
-use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\TerminusSecretsManager\SecretsApi\SecretsApiAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
-use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
 /**
  * Class SetCommand
