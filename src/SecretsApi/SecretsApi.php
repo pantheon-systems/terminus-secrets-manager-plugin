@@ -108,7 +108,7 @@ class SecretsApi
         string $name,
         string $value,
         string $type = '',
-        array $scopes = ['user'],
+        array $scopes = ['ic'],
         bool $debug = false
     ): bool {
         if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {

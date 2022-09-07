@@ -43,7 +43,7 @@ class SetCommand extends SecretBaseCommand implements SiteAwareInterface
      */
     public function setSecret($site_id, string $name, string $value, array $options = [
         'type' => 'env',
-        'scope' => ['user'],
+        'scope' => ['ic'],
         'debug' => false,
     ])
     {
