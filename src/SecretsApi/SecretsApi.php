@@ -72,6 +72,7 @@ class SecretsApi
                 'Authorization' => $this->request()->session()->get('session'),
             ],
             'debug' => $debug,
+            'verify' => false, // @todo Remove post-EA, once service is using trusted cert
         ];
         $result = $this->request()->request($url, $options);
         $data = $result->getData();
@@ -146,6 +147,7 @@ class SecretsApi
             'json' => $body,
             'method' => 'POST',
             'debug' => $debug,
+            'verify' => false, // @todo Remove post-EA, once service is using trusted cert
         ];
         $result = $this->request()->request($url, $options);
         return !$result->isError();
@@ -188,6 +190,7 @@ class SecretsApi
             ],
             'method' => 'DELETE',
             'debug' => $debug,
+            'verify' => false, // @todo Remove post-EA, once service is using trusted cert
         ];
         $result = $this->request()->request($url, $options);
         return !$result->isError();

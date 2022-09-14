@@ -5,7 +5,7 @@
 
 A plugin to handle Secrets via Terminus.
 
-NOTE: This is still a WORK IN PROGRESS, this plugin is NOT FUNCTIONAL yet.
+NOTE: This is still a WORK IN PROGRESS; it is not guaranteed to be error-free.
 
 ## Configuration
 
