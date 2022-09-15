@@ -50,6 +50,15 @@ terminus secret:set <site> file.json "{}" --type=file
 
 ```
 
+```
+terminus secret:set <site> foo bar --scope=ic --scope=user
+
+[notice] Success
+
+```
+
+Note: If you do not include a `type` or `scope` flag, their defaults will be `env` and `ic` respectively.
+
 ### Deleting secrets
 
 Use `terminus secret:delete <site> <secret_name>` to delete a secret for a given site:
