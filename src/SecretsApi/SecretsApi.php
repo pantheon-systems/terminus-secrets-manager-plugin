@@ -4,6 +4,9 @@ namespace Pantheon\TerminusSecretsManager\SecretsApi;
 
 use Pantheon\Terminus\Request\RequestAwareTrait;
 
+/**
+ * Temporary Secrets API client until formal PantheonAPI client is available.
+ */
 class SecretsApi
 {
 
