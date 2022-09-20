@@ -6,6 +6,7 @@ use Pantheon\Terminus\Commands\StructuredListTrait;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
+use Consolidation\OutputFormatters\Options\FormatterOptions;
 
 /**
  * Class ListCommand.
@@ -73,6 +74,15 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
             $options = $options['message_options'] ?? [];
             $this->log()->warning($message, $options);
         }
+
+        return (new RowsOfFields($data))->addRendererFunction(
+            function ($key, $cellData, FormatterOptions $options, $rowData) {
+                if ($key == 'value' && !$cellData) {
+                    return '[REDACTED]';
+                }
+                return $cellData;
+            }
+        );
 
         return new RowsOfFields($data);
     }

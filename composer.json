@@ -1,6 +1,6 @@
 {
     "name": "pantheon-systems/terminus-secrets-manager-plugin",
-    "description": "Customer secrets handling plugin for Terminus",
+    "description": "Secrets handling plugin for Terminus",
     "type": "terminus-plugin",
     "license": "MIT",
     "autoload": {
