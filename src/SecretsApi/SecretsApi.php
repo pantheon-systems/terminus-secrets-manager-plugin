@@ -84,7 +84,7 @@ class SecretsApi
             $secrets[] = [
                 'name' => $secretKey,
                 'type' => $secretValue->Type,
-                'value' => $secretValue->Value,
+                'value' => $secretValue->Value ?? null,
                 'scopes' => implode(', ', $secretValue->Scopes),
             ];
         }
