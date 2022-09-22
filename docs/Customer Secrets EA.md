@@ -1,16 +1,5 @@
 # Customer Secrets EA
 
-### Audience
-
-The ideal customer for the CUSTOMER SECRETS EARLY ACCESS PROGRAM
-
-* Has a composer-managed D8 or D9 site **OR** composer-managed WordPress site
-* Has one or more private repos listed in their composer.json dependencies
-* Uses Pantheon's Integrated Composer by enabling 'build_step: true' in their pantheon.yml file or has it enabled by the upstream
-* Has upgraded to terminus 3 and is comfortable with the command line
-* Is comfortable installing terminus plugins with `terminus self:plugin:search` and `terminus self:plugin:install`
-* Is comfortable using pre-release/beta software
-
 ### Prerequisites
 
 ***Terminus***
@@ -55,6 +44,8 @@ The Github token needs all of the "repo" permissions:![image](https://user-image
 
 
 ***HTTP basic authentication***
+
+For multiple private repositories, you will need to create a COMPOSER_AUTH json and make it available via the COMPOSER_AUTH environment variable.
 
 Composer has the ability to read private repository access information from the environment variable: COMPOSER_AUTH. The COMPOSER_AUTH variables has to be in a [specific JSON format](https://doc.codingdict.com/composer/doc/articles/http-basic-authentication.html). 
 
