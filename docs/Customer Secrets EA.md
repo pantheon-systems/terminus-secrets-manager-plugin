@@ -57,6 +57,8 @@ Composer has the ability to read private repository access information from the 
 That format example is here:
 
 ```bash
+#!/bin/bash
+
 read -e COMPOSER_AUTH_JSON <<< {
     "http-basic": {
         "github.com": {
@@ -74,8 +76,6 @@ read -e COMPOSER_AUTH_JSON <<< {
     }
 }
 EOF
-```
 
-`terminus secret:set ${SITE_NAME} \
-   COMPOSER_AUTH ${COMPOSER_AUTH_JSON} \
-   --type=env --scope user --scope ic`
+`terminus secret:set ${SITE_NAME} COMPOSER_AUTH ${COMPOSER_AUTH_JSON} --type=env --scope user --scope ic`
+```
