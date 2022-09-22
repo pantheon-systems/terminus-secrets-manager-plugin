@@ -36,16 +36,19 @@ Have terminus [installed](https://pantheon.io/docs/terminus/install) and working
 
 ***Github token authentication***
 
+In order to get a github token, you must [generate a github token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
+
+The Github token needs all of the "repo" permissions:![image](https://user-images.githubusercontent.com/87093053/191616923-67732035-08aa-41c3-9a69-4d954ca02560.png) Once you have the token, you can set the secret value to the token like this:
+
 `terminus secret:set ${SITE_NAME} \
    github-oauth.github.com ${GITHUB_TOKEN} \
    --type=composer --scope user --scope ic`
 
-The Github token needs all of the "repo" permissions:![image](https://user-images.githubusercontent.com/87093053/191616923-67732035-08aa-41c3-9a69-4d954ca02560.png)
-
+`'github-oauth.github.com'` is a magic tokenname for composer that authenticates all github url's with the credentials from the token you provide. There are several ["magic" variable names](https://getcomposer.org/doc/articles/authentication-for-private-packages.md#command-line-global-credential-editing), or you can choose "basic authentication" by providing a COMPOSER_AUTH variable.
 
 ***HTTP basic authentication***
 
-For multiple private repositories, you will need to create a COMPOSER_AUTH json and make it available via the COMPOSER_AUTH environment variable.
+For multiple private repositories on multiple private domains, you will need to create a COMPOSER_AUTH json and make it available via the COMPOSER_AUTH environment variable.
 
 Composer has the ability to read private repository access information from the environment variable: COMPOSER_AUTH. The COMPOSER_AUTH variables has to be in a [specific JSON format](https://doc.codingdict.com/composer/doc/articles/http-basic-authentication.html). 
 
@@ -54,7 +57,7 @@ That format example is here:
 ```bash
 read -e COMPOSER_AUTH_JSON <<< {
     "http-basic": {
-        "github-oauth.github.com": {
+        "github.com": {
             "username": "my-username1",
             "password": "my-secret-password1"
         },
