@@ -120,7 +120,7 @@ Have terminus [installed](https://pantheon.io/docs/terminus/install) and working
 
 1. Set the upstream to the ID of our Drupal 9 composer-based upstream: 
 
-	 `export SITE_UPSTREAM_ID=bde48795-b16d-443f-af01-8b1790caa1af`
+	 `export SITE_UPSTREAM_ID=drupal-composer-managed`
 
 1. `export SITE_NAME=$USER-secrets-testing`
 
