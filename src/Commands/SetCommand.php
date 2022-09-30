@@ -25,7 +25,7 @@ class SetCommand extends SecretBaseCommand implements SiteAwareInterface
      * @aliases secret-set
      *
      * @option string $type Secret type
-     * @option array $scope Secret scope
+     * @option array $scope Secret scope. Available options are ic (integrated composer), user, web, and ops.
      * @option boolean $debug Run command in debug mode
      *
      * @param string $site_id The name or UUID of a site to retrieve information on
