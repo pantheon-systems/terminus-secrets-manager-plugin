@@ -26,6 +26,7 @@ class SetCommand extends SecretBaseCommand implements SiteAwareInterface
      *
      * @option string $type Secret type
      * @option array $scope Secret scope. Available options are ic (integrated composer), user, web, and ops.
+     *   Multiple options should be specified in comma separated format. Ex: --scope=ic,ops,web.
      * @option boolean $debug Run command in debug mode
      *
      * @param string $site_id The name or UUID of a site to retrieve information on
@@ -41,7 +42,7 @@ class SetCommand extends SecretBaseCommand implements SiteAwareInterface
      */
     public function setSecret($site_id, string $name, string $value, array $options = [
         'type' => 'env',
-        'scope' => ['ic'],
+        'scope' => 'ic',
         'debug' => false,
     ])
     {

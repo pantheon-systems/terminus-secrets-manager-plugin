@@ -51,7 +51,7 @@ terminus secret:set <site> file.json "{}" --type=file
 ```
 
 ```
-terminus secret:set <site> foo bar --scope=ic --scope=user
+terminus secret:set <site> foo bar --scope=ic,user
 
 [notice] Success
 
@@ -140,7 +140,7 @@ The Github token needs all of the "repo" permissions:
 
 Once you have the token, you can set the secret value to the token like this:
 
-`terminus secret:set ${SITE_NAME} github-oauth.github.com ${GITHUB_TOKEN} --type=composer --scope user --scope ic`
+`terminus secret:set ${SITE_NAME} github-oauth.github.com ${GITHUB_TOKEN} --type=composer --scope=user,ic`
 
 `github-oauth.github.com` is a magic tokenname for composer that authenticates all github url's with the credentials from the token you provide. There are several ["magic" variable names](https://getcomposer.org/doc/articles/authentication-for-private-packages.md#command-line-global-credential-editing), or you can choose "basic authentication" by providing a COMPOSER_AUTH variable.
 
@@ -173,5 +173,5 @@ read -e COMPOSER_AUTH_JSON <<< {
 }
 EOF
 
-`terminus secret:set ${SITE_NAME} COMPOSER_AUTH ${COMPOSER_AUTH_JSON} --type=env --scope user --scope ic`
+`terminus secret:set ${SITE_NAME} COMPOSER_AUTH ${COMPOSER_AUTH_JSON} --type=env --scope=user,ic`
 ```
