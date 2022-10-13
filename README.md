@@ -50,7 +50,7 @@ terminus secret:set <site> file.json "{}" --type=file
 ```
 
 ```
-terminus secret:set <site> foo bar --scope=ic --scope=user
+terminus secret:set <site> foo bar --scope=user,ic
 
 [notice] Success
 
