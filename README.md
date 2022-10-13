@@ -3,19 +3,18 @@
 [![CircleCI](https://circleci.com/gh/pantheon-systems/terminus-secrets-manager-plugin.svg?style=shield)](https://circleci.com/gh/pantheon-systems/terminus-secrets-manager-plugin)
 [![Early Access](https://img.shields.io/badge/Pantheon-Early_Access-yellow?logo=pantheon&color=FFDC28)](https://pantheon.io/docs/oss-support-levels#early-access)
 
-A plugin to handle Secrets via Terminus.
+A plugin for managing your Pantheon secrets via Terminus.
 
-NOTE: This is still a WORK IN PROGRESS; it is not guaranteed to be error-free.
+NOTE: Secrets Manager is still in Early Access. Customer Support is unable to provide assistance with this feature. Please create an Issue in the GitHub repo to report any issues or bugs.
 
-## Configuration
+## Installation
 
-These commands require no configuration.
+To install this plugin using Terminus 3:
+```
+terminus self:plugin:install terminus-secrets-manager-plugin
+```
 
 ## Usage
-
-* `terminus secret:list`
-* `terminus secret:set`
-* `terminus secret:delete`
 
 ### Listing secrets
 
@@ -51,7 +50,7 @@ terminus secret:set <site> file.json "{}" --type=file
 ```
 
 ```
-terminus secret:set <site> foo bar --scope=ic,user
+terminus secret:set <site> foo bar --scope=ic --scope=user
 
 [notice] Success
 
@@ -70,77 +69,16 @@ terminus secret:delete <site> foo
 
 ```
 
-## Installation
-
-To install this plugin using Terminus 3:
-```
-terminus self:plugin:install terminus-secrets-manager-plugin
-```
-
-## Testing
-
-This plugin includes three testing targets:
-
-* `composer lint`: Syntax-check all php source files.
-* `composer cs`: Code-style check.
-* `composer functional`: Run functional test with phpunit
-
-To run all tests together, use `composer test`.
-
-Note that prior to running the tests, you should first run:
-* `composer install`
-
-## Help
-
-Run `terminus help <command>` for help.
 
 ## Using secrets with Integrated Composer
 
-### Prerequisites
-
-***Terminus***
-
-Have terminus [installed](https://pantheon.io/docs/terminus/install) and working
-
-***Terminus Plugin (all platforms)***
-
-1. `terminus plugin:search secret` will yield more than one secret manager. You want the one with the word MANAGER in the title. 
-
-1. `terminus plugin:install pantheon-systems/terminus-secrets-manager-plugin` The other secret “manager” is legacy code and unsupported. [Jira ticket to update that listing with “deprecated”](https://getpantheon.atlassian.net/browse/CMS-962).
-
-1. `terminus` without any arguments will list all the commands. You should now see “secret” commands in that list.
-
 ### Steps
 
-***Before***
+1. [Generate a github token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token). The Github token needs all of the "repo" permissions (check this box specifically - only checking all the child boxes does not set the proper permissions): ![image](https://user-images.githubusercontent.com/87093053/191616923-67732035-08aa-41c3-9a69-4d954ca02560.png) 
 
-`terminus auth:login`
+1. Set the secret value to the token via terminus: `terminus secret:set <site> github-oauth.github.com <github_token> --type=composer --scope user --scope ic`
 
-***To create a fresh site for testing***
-
-1. Set the upstream to the ID of our Drupal 9 composer-based upstream: 
-
-	 `export SITE_UPSTREAM_ID=drupal-composer-managed`
-
-1. `export SITE_NAME=$USER-secrets-testing`
-
-1. `terminus site:create ${SITE_NAME} “${USER} Secrets Testing”  ${SITE_UPSTREAM_ID}`
-
-1.  `terminus local:clone ${SITE_NAME}`
-
-1. Set secrets using one of the methods shown below. Changing a file and pushing the code to development will trigger a composer run.
-
-***Github token authentication***
-
-In order to get a github token, you must [generate a github token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
-
-The Github token needs all of the "repo" permissions:
-
-![image](https://user-images.githubusercontent.com/87093053/191616923-67732035-08aa-41c3-9a69-4d954ca02560.png) 
-
-Once you have the token, you can set the secret value to the token like this:
-
-`terminus secret:set ${SITE_NAME} github-oauth.github.com ${GITHUB_TOKEN} --type=composer --scope=user,ic`
+1. Commit a change to generate a new build 
 
 `github-oauth.github.com` is a magic tokenname for composer that authenticates all github url's with the credentials from the token you provide. There are several ["magic" variable names](https://getcomposer.org/doc/articles/authentication-for-private-packages.md#command-line-global-credential-editing), or you can choose "basic authentication" by providing a COMPOSER_AUTH variable.
 
@@ -173,5 +111,5 @@ read -e COMPOSER_AUTH_JSON <<< {
 }
 EOF
 
-`terminus secret:set ${SITE_NAME} COMPOSER_AUTH ${COMPOSER_AUTH_JSON} --type=env --scope=user,ic`
+`terminus secret:set ${SITE_NAME} COMPOSER_AUTH ${COMPOSER_AUTH_JSON} --type=env --scope user --scope ic`
 ```
