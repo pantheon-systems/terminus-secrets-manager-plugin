@@ -76,7 +76,7 @@ terminus secret:delete <site> foo
 
 1. [Generate a github token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token). The Github token needs all of the "repo" permissions (check this box specifically - only checking all the child boxes does not set the proper permissions): ![image](https://user-images.githubusercontent.com/87093053/191616923-67732035-08aa-41c3-9a69-4d954ca02560.png) 
 
-1. Set the secret value to the token via terminus: `terminus secret:set <site> github-oauth.github.com <github_token> --type=composer --scope user --scope ic`
+1. Set the secret value to the token via terminus: `terminus secret:set <site> github-oauth.github.com <github_token> --type=composer --scope=user,ic`
 
 1. Commit a change to generate a new build 
 
