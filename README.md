@@ -78,7 +78,24 @@ terminus secret:delete <site> foo
 
 1. Set the secret value to the token via terminus: `terminus secret:set <site> github-oauth.github.com <github_token> --type=composer --scope=user,ic`
 
-1. Commit a change to generate a new build 
+1. Add your private repository to the `repositories` section of `composer.json`:
+
+    ```json
+    {
+        "type": "vcs",
+        "url": "https://github.com/your-organization/your-repository-name"
+    }
+    ```
+
+    Your repository should contain a `composer.json` that declares a package name in its `name` field. If it is a WordPress plugin or a Drupal module, it should specify a `type` of `wordpress-plugin` or `drupal-module` respectively. For these instructions, we will assume your package name is `your-organization/your-package-name`.
+
+1. Require the package defined by your private repository's `composer.json` by either adding a new record to the `require` section of the site's `composer.json` or with a `composer require` command:
+
+    ```bash
+    composer require your-organization/your-package-name
+    ```
+
+1. Commit your changes and push to Pantheon.
 
 `github-oauth.github.com` is a magic tokenname for composer that authenticates all github url's with the credentials from the token you provide. There are several ["magic" variable names](https://getcomposer.org/doc/articles/authentication-for-private-packages.md#command-line-global-credential-editing), or you can choose "basic authentication" by providing a COMPOSER_AUTH variable.
 
