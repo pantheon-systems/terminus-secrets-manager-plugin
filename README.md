@@ -87,7 +87,7 @@ terminus secret:delete <site> foo
     }
     ```
 
-    Your repository should contain a `composer.json` that declares a package name in its `name` field and a `type` of `drupal-module` or `wordpress-plugin`, as appropriate for your CMS. For these instructions, we will assume your package name is `your-organization/your-package-name`.
+    Your repository should contain a `composer.json` that declares a package name in its `name` field. If it is a WordPress plugin or a Drupal module, it should specify a `type` of `wordpress-plugin` or `drupal-module` respectively. For these instructions, we will assume your package name is `your-organization/your-package-name`.
 
 1. Require the package defined by your private repository's `composer.json` by either adding a new record to the `require` section of the site's `composer.json` or with a `composer require` command:
 
