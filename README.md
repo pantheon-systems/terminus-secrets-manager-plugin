@@ -1,39 +1,53 @@
-# Terminus Secrets Manager Plugin
+# Terminus Secrets Management Plugin
 
-[![CircleCI](https://circleci.com/gh/pantheon-systems/terminus-secrets-manager-plugin.svg?style=shield)](https://circleci.com/gh/pantheon-systems/terminus-secrets-manager-plugin)
-[![Early Access](https://img.shields.io/badge/Pantheon-Early_Access-yellow?logo=pantheon&color=FFDC28)](https://pantheon.io/docs/oss-support-levels#early-access)
+Pantheon’s Secrets Management Terminus plugin is key to maintaining industry best practices for secure builds and application implementation. Secrets Management provides a convenient mechanism for you to manage your secrets and API keys directly on the Pantheon platform.
 
-A plugin for managing your Pantheon secrets via Terminus.
+## Key Features
 
-NOTE: Secrets Manager is still in Early Access. Customer Support is unable to provide assistance with this feature. Please create an Issue in the GitHub repo to report any issues or bugs.
+- Securely host and maintain Secrets on Pantheon
+- Use private repositories in Integrated Composer builds
+- Create and update secrets via Terminus
+- Ability to set a `COMPOSER_AUTH` environment variable and/or a `Composer auth.json` authentication file with Terminus commands
+- Ability to define site-specific Secrets (organization-specific Secrets are not yet supported)
+- Ability to define the level of secrecy for each managed item (this determines which users can view the value of a Secret after entering it)
+- Secrets are encrypted at rest
+
+## Secrets Management Plugin Requirements
+
+Secrets Management requires the following:
+
+- A Pantheon account
+- Integrated Composer
+- Terminus
+
+## Early Access
+
+The Secrets Management plugin is available for Early Access participants. Features for Secrets Management are in active development. Pantheon's development team is rolling out new functionality often while this product is in Early Access. Visit the [Pantheon Slack channel](https://slackin.pantheon.io/) (or sign up for the channel if you don't already have an account) to learn how you can enroll in our Early Access program. Please review [Pantheon's Software Evaluation Licensing Terms](https://legal.pantheon.io/#contract-hkqlbwpxo) for more information about access to our software.
 
 ## Installation
 
-To install this plugin using Terminus 3:
+Terminus 3.x has built in plugin management.
+
+Run the command below to install Terminus Secrets Management.
+
 ```
 terminus self:plugin:install terminus-secrets-manager-plugin
 ```
 
-## Usage
+## Terminus Secrets Management Commands
 
-### Listing secrets
+### Set a Secret
 
-Use `terminus secret:list` to list existing secrets for a given site:
+The Secrets `set` command takes the following format:
 
-```
-terminus secret:list <site>
+- `Name`
+- `Value`
+- `One or more scopes`
 
- ------------- ------------- ---------------------------
-  Secret name   Secret type   Secret value
- ------------- ------------- ---------------------------
-  file.json     file          contents of a secret file
-  foo           env           bar
- ------------- ------------- ---------------------------
-```
+The scope determines access to the Secret’s value. For example, if the scope is set to `users`, it will allow the user to view the Secret in Terminus. If the scope is set to `integrated composer`, it makes the Secret available to the Integrated Composer build. 
 
-### Setting secrets
 
-Use `terminus secret:set <site> <secret_name> <secret_value> [--type=TYPE] [--scope=SCOPE]` to set a secret for a given site:
+Run the command below to set a Secret in Terminus:
 
 ```
 terminus secret:set <site> foo bar
@@ -58,9 +72,56 @@ terminus secret:set <site> foo bar --scope=user,ic
 
 Note: If you do not include a `type` or `scope` flag, their defaults will be `env` and `ic` respectively.
 
-### Deleting secrets
+#### Multiple Key Versions 
 
-Use `terminus secret:delete <site> <secret_name>` to delete a secret for a given site:
+If you need multiple versions of a key for different environments or one key for development and one key for production:
+
+Add all keys with a naming structure that helps when listing the keys:
+
+```
+keyName_production: value
+keyName_development: value
+```
+
+or
+
+```
+keyName_multiDevName: value
+```
+
+NOTE: There are no key arrays in the json file; all keys are at the root. 
+
+### List Secrets
+
+The Secrets `list` command provides a list of all Secrets available for a site. The following fields are available:
+
+- `Name`
+- `Scope`
+- `Type`
+- `Value`
+
+Note that the `value` field will be empty or contain a placeholder value unless the `user` scope was specified when the secret was set.
+
+Run the command below to list a site’s Secrets:
+
+`terminus secret:list` 
+
+```
+terminus secret:list <site>
+
+ ------------- ------------- ---------------------------
+  Secret name   Secret type   Secret value
+ ------------- ------------- ---------------------------
+  file.json     file          contents of a secret file
+  foo           env           bar
+ ------------- ------------- ---------------------------
+```
+
+### Delete a Secret
+
+The Secrets `delete` command will remove a Secret from all of its scopes.
+
+Run the command below to delete a Secret:
 
 ```
 terminus secret:delete <site> foo
@@ -69,12 +130,21 @@ terminus secret:delete <site> foo
 
 ```
 
+### Help
 
-## Using secrets with Integrated Composer
+Run terminus secret `list` for a complete list of available commands. Use terminus help <command> to get help with a specific command.
 
-### Steps
+## Use Secrets with Integrated Composer
 
-1. [Generate a github token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token). The Github token needs all of the "repo" permissions (check this box specifically - only checking all the child boxes does not set the proper permissions): ![image](https://user-images.githubusercontent.com/87093053/191616923-67732035-08aa-41c3-9a69-4d954ca02560.png) 
+You must configure your private repository and provide an authentication token before you can use the Secrets Management Terminus plugin with Integrated Composer.
+
+### GitHub Repository
+
+1. [Generate a Github token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token). The Github token must have all "repo" permissions selected.
+
+    NOTE: Check the repo box that selects all child boxes. **Do not** check all child boxes individually as this does not set the correct permissions.
+
+    ![image](https://user-images.githubusercontent.com/87093053/191616923-67732035-08aa-41c3-9a69-4d954ca02560.png) 
 
 1. Set the secret value to the token via terminus: `terminus secret:set <site> github-oauth.github.com <github_token> --type=composer --scope=user,ic`
 
@@ -97,15 +167,78 @@ terminus secret:delete <site> foo
 
 1. Commit your changes and push to Pantheon.
 
-`github-oauth.github.com` is a magic tokenname for composer that authenticates all github url's with the credentials from the token you provide. There are several ["magic" variable names](https://getcomposer.org/doc/articles/authentication-for-private-packages.md#command-line-global-credential-editing), or you can choose "basic authentication" by providing a COMPOSER_AUTH variable.
+### GitLab Repository
 
-***HTTP basic authentication***
+1. [Generate a GitLab token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html). Ensure that all repository scopes are selected for the token.
 
-For multiple private repositories on multiple private domains, you will need to create a COMPOSER_AUTH json and make it available via the COMPOSER_AUTH environment variable.
+1. Set the secret value to the token via Terminus: `terminus secret:set <site> gitlab-oauth.gitlab.com <gitlab_token> --type=composer --scope=user,ic`
 
-Composer has the ability to read private repository access information from the environment variable: COMPOSER_AUTH. The COMPOSER_AUTH variables has to be in a [specific JSON format](https://doc.codingdict.com/composer/doc/articles/http-basic-authentication.html). 
+1. Add your private repository to the `repositories` section of `composer.json`:
 
-That format example is here:
+    ```json
+    {
+        "gitlab-oauth": {
+            "example.org": "token"
+        }
+    }
+    ```
+
+1. Require the package defined by your private repository's `composer.json` by either adding a new record to the `require` section of the site's `composer.json` or with a `composer require` command:
+
+    ```bash
+    composer require your-organization/your-package-name
+    ```
+
+1. Commit your changes and push to Pantheon.
+
+### Bitbucket Repository
+
+1. [Generate a Bitbucket token](https://confluence.atlassian.com/bitbucketserver072/personal-access-tokens-1005335924.html). Ensure that all repository scopes are selected for the token.
+
+1. Set the secret value to the token via Terminus: `terminus secret:set <site> bitbucket-oauth.bitbucket.com <bitbucket_token> --type=composer --scope=user,ic`
+
+1. Add your private repository to the `repositories` section of `composer.json`:
+
+    ```json
+    {
+        "bitbucket-oauth": {
+            "bitbucket.org": {
+                "consumer-key": "key",
+                "consumer-secret": "secret"
+            }
+        }
+    }
+    ```
+
+1. Require the package defined by your private repository's `composer.json` by either adding a new record to the `require` section of the site's `composer.json` or with a `composer require` command:
+
+    ```bash
+    composer require your-organization/your-package-name
+    ```
+
+1. Commit your changes and push to Pantheon.
+
+## Authentication
+
+### GitHub
+
+`github-oauth.github.com` is a magic token name for composer that authenticates all Github URLs with the credentials from the token you provide. There are several ["magic" variable names](https://getcomposer.org/doc/articles/authentication-for-private-packages.md#command-line-global-credential-editing), or you can choose "basic authentication" by providing a `COMPOSER_AUTH` variable.
+
+### GitLab
+
+`gitlab-oauth.gitlab.com` is a magic token name for Composer that authenticates all GitLab URLs with the credentials from the token you provide. There are several ["magic" variable names](https://getcomposer.org/doc/articles/authentication-for-private-packages.md#command-line-global-credential-editing), or you can choose "basic authentication" by providing a `COMPOSER_AUTH` variable.
+
+### Bitbucket
+
+`bitbucket-oauth.bitbucket.com` is a magic token name for Composer that authenticates all Bitbucket URLs with the credentials from the token you provide. There are several ["magic" variable names](https://getcomposer.org/doc/articles/authentication-for-private-packages.md#command-line-global-credential-editing), or you can choose "basic authentication" by providing a `COMPOSER_AUTH` variable.
+
+### HTTP Basic Authentication
+
+You must create a `COMPOSER_AUTH json` and make it available via the `COMPOSER_AUTH` environment variable if you have multiple private repositories on multiple private domains.
+
+Composer has the ability to read private repository access information from the environment variable: `COMPOSER_AUTH`. The `COMPOSER_AUTH` variables must be in a [specific JSON format](https://doc.codingdict.com/composer/doc/articles/http-basic-authentication.html). 
+
+Format example:
 
 ```bash
 #!/bin/bash
