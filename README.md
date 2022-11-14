@@ -50,7 +50,7 @@ The scope determines access to the Secret’s value. For example, if the scope i
 Run the command below to set a Secret in Terminus:
 
 ```
-terminus secret:set <site> foo bar
+terminus secret:set <site> secret-name
 
 [notice] Success
 
@@ -113,7 +113,7 @@ terminus secret:list <site>
   Secret name   Secret type   Secret value
  ------------- ------------- ---------------------------
   file.json     file          contents of a secret file
-  foo           env           bar
+  secret-name   env           secrets-content
  ------------- ------------- ---------------------------
 ```
 
@@ -124,7 +124,7 @@ The Secrets `delete` command will remove a Secret from all of its scopes.
 Run the command below to delete a Secret:
 
 ```
-terminus secret:delete <site> foo
+terminus secret:delete <site> secret-name
 
 [notice] Success
 
@@ -132,7 +132,7 @@ terminus secret:delete <site> foo
 
 ### Help
 
-Run terminus secret `list` for a complete list of available commands. Use terminus help <command> to get help with a specific command.
+Run `terminus secret list` for a complete list of available commands. Use terminus help <command> to get help with a specific command.
 
 ## Use Secrets with Integrated Composer
 
