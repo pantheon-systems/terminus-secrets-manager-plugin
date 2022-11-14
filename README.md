@@ -50,7 +50,7 @@ The scope determines access to the Secret’s value. For example, if the scope i
 Run the command below to set a Secret in Terminus:
 
 ```
-terminus secret:set <site> secret-name
+terminus secret:set <site> <secret-name> <secret-value>
 
 [notice] Success
 
