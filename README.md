@@ -64,7 +64,7 @@ terminus secret:set <site> file.json "{}" --type=file
 ```
 
 ```
-terminus secret:set <site> foo bar --scope=user,ic
+terminus secret:set <site> <secret-name> --scope=user,ic
 
 [notice] Success
 
