@@ -44,7 +44,7 @@ The Secrets `set` command takes the following format:
 - `Value`
 - `One or more scopes`
 
-The scope determines access to the Secret’s value. For example, if the scope is set to `users`, it will allow the user to view the Secret in Terminus. If the scope is set to `integrated composer`, it makes the Secret available to the Integrated Composer build. 
+The scope determines access to the Secret’s value. For example, if the scope is set to `users`, it will allow the user to view the Secret in Terminus. If the scope is set to `ic`, it makes the Secret available to the Integrated Composer build. 
 
 
 Run the command below to set a Secret in Terminus:
