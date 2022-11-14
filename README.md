@@ -124,7 +124,7 @@ The Secrets `delete` command will remove a Secret from all of its scopes.
 Run the command below to delete a Secret:
 
 ```
-terminus secret:delete <site> secret-name
+terminus secret:delete <site> <secret-name>
 
 [notice] Success
 
