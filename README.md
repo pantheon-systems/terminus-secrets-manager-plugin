@@ -1,6 +1,6 @@
-# Terminus Secrets Management Plugin
+# Terminus Secrets Manager Plugin
 
-Pantheon’s Secrets Management Terminus plugin is key to maintaining industry best practices for secure builds and application implementation. Secrets Management provides a convenient mechanism for you to manage your secrets and API keys directly on the Pantheon platform.
+Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best practices for secure builds and application implementation. Secrets Manager provides a convenient mechanism for you to manage your secrets and API keys directly on the Pantheon platform.
 
 ## Key Features
 
@@ -12,9 +12,9 @@ Pantheon’s Secrets Management Terminus plugin is key to maintaining industry b
 - Ability to define the level of secrecy for each managed item (this determines which users can view the value of a Secret after entering it)
 - Secrets are encrypted at rest
 
-## Secrets Management Plugin Requirements
+## Secrets Manager Plugin Requirements
 
-Secrets Management requires the following:
+Secrets Manager requires the following:
 
 - A Pantheon account
 - Integrated Composer
@@ -22,19 +22,19 @@ Secrets Management requires the following:
 
 ## Early Access
 
-The Secrets Management plugin is available for Early Access participants. Features for Secrets Management are in active development. Pantheon's development team is rolling out new functionality often while this product is in Early Access. Visit the [Pantheon Slack channel](https://slackin.pantheon.io/) (or sign up for the channel if you don't already have an account) to learn how you can enroll in our Early Access program. Please review [Pantheon's Software Evaluation Licensing Terms](https://legal.pantheon.io/#contract-hkqlbwpxo) for more information about access to our software.
+The Secrets Manager plugin is available for Early Access participants. Features for Secrets Manager are in active development. Pantheon's development team is rolling out new functionality often while this product is in Early Access. Visit the [Pantheon Slack channel](https://slackin.pantheon.io/) (or sign up for the channel if you don't already have an account) to learn how you can enroll in our Early Access program. Please review [Pantheon's Software Evaluation Licensing Terms](https://legal.pantheon.io/#contract-hkqlbwpxo) for more information about access to our software.
 
 ## Installation
 
 Terminus 3.x has built in plugin management.
 
-Run the command below to install Terminus Secrets Management.
+Run the command below to install Terminus Secrets Manager.
 
 ```
 terminus self:plugin:install terminus-secrets-manager-plugin
 ```
 
-## Terminus Secrets Management Commands
+## Terminus Secrets Manager Commands
 
 ### Set a Secret
 
@@ -136,7 +136,7 @@ Run `terminus secret list` for a complete list of available commands. Use termin
 
 ## Use Secrets with Integrated Composer
 
-You must configure your private repository and provide an authentication token before you can use the Secrets Management Terminus plugin with Integrated Composer.
+You must configure your private repository and provide an authentication token before you can use the Secrets Manager Terminus plugin with Integrated Composer.
 
 ### GitHub Repository
 
