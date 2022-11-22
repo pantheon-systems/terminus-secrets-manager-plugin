@@ -39,6 +39,7 @@ class DeleteCommand extends SecretBaseCommand implements SiteAwareInterface
     public function deleteSecret($site_id, string $name, array $options = ['debug' => false])
     {
         $site = $this->getSite($site_id);
+        $this->warnIfEnvironmentPresent($site_id);
         $this->setupRequest();
         if ($this->secretsApi->deleteSecret($site->id, $name, $options['debug'])) {
             $this->log()->notice('Success');

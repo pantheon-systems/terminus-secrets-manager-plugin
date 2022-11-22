@@ -51,6 +51,7 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
     public function listSecrets($site_id, array $options = ['debug' => false,])
     {
         $site = $this->getSite($site_id);
+        $this->warnIfEnvironmentPresent($site_id);
         $this->setupRequest();
         $secrets = $this->secretsApi->listSecrets($site->id, $options['debug']);
         $print_options = [
