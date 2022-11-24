@@ -169,7 +169,7 @@ You must configure your private repository and provide an authentication token b
 
 ### GitLab Repository
 
-1. [Generate a GitLab token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html). Ensure that all repository scopes are selected for the token.
+1. [Generate a GitLab token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html). Ensure that `read_repository` scope is selected for the token.
 
 1. Set the secret value to the token via Terminus: `terminus secret:set <site> gitlab-oauth.gitlab.com <gitlab_token> --type=composer --scope=user,ic`
 
@@ -177,25 +177,24 @@ You must configure your private repository and provide an authentication token b
 
     ```json
     {
-        "gitlab-oauth": {
-            "example.org": "token"
-        }
+        "type": "vcs",
+        "url": "https://gitlab.com/your-group/your-repository-name"
     }
     ```
 
 1. Require the package defined by your private repository's `composer.json` by either adding a new record to the `require` section of the site's `composer.json` or with a `composer require` command:
 
     ```bash
-    composer require your-organization/your-package-name
+    composer require your-group/your-package-name
     ```
 
 1. Commit your changes and push to Pantheon.
 
 ### Bitbucket Repository
 
-1. [Generate a Bitbucket token](https://confluence.atlassian.com/bitbucketserver072/personal-access-tokens-1005335924.html). Ensure that all repository scopes are selected for the token.
+1. [Generate a Bitbucket oauth consumer](https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud/). Ensure that Read repositories permission is selected for the consumer. Also, set the consumer as private and put a (dummy) callback URL.
 
-1. Set the secret value to the token via Terminus: `terminus secret:set <site> bitbucket-oauth.bitbucket.com <bitbucket_token> --type=composer --scope=user,ic`
+1. Set the secret value to the consumer info via Terminus: `terminus secret:set <site> bitbucket-oauth.bitbucket.com "<consumer_key> <consumer_secret>"--type=composer --scope=user,ic`
 
 1. Add your private repository to the `repositories` section of `composer.json`:
 
