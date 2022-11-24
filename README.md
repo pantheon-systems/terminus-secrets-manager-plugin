@@ -194,18 +194,14 @@ You must configure your private repository and provide an authentication token b
 
 1. [Generate a Bitbucket oauth consumer](https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud/). Ensure that Read repositories permission is selected for the consumer. Also, set the consumer as private and put a (dummy) callback URL.
 
-1. Set the secret value to the consumer info via Terminus: `terminus secret:set <site> bitbucket-oauth.bitbucket.com "<consumer_key> <consumer_secret>"--type=composer --scope=user,ic`
+1. Set the secret value to the consumer info via Terminus: `terminus secret:set <site> bitbucket-oauth.bitbucket.org "<consumer_key> <consumer_secret>"--type=composer --scope=user,ic`
 
 1. Add your private repository to the `repositories` section of `composer.json`:
 
     ```json
     {
-        "bitbucket-oauth": {
-            "bitbucket.org": {
-                "consumer-key": "key",
-                "consumer-secret": "secret"
-            }
-        }
+        "type": "vcs",
+        "url": "https://bitbucket.org/your-organization/your-repository-name"
     }
     ```
 
