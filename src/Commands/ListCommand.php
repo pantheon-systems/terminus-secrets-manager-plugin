@@ -77,7 +77,7 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
         }
 
         return (new RowsOfFields($data))->addRendererFunction(
-            function ($key, $cellData, FormatterOptions $options, $rowData) {
+            function ($key, $cellData) {
                 if ($key == 'value' && !$cellData) {
                     return '[REDACTED]';
                 }
