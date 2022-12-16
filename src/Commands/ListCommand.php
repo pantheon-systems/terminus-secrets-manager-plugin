@@ -84,7 +84,5 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
                 return $cellData;
             }
         );
-
-        return new RowsOfFields($data);
     }
 }
