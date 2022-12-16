@@ -39,6 +39,8 @@ class SetCommand extends SecretBaseCommand implements SiteAwareInterface
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function setSecret($site_id, string $name, string $value, array $options = [
         'type' => 'env',
