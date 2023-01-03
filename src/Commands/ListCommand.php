@@ -6,7 +6,6 @@ use Pantheon\Terminus\Commands\StructuredListTrait;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Consolidation\OutputFormatters\Options\FormatterOptions;
 
 /**
  * Class ListCommand.
@@ -37,16 +36,17 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
      *
      * @option boolean $debug Run command in debug mode
      *
-     * @param string $site_id The name or UUID of a site to retrieve information on
-     * @param array $options
-     *
      * @usage <site> Lists all secrets for current site.
      * @usage <site> --debug List all secrets for current site (debug mode).
      *
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @param string $site_id The name or UUID of a site to retrieve information on
+     * @param array $options
      *
      * @return RowsOfFields
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function listSecrets($site_id, array $options = ['debug' => false,])
     {
@@ -77,14 +77,12 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
         }
 
         return (new RowsOfFields($data))->addRendererFunction(
-            function ($key, $cellData, FormatterOptions $options, $rowData) {
+            function ($key, $cellData) {
                 if ($key == 'value' && !$cellData) {
                     return '[REDACTED]';
                 }
                 return $cellData;
             }
         );
-
-        return new RowsOfFields($data);
     }
 }

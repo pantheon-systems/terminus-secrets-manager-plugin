@@ -35,6 +35,8 @@ class DeleteCommand extends SecretBaseCommand implements SiteAwareInterface
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function deleteSecret($site_id, string $name, array $options = ['debug' => false])
     {
