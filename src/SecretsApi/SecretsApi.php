@@ -34,11 +34,11 @@ class SecretsApi
         }
         // If host is still not set, use the default host.
         if (!$host) {
-            $host = 'pantheonapi.pantheon.io';
+            $host = 'api.pantheon.io';
         }
 
         return sprintf(
-            '%s://%s:%s',
+            '%s://%s:%s/customer-secrets/v1',
             $protocol,
             $host,
             $port
