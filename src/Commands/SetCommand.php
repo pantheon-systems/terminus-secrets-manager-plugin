@@ -25,7 +25,8 @@ class SetCommand extends SecretBaseCommand implements SiteAwareInterface
      * @aliases secret-set
      *
      * @option string $type Secret type
-     * @option array $scope Secret scope
+     * @option array $scope Secret scope. Available options are ic (integrated composer), user, web, and ops.
+     *   Multiple options should be specified in comma separated format. Ex: --scope=ic,ops,web.
      * @option boolean $debug Run command in debug mode
      *
      * @param string $site_id The name or UUID of a site to retrieve information on
@@ -38,14 +39,17 @@ class SetCommand extends SecretBaseCommand implements SiteAwareInterface
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function setSecret($site_id, string $name, string $value, array $options = [
         'type' => 'env',
-        'scope' => ['ic'],
+        'scope' => 'ic',
         'debug' => false,
     ])
     {
         $site = $this->getSite($site_id);
+        $this->warnIfEnvironmentPresent($site_id);
         $this->setupRequest();
         if ($this->secretsApi->setSecret(
             $site->id,

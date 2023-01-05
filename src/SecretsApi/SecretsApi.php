@@ -100,7 +100,7 @@ class SecretsApi
      *   Secret value.
      * @param string $type
      *   Secret type.
-     * @param array $scopes
+     * @param string $scopes
      *   Secret scopes.
      * @param bool $debug
      *   Whether to return the secrets in debug mode.
@@ -116,7 +116,7 @@ class SecretsApi
         string $name,
         string $value,
         string $type = '',
-        array $scopes = ['ic'],
+        string $scopes = 'ic',
         bool $debug = false
     ): bool {
         if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
@@ -138,6 +138,7 @@ class SecretsApi
             $body['type'] = $type;
         }
         if ($scopes) {
+            $scopes = array_map('trim', explode(',', $scopes));
             $body['scopes'] = $scopes;
         }
         $options = [
