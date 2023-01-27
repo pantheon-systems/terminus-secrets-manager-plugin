@@ -1,15 +1,92 @@
-name: PHP Compatibility
+name: Terminus 3.x Plugins Test & Build
 on:
-  push
-
+  push:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      functional_tests_group:
+        description: Run arbitrary functional tests group by name or all (short and long) tests (default)
+        required: true
+        default: all
 jobs:
+  # Checkout in separate job because docker image is alpine based and checkout action doesn't work.
+  checkout_build:
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/pantheon-public/php-ci:v7.4
+    name: Checkout & Lint
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Save repo content as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: full-workspace
+          path: ${{ github.workspace }}
+      - name: Full Composer Install
+        run: composer install
+      - name: Validate Code
+        run: composer lint
   phpcompatibility:
     runs-on: ubuntu-latest
     name: PHP Compatibility
+    needs:
+      - checkout_build
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Download repo content from artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: full-workspace
       - name: PHPCompatibility
         uses: pantheon-systems/phpcompatibility-action@v1
         with:
-          test-versions: 7.4-
+          test-versions: 7.4-8.3
+          paths: ${{ github.workspace }}/src
+
+  functional:
+    runs-on: ${{ matrix.operating-system }}
+    name: Functional testing matrix - PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}
+    if: ${{ github.repository_owner == 'pantheon-systems' }}
+    strategy:
+      matrix:
+        operating-system: [ 'macos-latest' ]
+        php-versions: [ '7.4', '8.1' ]
+      max-parallel: 3
+    env:
+      TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
+      TERMINUS_SITE: ${{ secrets.TERMINUS_SITE }}
+      TERMINUS_ORG: ${{ secrets.TERMINUS_ORG }}
+      TERMINUS_USER: ${{ secrets.TERMINUS_USER }}
+      TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP: true
+      TERMINUS_VERSION: 3.1.1
+    needs:
+      - checkout_build
+      - phpcompatibility
+    steps:
+      - name: Install SSH key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-public-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: gd, mbstring, zip, ssh2-1.3.1, pcov
+          coverage: pcov
+          ini-values: error_reporting=E_ALL
+      - name: Download repo content from artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: full-workspace
+      - name: Install Terminus
+        uses: pantheon-systems/terminus-github-actions@main
+        with:
+          pantheon-machine-token: ${{ secrets.TERMINUS_TOKEN }}
+          terminus-version: ${{ env.TERMINUS_VERSION }}
+      - name: Run e2e test
+        run: chmod +x ${GITHUB_WORKSPACE}/.github/e2e.sh && bash ${GITHUB_WORKSPACE}/.github/e2e.sh
+        env:
+          pantheon-machine-token: ${{ secrets.TERMINUS_TOKEN }}
+          terminus-version: ${{ env.TERMINUS_VERSION }}
