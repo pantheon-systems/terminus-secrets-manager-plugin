@@ -68,7 +68,7 @@ jobs:
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          ssh-public-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-public-key: ${{ secrets.SSH_PUBLIC_KEY }}
       - name: Setup PHP with PECL extension
         uses: shivammathur/setup-php@v2
         with:
