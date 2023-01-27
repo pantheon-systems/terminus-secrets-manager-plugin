@@ -1,21 +1,37 @@
 name: PHP Compatibility
 on:
-  push
+  push:
+  pull_request:
 
 jobs:
+  checkout_build:
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/pantheon-public/php-ci:v7.4
+    name: Checkout & Lint
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Save repo content as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: full-workspace
+          path: ${{ github.workspace }}
+      - name: Full Composer Install
+        run: composer install
+      - name: Validate Code
+        run: composer lint
   phpcompatibility:
     runs-on: ubuntu-latest
     name: PHP Compatibility
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: PHPCompatibility
         uses: pantheon-systems/phpcompatibility-action@v1
         with:
-<<<<<<< HEAD
           test-versions: 7.4-8.3
           paths: ${{ github.workspace }}/src
-
   functional:
     runs-on: ${{ matrix.operating-system }}
     name: Functional testing matrix - PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}
@@ -52,6 +68,8 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: full-workspace
+      - name: Install jq
+        run: brew install jq
       - name: Install Terminus
         uses: pantheon-systems/terminus-github-actions@main
         with:
@@ -62,6 +80,4 @@ jobs:
         env:
           pantheon-machine-token: ${{ secrets.TERMINUS_TOKEN }}
           terminus-version: ${{ env.TERMINUS_VERSION }}
-=======
           test-versions: 7.4-
->>>>>>> parent of 68f8053 (Remove curent test and set up standardized test)

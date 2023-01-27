@@ -2,3 +2,4 @@ vendor
 .envrc
 .phpunit.result.cache
 reports
+/.idea
