@@ -1,5 +1,4 @@
 vendor
 .envrc
 .phpunit.result.cache
-.idea
-.DS_Store
+reports
