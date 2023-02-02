@@ -19,6 +19,7 @@ Secrets Manager requires the following:
 - A Pantheon account
 - Integrated Composer
 - Terminus
+- PHP (v8.0+)
 
 ## Early Access
 
