@@ -26,20 +26,20 @@ class SecretsCommandsTest extends TerminusTestBase
     public function testSecretsCommands()
     {
 
-        $this->assertCommandExists('secret:list');
-        $this->assertCommandExists('secret:set');
-        $this->assertCommandExists('secret:delete');
+        $this->assertCommandExists('secret:site:list');
+        $this->assertCommandExists('secret:site:set');
+        $this->assertCommandExists('secret:site:delete');
 
         // Set secret.
         $this->terminus(sprintf(
-            'secret:set %s %s %s',
+            'secret:site:set %s %s %s',
             $this->getSiteName(),
             self::SECRET_NAME,
             self::SECRET_VALUE
         ));
 
         // List secrets.
-        $secretsList = $this->terminusJsonResponse(sprintf('secret:list %s', $this->getSiteName()));
+        $secretsList = $this->terminusJsonResponse(sprintf('secret:site:list %s', $this->getSiteName()));
         $this->assertIsArray($secretsList);
         $this->assertNotEmpty($secretsList);
         $secretFound = false;
@@ -52,10 +52,10 @@ class SecretsCommandsTest extends TerminusTestBase
         $this->assertTrue($secretFound, 'Secret not found in list.');
 
         // Delete secret.
-        $this->terminus(sprintf('secret:delete %s %s', $this->getSiteName(), self::SECRET_NAME));
+        $this->terminus(sprintf('secret:site:delete %s %s', $this->getSiteName(), self::SECRET_NAME));
 
         // List secrets again.
-        $secretsList = $this->terminusJsonResponse(sprintf('secret:list %s', $this->getSiteName()));
+        $secretsList = $this->terminusJsonResponse(sprintf('secret:site:list %s', $this->getSiteName()));
         $this->assertIsArray($secretsList);
         $secretFound = false;
         foreach ($secretsList as $secret) {
