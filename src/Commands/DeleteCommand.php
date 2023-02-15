@@ -21,8 +21,8 @@ class DeleteCommand extends SecretBaseCommand implements SiteAwareInterface
      *
      * @authorize
      *
-     * @command secret:delete
-     * @aliases secret-delete
+     * @command secret:site:delete
+     * @aliases secret-delete, secret:delete
      *
      * @option boolean $debug Run command in debug mode
      *

@@ -21,8 +21,8 @@ class SetCommand extends SecretBaseCommand implements SiteAwareInterface
      *
      * @authorize
      *
-     * @command secret:set
-     * @aliases secret-set
+     * @command secret:site:set
+     * @aliases secret-set, secret:set
      *
      * @option string $type Secret type
      * @option array $scope Secret scope. Available options are ic (integrated composer), user, web, and ops.

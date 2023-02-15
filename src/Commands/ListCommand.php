@@ -25,8 +25,8 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
      * @authorize
      * @filter-output
      *
-     * @command secret:list
-     * @aliases secrets
+     * @command secret:site:list
+     * @aliases secrets, secret:list
      *
      * @field-labels
      *   name: Secret name
