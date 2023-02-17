@@ -54,9 +54,9 @@ echo "===================================================="
 #curl "https://${SITE_DOMAIN_NAME}" &> /dev/null
 #echo "===================================================="
 
-terminus secret:set "${SITENAME}" "SUPER_TEST_SECRET" "${DATE_TAG}-value" --scope=user,ic
+terminus secret:site:set "${SITENAME}" "SUPER_TEST_SECRET" "${DATE_TAG}-value" --scope=user,ic
 echo "Simple secret set : ${SITENAME}"
-RETURN_VALUE=$(terminus secret:list "${SITENAME}" --format=json | jq -r '.[] | select(.name=="SUPER_TEST_SECRET") | .value' )
+RETURN_VALUE=$(terminus secret:site:list "${SITENAME}" --format=json | jq -r '.[] | select(.name=="SUPER_TEST_SECRET") | .value' )
 echo "Secret value retrieved: ${RETURN_VALUE} // ${DATE_TAG}"
 test "${RETURN_VALUE}" == "${DATE_TAG}-value" || exit 1
 echo "===================================================="

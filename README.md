@@ -51,21 +51,21 @@ The scope determines access to the Secret’s value. For example, if the scope i
 Run the command below to set a Secret in Terminus:
 
 ```
-terminus secret:set <site> <secret-name> <secret-value>
+terminus secret:site:set <site> <secret-name> <secret-value>
 
 [notice] Success
 
 ```
 
 ```
-terminus secret:set <site> file.json "{}" --type=file
+terminus secret:site:set <site> file.json "{}" --type=file
 
 [notice] Success
 
 ```
 
 ```
-terminus secret:set <site> <secret-name> --scope=user,ic
+terminus secret:site:set <site> <secret-name> --scope=user,ic
 
 [notice] Success
 
@@ -105,10 +105,10 @@ Note that the `value` field will be empty or contain a placeholder value unless 
 
 Run the command below to list a site’s Secrets:
 
-`terminus secret:list` 
+`terminus secret:site:list`
 
 ```
-terminus secret:list <site>
+terminus secret:site:list <site>
 
  ------------- ------------- ---------------------------
   Secret name   Secret type   Secret value
@@ -125,7 +125,7 @@ The Secrets `delete` command will remove a Secret from all of its scopes.
 Run the command below to delete a Secret:
 
 ```
-terminus secret:delete <site> <secret-name>
+terminus secret:site:delete <site> <secret-name>
 
 [notice] Success
 
@@ -133,7 +133,7 @@ terminus secret:delete <site> <secret-name>
 
 ### Help
 
-Run `terminus secret list` for a complete list of available commands. Use terminus help <command> to get help with a specific command.
+Run `terminus list secret` for a complete list of available commands. Use terminus help <command> to get help with a specific command.
 
 ## Use Secrets with Integrated Composer
 
@@ -147,7 +147,7 @@ You must configure your private repository and provide an authentication token b
 
     ![image](https://user-images.githubusercontent.com/87093053/191616923-67732035-08aa-41c3-9a69-4d954ca02560.png) 
 
-1. Set the secret value to the token via terminus: `terminus secret:set <site> github-oauth.github.com <github_token> --type=composer --scope=user,ic`
+1. Set the secret value to the token via terminus: `terminus secret:site:set <site> github-oauth.github.com <github_token> --type=composer --scope=user,ic`
 
 1. Add your private repository to the `repositories` section of `composer.json`:
 
@@ -172,7 +172,7 @@ You must configure your private repository and provide an authentication token b
 
 1. [Generate a GitLab token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html). Ensure that `read_repository` scope is selected for the token.
 
-1. Set the secret value to the token via Terminus: `terminus secret:set <site> gitlab-oauth.gitlab.com <gitlab_token> --type=composer --scope=user,ic`
+1. Set the secret value to the token via Terminus: `terminus secret:site:set <site> gitlab-oauth.gitlab.com <gitlab_token> --type=composer --scope=user,ic`
 
 1. Add your private repository to the `repositories` section of `composer.json`:
 
@@ -195,7 +195,7 @@ You must configure your private repository and provide an authentication token b
 
 1. [Generate a Bitbucket oauth consumer](https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud/). Ensure that Read repositories permission is selected for the consumer. Also, set the consumer as private and put a (dummy) callback URL.
 
-1. Set the secret value to the consumer info via Terminus: `terminus secret:set <site> bitbucket-oauth.bitbucket.org "<consumer_key> <consumer_secret>" --type=composer --scope=user,ic`
+1. Set the secret value to the consumer info via Terminus: `terminus secret:site:set <site> bitbucket-oauth.bitbucket.org "<consumer_key> <consumer_secret>" --type=composer --scope=user,ic`
 
 1. Add your private repository to the `repositories` section of `composer.json`:
 
@@ -257,5 +257,5 @@ read -e COMPOSER_AUTH_JSON <<< {
 }
 EOF
 
-`terminus secret:set ${SITE_NAME} COMPOSER_AUTH ${COMPOSER_AUTH_JSON} --type=env --scope=user,ic`
+`terminus secret:site:set ${SITE_NAME} COMPOSER_AUTH ${COMPOSER_AUTH_JSON} --type=env --scope=user,ic`
 ```
