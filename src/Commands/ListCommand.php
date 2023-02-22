@@ -33,6 +33,9 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
      *   type: Secret type
      *   value: Secret value
      *   scopes: Secret scopes
+     *   env-overrides: Environment overrides
+     *   org-defaults: Org defaults
+     * @default-fields name,type,value,scopes
      *
      * @option boolean $debug Run command in debug mode
      *
@@ -80,6 +83,21 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
             function ($key, $cellData) {
                 if ($key == 'value' && !$cellData) {
                     return '[REDACTED]';
+                }
+                if ($key == 'scopes') {
+                    return implode(', ', $cellData);
+                }
+                if (($key == 'env-overrides') || ($key == 'org-defaults')) {
+                    $rows = [];
+                    foreach ($cellData as $k => $v) {
+                        if ($v) {
+                            $rows[] = "$k=$v";
+                        }
+                        else {
+                            $rows[] = "$k";
+                        }
+                    }
+                    return implode(', ', $rows);
                 }
                 return $cellData;
             }

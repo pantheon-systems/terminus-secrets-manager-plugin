@@ -79,11 +79,24 @@ class SecretsApi
         $data = $result->getData();
         $secrets = [];
         foreach ($data->Secrets ?? [] as $secretKey => $secretValue) {
-            $secrets[] = [
+            // Key the rows of fields entries by their secret keys
+            $secrets[$secretKey] = [
                 'name' => $secretKey,
                 'type' => $secretValue->Type,
                 'value' => $secretValue->Value ?? null,
-                'scopes' => implode(', ', $secretValue->Scopes),
+                'scopes' => $secretValue->Scopes,
+            ];
+
+            // SIMULATION. Put in some fake data for env and org values.
+            // Redact the env and org data if the site data was redacted.
+            $secrets[$secretKey]["env-overrides"] = [
+                'dev' => $secretValue->Value ? $secretValue->Value . '-for-dev' : null,
+                'live' => $secretValue->Value ? $secretValue->Value . '-for-live' : null,
+            ];
+            $secrets[$secretKey]["org-defaults"] = [
+                'default' => $secretValue->Value ? $secretValue->Value . '-from-org' : null,
+                'dev' => $secretValue->Value ? $secretValue->Value . '-org-for-dev' : null,
+                'live' => $secretValue->Value ? $secretValue->Value . '-org-for-live' : null,
             ];
         }
         return $secrets;
