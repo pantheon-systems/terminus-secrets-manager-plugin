@@ -35,7 +35,8 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
      *   scopes: Secret scopes
      *   env-overrides: Environment overrides
      *   org-defaults: Org defaults
-     * @default-fields name,type,value,scopes
+     * @default-table-fields name,type,value,scopes
+     * @default-fields name,type,value,scopes,env-overrides,org-defaults
      *
      * @option boolean $debug Run command in debug mode
      *
@@ -53,15 +54,52 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
      */
     public function listSecrets($site_id, array $options = ['debug' => false,])
     {
+        $env_name = '';
+        if (strpos($site_id, '.') !== false) {
+            list($site_id, $env_name) = explode('.', $site_id, 2);
+        }
         $site = $this->getSite($site_id);
-        $this->warnIfEnvironmentPresent($site_id);
         $this->setupRequest();
         $secrets = $this->secretsApi->listSecrets($site->id, $options['debug']);
         $print_options = [
             'message' => 'You have no Secrets.'
         ];
+        // If the user requested secrets from a specific environment, then
+        // filter down to just the secret values there.
+        if (!empty($env_name)) {
+            $secrets = $this->secretsForEnv($secrets, $env_name);
+            $print_options = [
+                'message' => "There are no environment overrides in the environment '$env_name'.",
+            ];
+        }
         return $this->getTableFromData($secrets, $print_options);
     }
+
+    /**
+     * @param array $secrets Complete secret data
+     * @param string $env_name Name of environment to pull secrets from
+     *
+     * @return array Secret data containing only secrets with overrides
+     *   in the specified environment.
+     */
+    protected function secretsForEnv(array $secrets, $env_name)
+    {
+        $result = [];
+
+        foreach ($secrets as $key => $data) {
+            if (array_key_exists($env_name, $data['env-overrides'] ?? [])) {
+                $result[$key] = [
+                    'name' => $key,
+                    'type' => $data['type'],
+                    'value' => $data['env-overrides'][$env_name],
+                    'scopes' => $data['scopes'],
+                ];
+            }
+        }
+
+        return $result;
+    }
+
 
     /**
      * @param array $data Data already serialized (i.e. not a TerminusCollection)
