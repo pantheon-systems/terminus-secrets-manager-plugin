@@ -36,7 +36,6 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
      *   env-overrides: Environment overrides
      *   org-defaults: Org defaults
      * @default-table-fields name,type,value,scopes
-     * @default-fields name,type,value,scopes,env-overrides,org-defaults
      *
      * @option boolean $debug Run command in debug mode
      *
