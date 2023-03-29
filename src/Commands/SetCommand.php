@@ -29,14 +29,13 @@ class SetCommand extends SecretBaseCommand implements SiteAwareInterface
      *   Multiple options should be specified in comma separated format. Ex: --scope=ic,ops,web.
      * @option boolean $debug Run command in debug mode
      *
-     * @param string $siteish The site name, site UUID, or site.env of a site to retrieve information on
+     * @param string $siteish <site_name>, site UUID, or <site.env> for environment-specific secrets
      * @param string $name The secret name
      * @param string $value The secret value
      * @param array $options
      *
-     * @usage <site> <name> <value> Set secret <name> with value <value> for all environments.
-     * @usage <site> <name> <value> --debug Set given secret (debug mode).
-     * @usage <site.env> <name> <value> Set environment-specific secret <name> with value <value> for <env>.
+     * @usage <site[.env]> <name> <value> Set secret <name> with value <value> for all environments.
+     * @usage <site[.env]> <name> <value> --debug Set given secret (debug mode).
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException

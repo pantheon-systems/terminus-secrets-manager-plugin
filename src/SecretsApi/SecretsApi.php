@@ -137,13 +137,20 @@ class SecretsApi
             file_put_contents('/tmp/secrets.json', json_encode($this->secrets));
             return true;
         }
-        $url = sprintf('%s/sites/%s/secret/%s', $this->getBaseURI(), $site_id, $name);
+        $url = sprintf('%s/sites/%s/secrets', $this->getBaseURI(), $site_id);
+        $options = [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => $this->request()->session()->get('session'),
+            ],
+            'method' => 'POST',
+            'debug' => $debug,
+        ];
+
         $body = [
+            'name' => $name,
             'value' => $value,
         ];
-        if ($env) {
-            $body['env'] = $env;
-        }
         if ($type) {
             $body['type'] = $type;
         }
@@ -151,19 +158,18 @@ class SecretsApi
             $scopes = array_map('trim', explode(',', $scopes));
             $body['scopes'] = $scopes;
         }
-        $options = [
-            'headers' => [
-                'Accept' => 'application/json',
-                'Authorization' => $this->request()->session()->get('session'),
-            ],
-            'json' => $body,
-            'method' => 'POST',
-            'debug' => $debug,
-        ];
 
         if($env) {
+            $url = sprintf('%s/sites/%s/secrets/%s', $this->getBaseURI(), $site_id, $name);
+            $body['env'] = $env;
             $options['method'] = 'PATCH';
+            unset($body['name']);
+            unset($body['type']);
+            unset($body['scopes']);
         }
+        $options['json'] = $body;
+
+        print_r($options);
         $result = $this->request()->request($url, $options);
         return !$result->isError();
     }
