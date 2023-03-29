@@ -163,6 +163,8 @@ class SecretsApi
             $url = sprintf('%s/sites/%s/secrets/%s', $this->getBaseURI(), $site_id, $name);
             $body['env'] = $env_name;
             $options['method'] = 'PATCH';
+
+            // else statements are bad, so we unset rather than reversing previous logic
             unset($body['name']);
             unset($body['type']);
             unset($body['scopes']);
