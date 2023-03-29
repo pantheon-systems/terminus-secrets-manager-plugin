@@ -217,10 +217,14 @@ class SecretsApi
         }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         $url = sprintf('%s/sites/%s/secrets/%s', $this->getBaseURI(), $site_id, $name);
 =======
         $url = sprintf('%s/%s/%s/secret/%s', $this->getBaseURI(), $workspaceType, $workspaceId, $name);
 >>>>>>> e2a32a1 (org commands working)
+=======
+        $url = sprintf('%s/%s/%s/secrets/%s', $this->getBaseURI(), $workspaceType, $workspaceId, $name);
+>>>>>>> 2a6916b (Fixing Delete)
         $options = [
             'headers' => [
                 'Accept' => 'application/json',
