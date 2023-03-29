@@ -130,7 +130,7 @@ class SecretsApi
             file_put_contents('/tmp/secrets.json', json_encode($this->secrets));
             return true;
         }
-        $url = sprintf('%s/sites/%s/secret/%s', $this->getBaseURI(), $site_id, $name);
+        $url = sprintf('%s/sites/%s/secrets/%s', $this->getBaseURI(), $site_id, $name);
         $body = [
             'value' => $value,
         ];
@@ -183,7 +183,7 @@ class SecretsApi
             return true;
         }
 
-        $url = sprintf('%s/sites/%s/secret/%s', $this->getBaseURI(), $site_id, $name);
+        $url = sprintf('%s/sites/%s/secrets/%s', $this->getBaseURI(), $site_id, $name);
         $options = [
             'headers' => [
                 'Accept' => 'application/json',
