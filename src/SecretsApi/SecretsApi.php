@@ -120,7 +120,7 @@ class SecretsApi
         string $site_id,
         string $name,
         string $value,
-        string $env = 'dev',
+        string $env = null,
         string $type = '',
         string $scopes = 'ic',
         bool $debug = false
@@ -140,8 +140,10 @@ class SecretsApi
         $url = sprintf('%s/sites/%s/secret/%s', $this->getBaseURI(), $site_id, $name);
         $body = [
             'value' => $value,
-            'env' => $env,
         ];
+        if ($env) {
+            $body['env'] = $env;
+        }
         if ($type) {
             $body['type'] = $type;
         }
@@ -158,6 +160,10 @@ class SecretsApi
             'method' => 'POST',
             'debug' => $debug,
         ];
+
+        if($env) {
+            $options['method'] = 'PATCH';
+        }
         $result = $this->request()->request($url, $options);
         return !$result->isError();
     }
