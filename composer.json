@@ -23,7 +23,7 @@
         "lint": "find src -name '*.php' -print0 | xargs -0 -n1 php -l",
         "functional": "phpunit --colors=always tests",
         "fix":[
-            "phpcbf -q --standard=psr2"
+            "phpcbf --standard=psr12 ./src"
         ],
         "test": [
             "@lint",

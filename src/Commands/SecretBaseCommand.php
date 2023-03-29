@@ -20,7 +20,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  *
  * @package Pantheon\TerminusSecretsManager\Commands
  */
-abstract class SecretBaseCommand extends TerminusCommand implements SecretsApiAwareInterface, RequestAwareInterface, SiteAwareInterface
+abstract class SecretBaseCommand extends TerminusCommand implements SecretsApiAwareInterface, RequestAwareInterface
 {
     use SecretsApiAwareTrait;
     use RequestAwareTrait;

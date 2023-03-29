@@ -58,7 +58,7 @@ class SecretsApi
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function listSecrets(string $site_id, bool $debug = false): array
+    public function listSecrets(string $workspaceId, bool $debug = false, string $workspaceType = "sites"): array
     {
         if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
             if (file_exists('/tmp/secrets.json')) {
@@ -66,7 +66,11 @@ class SecretsApi
             }
             return array_values($this->secrets);
         }
+<<<<<<< HEAD
         $url = sprintf('%s/sites/%s/secrets/showall', $this->getBaseURI(), $site_id);
+=======
+        $url = sprintf('%s/%s/%s/secrets', $this->getBaseURI(), $workspaceType, $workspaceId);
+>>>>>>> 9997e9e (org commands working)
         $options = [
             'headers' => [
                 'Accept' => 'application/json',
@@ -116,13 +120,14 @@ class SecretsApi
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function setSecret(
-        string $site_id,
+        string $workspaceId,
         string $name,
         string $value,
         string $env_name = null,
         string $type = '',
         string $scopes = 'ic',
-        bool $debug = false
+        bool $debug = false,
+        string $workspaceType = "sites"
     ): bool {
         if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
             if (file_exists('/tmp/secrets.json')) {
@@ -136,6 +141,7 @@ class SecretsApi
             file_put_contents('/tmp/secrets.json', json_encode($this->secrets));
             return true;
         }
+<<<<<<< HEAD
         $url = sprintf('%s/sites/%s/secrets', $this->getBaseURI(), $site_id);
         $options = [
             'headers' => [
@@ -146,6 +152,9 @@ class SecretsApi
             'debug' => $debug,
         ];
 
+=======
+        $url = sprintf('%s/%s/%s/secrets', $this->getBaseURI(), $workspaceType, $workspaceId);
+>>>>>>> e2a32a1 (org commands working)
         $body = [
             'name' => $name,
             'value' => $value,
@@ -190,7 +199,11 @@ class SecretsApi
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
+<<<<<<< HEAD
     public function deleteSecret(string $site_id, string $name, string $env = null, bool $debug = false): bool
+=======
+    public function deleteSecret(string $workspaceId, string $name, bool $debug = false, string $workspaceType = "sites"): bool
+>>>>>>> e2a32a1 (org commands working)
     {
         if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
             if (file_exists('/tmp/secrets.json')) {
@@ -203,7 +216,11 @@ class SecretsApi
             return true;
         }
 
+<<<<<<< HEAD
         $url = sprintf('%s/sites/%s/secrets/%s', $this->getBaseURI(), $site_id, $name);
+=======
+        $url = sprintf('%s/%s/%s/secret/%s', $this->getBaseURI(), $workspaceType, $workspaceId, $name);
+>>>>>>> e2a32a1 (org commands working)
         $options = [
             'headers' => [
                 'Accept' => 'application/json',
@@ -220,6 +237,9 @@ class SecretsApi
             $options['json'] = ['env' => $env, 'value' => null];
         }
         $result = $this->request()->request($url, $options);
+        if ($result->isError()) {
+            throw new \Exception($result->getStatusCodeReason());
+        }
         return !$result->isError();
     }
 }

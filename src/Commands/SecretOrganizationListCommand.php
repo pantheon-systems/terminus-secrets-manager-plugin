@@ -8,6 +8,7 @@ use Pantheon\Terminus\Friends\OrganizationTrait;
 use Pantheon\Terminus\org\orgAwareTrait;
 use Pantheon\Terminus\org\orgAwareInterface;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
+use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
  * Class SecretOrganizationListCommand.
@@ -18,9 +19,6 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
  */
 class SecretOrganizationListCommand extends SecretBaseCommand
 {
-    use StructuredListTrait;
-    use OrganizationTrait;
-
     /**
      * Lists secrets for a specific org.
      *
@@ -47,16 +45,16 @@ class SecretOrganizationListCommand extends SecretBaseCommand
      * @return RowsOfFields
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function listSecrets(string $org_id, array $options = ['debug' => false,])
     {
-        $this->setOrganization($org_id)
-        $org = $this->getOrganization();
+        $org = $this->session()->getUser()->getOrganizationMemberships()->get($org_id)->getOrganization();
+        if (empty($org)) {
+            $this->log()->error('Either the org is unavailable or you dont have permission to access it..');
+        }
         $this->warnIfEnvironmentPresent($org_id);
         $this->setupRequest();
-        $secrets = $this->secretsApi->listSecrets($org->id, $options['debug']);
+        $secrets = $this->secretsApi->listSecrets($org->id, $options['debug'], "organizations");
         $print_options = [
             'message' => 'You have no Secrets.'
         ];

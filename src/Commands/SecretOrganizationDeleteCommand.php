@@ -2,8 +2,10 @@
 
 namespace Pantheon\TerminusSecretsManager\Commands;
 
+use Pantheon\Terminus\Friends\OrganizationTrait;
 use Pantheon\Terminus\org\orgAwareTrait;
 use Pantheon\Terminus\org\orgAwareInterface;
+use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
  * Class SecretOrganizationDeleteCommand.
@@ -14,8 +16,6 @@ use Pantheon\Terminus\org\orgAwareInterface;
  */
 class SecretOrganizationDeleteCommand extends SecretBaseCommand
 {
-    use OrgAwareTrait;
-
     /**
      * Delete given secret for a specific org.
      *
@@ -40,10 +40,12 @@ class SecretOrganizationDeleteCommand extends SecretBaseCommand
      */
     public function deleteSecret(string $org_id, string $name, array $options = ['debug' => false])
     {
-        $org = $this->getOrg($org_id);
-        $this->warnIfEnvironmentPresent($org_id);
+        $org = $this->session()->getUser()->getOrganizationMemberships()->get($org_id)->getOrganization();
+        if (empty($org)) {
+            $this->log()->error('Either the org is unavailable or you dont have permission to access it..');
+        }
         $this->setupRequest();
-        if ($this->secretsApi->deleteSecret($org->id, $name, $options['debug'])) {
+        if ($this->secretsApi->deleteSecret($org->id, $name, $options['debug'], "organizations")) {
             $this->log()->notice('Success');
         } else {
             $this->log()->error('An error happened when trying to delete the secret.');

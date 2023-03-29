@@ -14,10 +14,8 @@ use Pantheon\Terminus\org\orgAwareInterface;
  *
  * @package Pantheon\TerminusSecretsManager\Commands
  */
-class SecretOrganizationSetCommand extends SecretBaseCommand implements OrganizationInterface
+class SecretOrganizationSetCommand extends SecretBaseCommand
 {
-    use OrganizationTrait;
-
     /**
      * Set secret for a specific org.
      *
@@ -66,7 +64,8 @@ class SecretOrganizationSetCommand extends SecretBaseCommand implements Organiza
                 $value,
                 $options['type'],
                 $options['scope'],
-                $options['debug']
+                $options['debug'],
+                "organizations"
             )
         ) {
             $this->log()->notice('Success');
