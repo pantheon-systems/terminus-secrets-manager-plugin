@@ -60,29 +60,4 @@ class SecretOrganizationListCommand extends SecretBaseCommand
         return $this->getTableFromData($secrets, $print_options);
     }
 
-    /**
-     * @param array $data Data already serialized (i.e. not a TerminusCollection)
-     * @param array $options Elements as follow
-     *        string $message Message to emit if the collection is empty.
-     *        array $message_options Values to interpolate into the error message.
-     *        function $sort A function to sort the data using
-     * @return RowsOfFields Returns a RowsOfFields-type object with applied filters
-     */
-    protected function getTableFromData(array $data, array $options = [])
-    {
-        if (count($data) === 0) {
-            $message = $options['message'];
-            $options = $options['message_options'] ?? [];
-            $this->log()->warning($message, $options);
-        }
-
-        return (new RowsOfFields($data))->addRendererFunction(
-            function ($key, $cellData) {
-                if ($key == 'value' && !$cellData) {
-                    return '[REDACTED]';
-                }
-                return $cellData;
-            }
-        );
-    }
 }

@@ -66,7 +66,14 @@ class SecretsApi
             }
             return array_values($this->secrets);
         }
-        $url = sprintf('%s/%s/%s/secrets/showall', $this->getBaseURI(), $workspaceType, $workspaceId);
+
+        $url = sprintf(
+            '%s/%s/%s/secrets%s',
+            $this->getBaseURI(),
+            $workspaceType,
+            $workspaceId,
+            $workspaceType == "sites" ? "/showall" : ""
+        );
         $options = [
             'headers' => [
                 'Accept' => 'application/json',
