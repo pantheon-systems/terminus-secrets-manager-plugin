@@ -49,7 +49,7 @@ class SetCommand extends SecretBaseCommand implements SiteAwareInterface
     ])
     {
         $site = $this->getSite($site_id);
-        $this->warnIfEnvironmentPresent($site_id);
+        // TODO: respect environment
         $this->setupRequest();
         if ($this->secretsApi->setSecret(
             $site->id,
