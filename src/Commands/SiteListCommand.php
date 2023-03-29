@@ -8,13 +8,13 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
 /**
- * Class ListCommand.
+ * Class SiteListCommand.
  *
  * List secrets for a given site.
  *
  * @package Pantheon\TerminusSecretsManager\Commands
  */
-class ListCommand extends SecretBaseCommand implements SiteAwareInterface
+class SiteListCommand extends SecretBaseCommand implements SiteAwareInterface
 {
     use StructuredListTrait;
     use SiteAwareTrait;

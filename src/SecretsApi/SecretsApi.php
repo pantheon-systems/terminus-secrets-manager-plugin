@@ -9,7 +9,6 @@ use Pantheon\Terminus\Request\RequestAwareTrait;
  */
 class SecretsApi
 {
-
     use RequestAwareTrait;
 
     /**

@@ -3,6 +3,8 @@
 namespace Pantheon\TerminusSecretsManager\Commands;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Friends\OrganizationsTrait;
+use Pantheon\Terminus\Friends\OrganizationTrait;
 use Pantheon\TerminusSecretsManager\SecretsApi\SecretsApiAwareTrait;
 use Pantheon\TerminusSecretsManager\SecretsApi\SecretsApiAwareInterface;
 use Pantheon\TerminusSecretsManager\SecretsApi\SecretsApi;
@@ -22,7 +24,7 @@ abstract class SecretBaseCommand extends TerminusCommand implements SecretsApiAw
 {
     use SecretsApiAwareTrait;
     use RequestAwareTrait;
-    use SiteAwareTrait;
+
 
     /**
      * Construct function to pass the required dependencies.

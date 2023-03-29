@@ -6,13 +6,13 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 
 /**
- * Class DeleteCommand.
+ * Class SiteDeleteCommand.
  *
  * Delete secret by name.
  *
  * @package Pantheon\TerminusSecretsManager\Commands
  */
-class DeleteCommand extends SecretBaseCommand implements SiteAwareInterface
+class SiteDeleteCommand extends SecretBaseCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
