@@ -101,6 +101,8 @@ class SecretsApi
      *   Secret name.
      * @param string $value
      *   Secret value.
+     * @param string $env
+     *  Environment to set secret for.
      * @param string $type
      *   Secret type.
      * @param string $scopes
@@ -118,6 +120,7 @@ class SecretsApi
         string $site_id,
         string $name,
         string $value,
+        string $env = 'dev',
         string $type = '',
         string $scopes = 'ic',
         bool $debug = false
@@ -129,6 +132,7 @@ class SecretsApi
             $this->secrets[$name] = [
                 'name' => $name,
                 'value' => $value,
+                'env' => $env,
             ];
             file_put_contents('/tmp/secrets.json', json_encode($this->secrets));
             return true;
@@ -136,6 +140,7 @@ class SecretsApi
         $url = sprintf('%s/sites/%s/secret/%s', $this->getBaseURI(), $site_id, $name);
         $body = [
             'value' => $value,
+            'env' => $env,
         ];
         if ($type) {
             $body['type'] = $type;
