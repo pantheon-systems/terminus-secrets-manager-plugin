@@ -190,7 +190,7 @@ class SecretsApi
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function deleteSecret(string $site_id, string $name, bool $debug = false): bool
+    public function deleteSecret(string $site_id, string $name, string $env = null, bool $debug = false): bool
     {
         if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
             if (file_exists('/tmp/secrets.json')) {
@@ -212,6 +212,15 @@ class SecretsApi
             'method' => 'DELETE',
             'debug' => $debug,
         ];
+
+        if($env) {
+            // maybe it's query parameter?
+            $url = sprintf('%s/sites/%s/secret/%s/env/%s', $this->getBaseURI(), $site_id, $name, $env);
+
+            // or maybe it's in the body?
+            $url = sprintf('%s/sites/%s/secret/%s', $this->getBaseURI(), $site_id, $name);
+            $options['json'] = ['env' => $env];
+        }
         $result = $this->request()->request($url, $options);
         return !$result->isError();
     }
