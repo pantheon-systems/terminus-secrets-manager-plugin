@@ -18,12 +18,12 @@
         "pantheon-systems/terminus": "^3.1"
     },
     "scripts": {
-        "cs": "phpcs --standard=PSR12 -n src",
-        "cbf": "phpcbf --standard=PSR12 -n src",
+        "cs": "phpcs --standard=PSR2 -n src",
+        "cbf": "phpcbf --standard=PSR2 -n src",
         "lint": "find src -name '*.php' -print0 | xargs -0 -n1 php -l",
         "functional": "phpunit --colors=always tests",
         "fix":[
-            "phpcbf --standard=psr12 ./src"
+            "phpcbf --standard=psr2 ./src"
         ],
         "test": [
             "@lint",

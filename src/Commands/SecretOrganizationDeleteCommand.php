@@ -45,7 +45,7 @@ class SecretOrganizationDeleteCommand extends SecretBaseCommand
             $this->log()->error('Either the org is unavailable or you dont have permission to access it..');
         }
         $this->setupRequest();
-        if ($this->secretsApi->deleteSecret($org->id, $name, $options['debug'], "organizations")) {
+        if ($this->secretsApi->deleteSecret($org->id, $name, null, $options['debug'], "organizations")) {
             $this->log()->notice('Success');
         } else {
             $this->log()->error('An error happened when trying to delete the secret.');

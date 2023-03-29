@@ -144,8 +144,7 @@ class SecretsApi
             file_put_contents('/tmp/secrets.json', json_encode($this->secrets));
             return true;
         }
-<<<<<<< HEAD
-        $url = sprintf('%s/sites/%s/secrets', $this->getBaseURI(), $site_id);
+        $url = sprintf('%s/%s/%s/secrets', $this->getBaseURI(), $workspaceType, $workspaceId);
         $options = [
             'headers' => [
                 'Accept' => 'application/json',
@@ -154,10 +153,6 @@ class SecretsApi
             'method' => 'POST',
             'debug' => $debug,
         ];
-
-=======
-        $url = sprintf('%s/%s/%s/secrets', $this->getBaseURI(), $workspaceType, $workspaceId);
->>>>>>> e2a32a1 (org commands working)
         $body = [
             'name' => $name,
             'value' => $value,
@@ -170,7 +165,7 @@ class SecretsApi
             $body['scopes'] = $scopes;
         }
 
-        if($env_name) {
+        if ($env_name) {
             $url = sprintf('%s/sites/%s/secrets/%s', $this->getBaseURI(), $site_id, $name);
             $body['env'] = $env_name;
             $options['method'] = 'PATCH';
@@ -187,27 +182,23 @@ class SecretsApi
     }
 
     /**
-     * Delete secret for a given site.
-     *
-     * @param string $site_id
-     *   Site id to set secret for.
+     * @param string $workspaceId
      * @param string $name
-     *   Secret name.
+     * @param string $env
      * @param bool $debug
-     *   Whether to return the secrets in debug mode.
+     * @param string $workspaceType
      *
      * @return bool
-     *   Whether saving the secret was successful or not.
-     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-<<<<<<< HEAD
-    public function deleteSecret(string $site_id, string $name, string $env = null, bool $debug = false): bool
-=======
-    public function deleteSecret(string $workspaceId, string $name, bool $debug = false, string $workspaceType = "sites"): bool
->>>>>>> e2a32a1 (org commands working)
-    {
+    public function deleteSecret(
+        string $workspaceId,
+        string $name,
+        string $env = null,
+        bool $debug = false,
+        string $workspaceType = "sites"
+    ): bool {
         if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
             if (file_exists('/tmp/secrets.json')) {
                 $this->secrets = json_decode(file_get_contents('/tmp/secrets.json'), true);
@@ -219,15 +210,7 @@ class SecretsApi
             return true;
         }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-        $url = sprintf('%s/sites/%s/secrets/%s', $this->getBaseURI(), $site_id, $name);
-=======
-        $url = sprintf('%s/%s/%s/secret/%s', $this->getBaseURI(), $workspaceType, $workspaceId, $name);
->>>>>>> e2a32a1 (org commands working)
-=======
         $url = sprintf('%s/%s/%s/secrets/%s', $this->getBaseURI(), $workspaceType, $workspaceId, $name);
->>>>>>> 2a6916b (Fixing Delete)
         $options = [
             'headers' => [
                 'Accept' => 'application/json',
@@ -237,7 +220,7 @@ class SecretsApi
             'debug' => $debug,
         ];
 
-        if($env) {
+        if ($env) {
             $options['method'] = 'PATCH';
 
             // null value deletes the secret for the given env.

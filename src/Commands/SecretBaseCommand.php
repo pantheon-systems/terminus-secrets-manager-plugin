@@ -41,8 +41,6 @@ abstract class SecretBaseCommand extends TerminusCommand implements SecretsApiAw
     {
         $this->secretsApi()->setRequest($this->request());
     }
-<<<<<<< HEAD
-=======
 
     /**
      * Warn use if environment is present in site_id.
@@ -96,5 +94,4 @@ abstract class SecretBaseCommand extends TerminusCommand implements SecretsApiAw
             }
         );
     }
->>>>>>> 8d03277 (Print lists with showall correctly)
 }

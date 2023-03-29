@@ -57,28 +57,17 @@ class SiteSetCommand extends SecretBaseCommand implements SiteAwareInterface
 
         $site = $this->getSite($site_id);
         $this->setupRequest();
-<<<<<<< HEAD:src/Commands/SetCommand.php
-        if ($this->secretsApi->setSecret(
-            $site->id,
-            $name,
-            $value,
-            $env_name,
-            $options['type'],
-            $options['scope'],
-            $options['debug']
-        )) {
-=======
         if (
             $this->secretsApi->setSecret(
                 $site->id,
                 $name,
                 $value,
+                $env_name,
                 $options['type'],
                 $options['scope'],
                 $options['debug']
             )
         ) {
->>>>>>> 66a850f (wip):src/Commands/SiteSetCommand.php
             $this->log()->notice('Success');
         } else {
             $this->log()->error('An error happened when trying to set the secret.');

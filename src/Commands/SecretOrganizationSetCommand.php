@@ -62,6 +62,7 @@ class SecretOrganizationSetCommand extends SecretBaseCommand
                 $org->id,
                 $name,
                 $value,
+                null,
                 $options['type'],
                 $options['scope'],
                 $options['debug'],
