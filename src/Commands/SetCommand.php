@@ -50,7 +50,6 @@ class SetCommand extends SecretBaseCommand implements SiteAwareInterface
     {
         if (strpos($siteish, '.') !== false) {
             list($site_id, $env_name) = explode('.', $siteish);
-            // $env = $this->getEnv($site_env);
         } else {
             $site_id = $siteish;
             $env_name = null;
