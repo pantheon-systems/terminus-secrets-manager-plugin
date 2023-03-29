@@ -9,7 +9,6 @@ use Pantheon\Terminus\Request\RequestAwareTrait;
  */
 class SecretsApi
 {
-
     use RequestAwareTrait;
 
     /**
@@ -59,7 +58,7 @@ class SecretsApi
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function listSecrets(string $site_id, bool $debug = false): array
+    public function listSecrets(string $workspaceId, bool $debug = false, string $workspaceType = "sites"): array
     {
         if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
             if (file_exists('/tmp/secrets.json')) {
@@ -67,7 +66,14 @@ class SecretsApi
             }
             return array_values($this->secrets);
         }
-        $url = sprintf('%s/sites/%s/secrets/showall', $this->getBaseURI(), $site_id);
+
+        $url = sprintf(
+            '%s/%s/%s/secrets%s',
+            $this->getBaseURI(),
+            $workspaceType,
+            $workspaceId,
+            $workspaceType == "sites" ? "/showall" : ""
+        );
         $options = [
             'headers' => [
                 'Accept' => 'application/json',
@@ -117,19 +123,20 @@ class SecretsApi
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function setSecret(
-        string $site_id,
+        string $workspaceId,
         string $name,
         string $value,
         string $env_name = null,
         string $type = '',
         string $scopes = 'ic',
-        bool $debug = false
+        bool $debug = false,
+        string $workspaceType = "sites"
     ): bool {
         if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
             if (file_exists('/tmp/secrets.json')) {
                 $this->secrets = json_decode(file_get_contents('/tmp/secrets.json'), true);
             }
-            $this->secrets[$name] = [
+            $this->secrets = [
                 'name' => $name,
                 'value' => $value,
                 'env' => $env_name,
@@ -137,7 +144,7 @@ class SecretsApi
             file_put_contents('/tmp/secrets.json', json_encode($this->secrets));
             return true;
         }
-        $url = sprintf('%s/sites/%s/secrets', $this->getBaseURI(), $site_id);
+        $url = sprintf('%s/%s/%s/secrets', $this->getBaseURI(), $workspaceType, $workspaceId);
         $options = [
             'headers' => [
                 'Accept' => 'application/json',
@@ -146,7 +153,6 @@ class SecretsApi
             'method' => 'POST',
             'debug' => $debug,
         ];
-
         $body = [
             'name' => $name,
             'value' => $value,
@@ -159,7 +165,7 @@ class SecretsApi
             $body['scopes'] = $scopes;
         }
 
-        if($env_name) {
+        if ($env_name) {
             $url = sprintf('%s/sites/%s/secrets/%s', $this->getBaseURI(), $site_id, $name);
             $body['env'] = $env_name;
             $options['method'] = 'PATCH';
@@ -176,23 +182,23 @@ class SecretsApi
     }
 
     /**
-     * Delete secret for a given site.
-     *
-     * @param string $site_id
-     *   Site id to set secret for.
+     * @param string $workspaceId
      * @param string $name
-     *   Secret name.
+     * @param string $env
      * @param bool $debug
-     *   Whether to return the secrets in debug mode.
+     * @param string $workspaceType
      *
      * @return bool
-     *   Whether saving the secret was successful or not.
-     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function deleteSecret(string $site_id, string $name, string $env = null, bool $debug = false): bool
-    {
+    public function deleteSecret(
+        string $workspaceId,
+        string $name,
+        string $env = null,
+        bool $debug = false,
+        string $workspaceType = "sites"
+    ): bool {
         if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
             if (file_exists('/tmp/secrets.json')) {
                 $this->secrets = json_decode(file_get_contents('/tmp/secrets.json'), true);
@@ -204,7 +210,7 @@ class SecretsApi
             return true;
         }
 
-        $url = sprintf('%s/sites/%s/secrets/%s', $this->getBaseURI(), $site_id, $name);
+        $url = sprintf('%s/%s/%s/secrets/%s', $this->getBaseURI(), $workspaceType, $workspaceId, $name);
         $options = [
             'headers' => [
                 'Accept' => 'application/json',
@@ -214,13 +220,16 @@ class SecretsApi
             'debug' => $debug,
         ];
 
-        if($env) {
+        if ($env) {
             $options['method'] = 'PATCH';
 
             // null value deletes the secret for the given env.
             $options['json'] = ['env' => $env, 'value' => null];
         }
         $result = $this->request()->request($url, $options);
+        if ($result->isError()) {
+            throw new \Exception($result->getStatusCodeReason());
+        }
         return !$result->isError();
     }
 }

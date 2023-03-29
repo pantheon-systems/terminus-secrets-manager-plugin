@@ -21,6 +21,9 @@
         "cbf": "phpcbf --standard=PSR2 -n src",
         "lint": "find src -name '*.php' -print0 | xargs -0 -n1 php -l",
         "functional": "phpunit --colors=always tests",
+        "fix":[
+            "phpcbf --standard=psr2 ./src"
+        ],
         "test": [
             "@lint",
             "@cs",

@@ -6,13 +6,13 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 
 /**
- * Class SetCommand.
+ * Class SiteSetCommand.
  *
  * Set secret for a given site.
  *
  * @package Pantheon\TerminusSecretsManager\Commands
  */
-class SetCommand extends SecretBaseCommand implements SiteAwareInterface
+class SiteSetCommand extends SecretBaseCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
@@ -57,15 +57,17 @@ class SetCommand extends SecretBaseCommand implements SiteAwareInterface
 
         $site = $this->getSite($site_id);
         $this->setupRequest();
-        if ($this->secretsApi->setSecret(
-            $site->id,
-            $name,
-            $value,
-            $env_name,
-            $options['type'],
-            $options['scope'],
-            $options['debug']
-        )) {
+        if (
+            $this->secretsApi->setSecret(
+                $site->id,
+                $name,
+                $value,
+                $env_name,
+                $options['type'],
+                $options['scope'],
+                $options['debug']
+            )
+        ) {
             $this->log()->notice('Success');
         } else {
             $this->log()->error('An error happened when trying to set the secret.');

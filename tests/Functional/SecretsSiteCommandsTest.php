@@ -5,20 +5,20 @@ namespace Pantheon\TerminusSecretsManager\Tests\Functional;
 use Pantheon\Terminus\Tests\Functional\TerminusTestBase;
 
 /**
- * Class SecretsCommandsTest.
+ * Class SecretsSiteCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
-class SecretsCommandsTest extends TerminusTestBase
+class SecretsSiteCommandsTest extends TerminusTestBase
 {
     protected const SECRET_NAME = 'foosecret';
     protected const SECRET_VALUE = 'secretbar';
 
     /**
      * @test
-     * @covers \Pantheon\TerminusSecretsManager\Commands\SetCommand
-     * @covers \Pantheon\TerminusSecretsManager\Commands\ListCommand
-     * @covers \Pantheon\TerminusSecretsManager\Commands\DeleteCommand
+     * @covers \Pantheon\TerminusSecretsManager\Commands\SiteSetCommand
+     * @covers \Pantheon\TerminusSecretsManager\Commands\SiteListCommand
+     * @covers \Pantheon\TerminusSecretsManager\Commands\SiteDeleteCommand
      *
      * @group secrets
      * @group short
