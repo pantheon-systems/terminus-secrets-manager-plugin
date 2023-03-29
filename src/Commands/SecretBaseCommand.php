@@ -43,19 +43,6 @@ abstract class SecretBaseCommand extends TerminusCommand implements SecretsApiAw
     }
 
     /**
-     * Warn use if environment is present in site_id.
-     *
-     * @param string $site_id
-     *   Site ID.
-     */
-    protected function warnIfEnvironmentPresent(string $site_id)
-    {
-        if (preg_match('/.*\..*/', $site_id)) {
-            $this->log()->warning('Note: Secrets are available for all environments of a site. If you wish to specify secrets for different environments, we recommend using prefixes.');
-        }
-    }
-
-    /**
      * @param array $data Data already serialized (i.e. not a TerminusCollection)
      * @param array $options Elements as follow
      *        string $message Message to emit if the collection is empty.
