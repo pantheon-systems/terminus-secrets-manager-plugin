@@ -67,7 +67,7 @@ class SecretsApi
             }
             return array_values($this->secrets);
         }
-        $url = sprintf('%s/sites/%s/secrets', $this->getBaseURI(), $site_id);
+        $url = sprintf('%s/sites/%s/secrets/showall', $this->getBaseURI(), $site_id);
         $options = [
             'headers' => [
                 'Accept' => 'application/json',
@@ -79,11 +79,14 @@ class SecretsApi
         $data = $result->getData();
         $secrets = [];
         foreach ($data->Secrets ?? [] as $secretKey => $secretValue) {
-            $secrets[] = [
+            // Key the rows of fields entries by their secret keys
+            $secrets[$secretKey] = [
                 'name' => $secretKey,
                 'type' => $secretValue->Type,
                 'value' => $secretValue->Value ?? null,
-                'scopes' => implode(', ', $secretValue->Scopes),
+                'scopes' => $secretValue->Scopes,
+                'env-values' => (array) ($secretValue->EnvValues ?? []),
+                'org-values' => (array) ($secretValue->OrgValues ?? []),
             ];
         }
         return $secrets;

@@ -33,6 +33,9 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
      *   type: Secret type
      *   value: Secret value
      *   scopes: Secret scopes
+     *   env-values: Environment override values
+     *   org-values: Org default values
+     * @default-table-fields name,type,value,scopes
      *
      * @option boolean $debug Run command in debug mode
      *
@@ -50,15 +53,52 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
      */
     public function listSecrets($site_id, array $options = ['debug' => false,])
     {
+        $env_name = '';
+        if (strpos($site_id, '.') !== false) {
+            list($site_id, $env_name) = explode('.', $site_id, 2);
+        }
         $site = $this->getSite($site_id);
-        $this->warnIfEnvironmentPresent($site_id);
         $this->setupRequest();
         $secrets = $this->secretsApi->listSecrets($site->id, $options['debug']);
         $print_options = [
             'message' => 'You have no Secrets.'
         ];
+        // If the user requested secrets from a specific environment, then
+        // filter down to just the secret values there.
+        if (!empty($env_name)) {
+            $secrets = $this->secretsForEnv($secrets, $env_name);
+            $print_options = [
+                'message' => "There are no environment overrides in the environment '$env_name'.",
+            ];
+        }
         return $this->getTableFromData($secrets, $print_options);
     }
+
+    /**
+     * @param array $secrets Complete secret data
+     * @param string $env_name Name of environment to pull secrets from
+     *
+     * @return array Secret data containing only secrets with overrides
+     *   in the specified environment.
+     */
+    protected function secretsForEnv(array $secrets, $env_name)
+    {
+        $result = [];
+
+        foreach ($secrets as $key => $data) {
+            if (array_key_exists($env_name, $data['env-values'] ?? [])) {
+                $result[$key] = [
+                    'name' => $key,
+                    'type' => $data['type'],
+                    'value' => $data['env-values'][$env_name],
+                    'scopes' => $data['scopes'],
+                ];
+            }
+        }
+
+        return $result;
+    }
+
 
     /**
      * @param array $data Data already serialized (i.e. not a TerminusCollection)
@@ -80,6 +120,21 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
             function ($key, $cellData) {
                 if ($key == 'value' && !$cellData) {
                     return '[REDACTED]';
+                }
+                if ($key == 'scopes') {
+                    return implode(', ', $cellData);
+                }
+                if (($key == 'env-values') || ($key == 'org-values')) {
+                    $rows = [];
+                    foreach ($cellData as $k => $v) {
+                        if ($v) {
+                            $rows[] = "$k=$v";
+                        }
+                        else {
+                            $rows[] = "$k";
+                        }
+                    }
+                    return implode(', ', $rows);
                 }
                 return $cellData;
             }
