@@ -120,7 +120,7 @@ class SecretsApi
         string $site_id,
         string $name,
         string $value,
-        string $env = null,
+        string $env_name = null,
         string $type = '',
         string $scopes = 'ic',
         bool $debug = false
@@ -132,7 +132,7 @@ class SecretsApi
             $this->secrets[$name] = [
                 'name' => $name,
                 'value' => $value,
-                'env' => $env,
+                'env' => $env_name,
             ];
             file_put_contents('/tmp/secrets.json', json_encode($this->secrets));
             return true;
@@ -159,9 +159,9 @@ class SecretsApi
             $body['scopes'] = $scopes;
         }
 
-        if($env) {
+        if($env_name) {
             $url = sprintf('%s/sites/%s/secrets/%s', $this->getBaseURI(), $site_id, $name);
-            $body['env'] = $env;
+            $body['env'] = $env_name;
             $options['method'] = 'PATCH';
             unset($body['name']);
             unset($body['type']);
