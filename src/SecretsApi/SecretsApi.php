@@ -202,7 +202,7 @@ class SecretsApi
             return true;
         }
 
-        $url = sprintf('%s/sites/%s/secret/%s', $this->getBaseURI(), $site_id, $name);
+        $url = sprintf('%s/sites/%s/secrets/%s', $this->getBaseURI(), $site_id, $name);
         $options = [
             'headers' => [
                 'Accept' => 'application/json',
@@ -213,12 +213,10 @@ class SecretsApi
         ];
 
         if($env) {
-            // maybe it's query parameter?
-            $url = sprintf('%s/sites/%s/secret/%s/env/%s', $this->getBaseURI(), $site_id, $name, $env);
+            $options['method'] = 'PATCH';
 
-            // or maybe it's in the body?
-            $url = sprintf('%s/sites/%s/secret/%s', $this->getBaseURI(), $site_id, $name);
-            $options['json'] = ['env' => $env];
+            // null value deletes the secret for the given env.
+            $options['json'] = ['env' => $env, 'value' => null];
         }
         $result = $this->request()->request($url, $options);
         return !$result->isError();
