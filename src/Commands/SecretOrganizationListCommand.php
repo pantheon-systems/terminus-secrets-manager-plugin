@@ -52,7 +52,6 @@ class SecretOrganizationListCommand extends SecretBaseCommand
         if (empty($org)) {
             $this->log()->error('Either the org is unavailable or you dont have permission to access it..');
         }
-        $this->warnIfEnvironmentPresent($org_id);
         $this->setupRequest();
         $secrets = $this->secretsApi->listSecrets($org->id, $options['debug'], "organizations");
         $print_options = [

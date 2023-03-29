@@ -66,11 +66,7 @@ class SecretsApi
             }
             return array_values($this->secrets);
         }
-<<<<<<< HEAD
-        $url = sprintf('%s/sites/%s/secrets/showall', $this->getBaseURI(), $site_id);
-=======
-        $url = sprintf('%s/%s/%s/secrets', $this->getBaseURI(), $workspaceType, $workspaceId);
->>>>>>> 9997e9e (org commands working)
+        $url = sprintf('%s/%s/%s/secrets/showall', $this->getBaseURI(), $workspaceType, $workspaceId);
         $options = [
             'headers' => [
                 'Accept' => 'application/json',
@@ -133,7 +129,7 @@ class SecretsApi
             if (file_exists('/tmp/secrets.json')) {
                 $this->secrets = json_decode(file_get_contents('/tmp/secrets.json'), true);
             }
-            $this->secrets[$name] = [
+            $this->secrets = [
                 'name' => $name,
                 'value' => $value,
                 'env' => $env_name,
