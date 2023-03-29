@@ -169,7 +169,6 @@ class SecretsApi
         }
         $options['json'] = $body;
 
-        print_r($options);
         $result = $this->request()->request($url, $options);
         return !$result->isError();
     }
