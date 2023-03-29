@@ -26,24 +26,30 @@ class DeleteCommand extends SecretBaseCommand implements SiteAwareInterface
      *
      * @option boolean $debug Run command in debug mode
      *
-     * @param string $site_id The name or UUID of a site to retrieve information on
+     * @param string $siteish <site_name>, site UUID, or <site.env> for environment-specific secrets
      * @param string $name The secret name
      * @param array $options
      *
-     * @usage <site> <name> Delete given secret.
-     * @usage <site> <name> --debug Delete given secret (debug mode).
+     * @usage <site[.env]> <name> Delete given secret.
+     * @usage <site[.env]> <name> --debug Delete given secret (debug mode).
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function deleteSecret($site_id, string $name, array $options = ['debug' => false])
+    public function deleteSecret($siteish, string $name, array $options = ['debug' => false])
     {
+        if (strpos($siteish, '.') !== false) {
+            list($site_id, $env_name) = explode('.', $siteish);
+        } else {
+            $site_id = $siteish;
+            $env_name = null;
+        }
+
         $site = $this->getSite($site_id);
-        $this->warnIfEnvironmentPresent($site_id);
         $this->setupRequest();
-        if ($this->secretsApi->deleteSecret($site->id, $name, $options['debug'])) {
+        if ($this->secretsApi->deleteSecret($site->id, $name, $env_name, $options['debug'])) {
             $this->log()->notice('Success');
         } else {
             $this->log()->error('An error happened when trying to delete the secret.');

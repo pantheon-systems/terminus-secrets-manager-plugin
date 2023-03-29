@@ -101,6 +101,8 @@ class SecretsApi
      *   Secret name.
      * @param string $value
      *   Secret value.
+     * @param string $env
+     *  Environment to set secret for.
      * @param string $type
      *   Secret type.
      * @param string $scopes
@@ -118,6 +120,7 @@ class SecretsApi
         string $site_id,
         string $name,
         string $value,
+        string $env_name = null,
         string $type = '',
         string $scopes = 'ic',
         bool $debug = false
@@ -129,12 +132,23 @@ class SecretsApi
             $this->secrets[$name] = [
                 'name' => $name,
                 'value' => $value,
+                'env' => $env_name,
             ];
             file_put_contents('/tmp/secrets.json', json_encode($this->secrets));
             return true;
         }
-        $url = sprintf('%s/sites/%s/secret/%s', $this->getBaseURI(), $site_id, $name);
+        $url = sprintf('%s/sites/%s/secrets', $this->getBaseURI(), $site_id);
+        $options = [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => $this->request()->session()->get('session'),
+            ],
+            'method' => 'POST',
+            'debug' => $debug,
+        ];
+
         $body = [
+            'name' => $name,
             'value' => $value,
         ];
         if ($type) {
@@ -144,15 +158,19 @@ class SecretsApi
             $scopes = array_map('trim', explode(',', $scopes));
             $body['scopes'] = $scopes;
         }
-        $options = [
-            'headers' => [
-                'Accept' => 'application/json',
-                'Authorization' => $this->request()->session()->get('session'),
-            ],
-            'json' => $body,
-            'method' => 'POST',
-            'debug' => $debug,
-        ];
+
+        if($env_name) {
+            $url = sprintf('%s/sites/%s/secrets/%s', $this->getBaseURI(), $site_id, $name);
+            $body['env'] = $env_name;
+            $options['method'] = 'PATCH';
+
+            // else statements are bad, so we unset rather than reversing previous logic
+            unset($body['name']);
+            unset($body['type']);
+            unset($body['scopes']);
+        }
+        $options['json'] = $body;
+
         $result = $this->request()->request($url, $options);
         return !$result->isError();
     }
@@ -173,7 +191,7 @@ class SecretsApi
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function deleteSecret(string $site_id, string $name, bool $debug = false): bool
+    public function deleteSecret(string $site_id, string $name, string $env = null, bool $debug = false): bool
     {
         if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
             if (file_exists('/tmp/secrets.json')) {
@@ -186,7 +204,7 @@ class SecretsApi
             return true;
         }
 
-        $url = sprintf('%s/sites/%s/secret/%s', $this->getBaseURI(), $site_id, $name);
+        $url = sprintf('%s/sites/%s/secrets/%s', $this->getBaseURI(), $site_id, $name);
         $options = [
             'headers' => [
                 'Accept' => 'application/json',
@@ -195,6 +213,13 @@ class SecretsApi
             'method' => 'DELETE',
             'debug' => $debug,
         ];
+
+        if($env) {
+            $options['method'] = 'PATCH';
+
+            // null value deletes the secret for the given env.
+            $options['json'] = ['env' => $env, 'value' => null];
+        }
         $result = $this->request()->request($url, $options);
         return !$result->isError();
     }

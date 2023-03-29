@@ -29,32 +29,39 @@ class SetCommand extends SecretBaseCommand implements SiteAwareInterface
      *   Multiple options should be specified in comma separated format. Ex: --scope=ic,ops,web.
      * @option boolean $debug Run command in debug mode
      *
-     * @param string $site_id The name or UUID of a site to retrieve information on
+     * @param string $siteish <site_name>, site UUID, or <site.env> for environment-specific secrets
      * @param string $name The secret name
      * @param string $value The secret value
      * @param array $options
      *
-     * @usage <site> <name> <value> Set secret <name> with value <value>.
-     * @usage <site> <name> <value> --debug Set given secret (debug mode).
+     * @usage <site[.env]> <name> <value> Set secret <name> with value <value> for all environments.
+     * @usage <site[.env]> <name> <value> --debug Set given secret (debug mode).
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function setSecret($site_id, string $name, string $value, array $options = [
+    public function setSecret($siteish, string $name, string $value, array $options = [
         'type' => 'env',
         'scope' => 'ic',
         'debug' => false,
     ])
     {
+        if (strpos($siteish, '.') !== false) {
+            list($site_id, $env_name) = explode('.', $siteish);
+        } else {
+            $site_id = $siteish;
+            $env_name = null;
+        }
+
         $site = $this->getSite($site_id);
-        $this->warnIfEnvironmentPresent($site_id);
         $this->setupRequest();
         if ($this->secretsApi->setSecret(
             $site->id,
             $name,
             $value,
+            $env_name,
             $options['type'],
             $options['scope'],
             $options['debug']
