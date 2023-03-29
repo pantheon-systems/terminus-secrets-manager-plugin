@@ -33,8 +33,8 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
      *   type: Secret type
      *   value: Secret value
      *   scopes: Secret scopes
-     *   env-overrides: Environment overrides
-     *   org-defaults: Org defaults
+     *   env-values: Environment override values
+     *   org-values: Org default values
      * @default-table-fields name,type,value,scopes
      *
      * @option boolean $debug Run command in debug mode
@@ -86,11 +86,11 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
         $result = [];
 
         foreach ($secrets as $key => $data) {
-            if (array_key_exists($env_name, $data['env-overrides'] ?? [])) {
+            if (array_key_exists($env_name, $data['EnvValues'] ?? [])) {
                 $result[$key] = [
                     'name' => $key,
                     'type' => $data['type'],
-                    'value' => $data['env-overrides'][$env_name],
+                    'value' => $data['env-values'][$env_name],
                     'scopes' => $data['scopes'],
                 ];
             }
@@ -124,7 +124,7 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
                 if ($key == 'scopes') {
                     return implode(', ', $cellData);
                 }
-                if (($key == 'env-overrides') || ($key == 'org-defaults')) {
+                if (($key == 'env-values') || ($key == 'org-values')) {
                     $rows = [];
                     foreach ($cellData as $k => $v) {
                         if ($v) {

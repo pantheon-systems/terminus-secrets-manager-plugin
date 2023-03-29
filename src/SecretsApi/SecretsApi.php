@@ -67,7 +67,7 @@ class SecretsApi
             }
             return array_values($this->secrets);
         }
-        $url = sprintf('%s/sites/%s/secrets', $this->getBaseURI(), $site_id);
+        $url = sprintf('%s/sites/%s/secrets/showall', $this->getBaseURI(), $site_id);
         $options = [
             'headers' => [
                 'Accept' => 'application/json',
@@ -85,18 +85,8 @@ class SecretsApi
                 'type' => $secretValue->Type,
                 'value' => $secretValue->Value ?? null,
                 'scopes' => $secretValue->Scopes,
-            ];
-
-            // SIMULATION. Put in some fake data for env and org values.
-            // Redact the env and org data if the site data was redacted.
-            $secrets[$secretKey]["env-overrides"] = [
-                'dev' => $secretValue->Value ? $secretValue->Value . '-for-dev' : null,
-                'live' => $secretValue->Value ? $secretValue->Value . '-for-live' : null,
-            ];
-            $secrets[$secretKey]["org-defaults"] = [
-                'default' => $secretValue->Value ? $secretValue->Value . '-from-org' : null,
-                'dev' => $secretValue->Value ? $secretValue->Value . '-org-for-dev' : null,
-                'live' => $secretValue->Value ? $secretValue->Value . '-org-for-live' : null,
+                'env-values' => $secretValue->EnvValues ?? [],
+                'org-values' => $secretValue->OrgValues ?? [],
             ];
         }
         return $secrets;
