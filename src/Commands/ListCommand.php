@@ -86,7 +86,7 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
         $result = [];
 
         foreach ($secrets as $key => $data) {
-            if (array_key_exists($env_name, $data['EnvValues'] ?? [])) {
+            if (array_key_exists($env_name, $data['env-values'] ?? [])) {
                 $result[$key] = [
                     'name' => $key,
                     'type' => $data['type'],

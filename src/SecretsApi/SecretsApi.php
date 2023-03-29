@@ -85,8 +85,8 @@ class SecretsApi
                 'type' => $secretValue->Type,
                 'value' => $secretValue->Value ?? null,
                 'scopes' => $secretValue->Scopes,
-                'env-values' => $secretValue->EnvValues ?? [],
-                'org-values' => $secretValue->OrgValues ?? [],
+                'env-values' => (array) ($secretValue->EnvValues ?? []),
+                'org-values' => (array) ($secretValue->OrgValues ?? []),
             ];
         }
         return $secrets;
