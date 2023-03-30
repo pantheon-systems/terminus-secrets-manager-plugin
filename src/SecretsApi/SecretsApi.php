@@ -184,6 +184,17 @@ class SecretsApi
         $options['json'] = $body;
 
         $result = $this->request()->request($url, $options);
+
+        // If code is 400 and data contains "PATCH", the secret exists; re-send the request as patch.
+        if ($result->getStatusCode() == 400 && strpos($result->getData(), 'PATCH') !== false) {
+            if (empty($body['type']) && empty($body['scopes'])) {
+                // PATCH can only be sent with empty type and scopes.
+                $options['method'] = 'PATCH';
+                $url = sprintf('%s/%s/%s/secrets/%s', $this->getBaseURI(), $workspaceType, $workspaceId, $name);
+                unset($options['json']['name']);
+                $result = $this->request()->request($url, $options);
+            }
+        }
         return !$result->isError();
     }
 
