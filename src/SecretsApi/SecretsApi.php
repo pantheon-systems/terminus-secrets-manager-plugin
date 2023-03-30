@@ -47,10 +47,12 @@ class SecretsApi
     /**
      * List secrets for a given site.
      *
-     * @param string $site_id
-     *   Site id to get secrets for.
+     * @param string $workspaceId
+     *   Site/org id to get secrets for.
      * @param bool $debug
      *   Whether to return the secrets in debug mode.
+     * @param string $workspaceType
+     *   Whether to return the secrets for a site or org.
      *
      * @return array
      *   Secrets for given site.
@@ -92,8 +94,10 @@ class SecretsApi
                 'value' => $secretValue->Value ?? null,
                 'scopes' => $secretValue->Scopes,
                 'env-values' => (array) ($secretValue->EnvValues ?? []),
-                'org-values' => (array) ($secretValue->OrgValues ?? []),
             ];
+            if ($workspaceType === "sites") {
+                $secrets[$secretKey]["org-values"] = (array) ($secretValue->OrgValues ?? []);
+            }
         }
         return $secrets;
     }

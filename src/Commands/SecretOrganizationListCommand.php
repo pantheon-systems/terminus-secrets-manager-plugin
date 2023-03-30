@@ -33,6 +33,7 @@ class SecretOrganizationListCommand extends SecretBaseCommand
      *   type: Secret type
      *   value: Secret value
      *   scopes: Secret scopes
+     *   env-values: Environment override values
      *
      * @option boolean $debug Run command in debug mode
      *
@@ -50,7 +51,7 @@ class SecretOrganizationListCommand extends SecretBaseCommand
     {
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($org_id)->getOrganization();
         if (empty($org)) {
-            $this->log()->error('Either the org is unavailable or you dont have permission to access it..');
+            $this->log()->error('Either the org is unavailable or you dont have permission to access it.');
         }
         $this->setupRequest();
         $secrets = $this->secretsApi->listSecrets($org->id, $options['debug'], "organizations");
