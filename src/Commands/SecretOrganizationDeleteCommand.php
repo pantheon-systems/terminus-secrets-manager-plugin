@@ -24,6 +24,7 @@ class SecretOrganizationDeleteCommand extends SecretBaseCommand
      * @command secret:org:delete
      * @aliases secret-org-delete, secret:org:delete
      *
+     * @option env string The environment to delete the secret from
      * @option boolean $debug Run command in debug mode
      *
      * @param string $org_id The name or UUID of an organization to retrieve information on
@@ -38,14 +39,16 @@ class SecretOrganizationDeleteCommand extends SecretBaseCommand
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function deleteSecret(string $org_id, string $name, array $options = ['debug' => false])
-    {
+    public function deleteSecret(string $org_id, string $name, array $options = [
+        'env' => null,
+        'debug' => false,
+    ]) {
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($org_id)->getOrganization();
         if (empty($org)) {
             $this->log()->error('Either the org is unavailable or you dont have permission to access it..');
         }
         $this->setupRequest();
-        if ($this->secretsApi->deleteSecret($org->id, $name, null, $options['debug'], "organizations")) {
+        if ($this->secretsApi->deleteSecret($org->id, $name, $options['env'], $options['debug'], "organizations")) {
             $this->log()->notice('Success');
         } else {
             $this->log()->error('An error happened when trying to delete the secret.');
