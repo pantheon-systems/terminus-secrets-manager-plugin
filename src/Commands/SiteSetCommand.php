@@ -43,8 +43,8 @@ class SiteSetCommand extends SecretBaseCommand implements SiteAwareInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function setSecret($siteish, string $name, string $value, array $options = [
-        'type' => 'env',
-        'scope' => 'ic',
+        'type' => null,
+        'scope' => null,
         'debug' => false,
     ])
     {

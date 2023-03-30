@@ -133,8 +133,8 @@ class SecretsApi
         string $name,
         string $value,
         string $env_name = null,
-        string $type = '',
-        string $scopes = 'ic',
+        string $type = null,
+        string $scopes = null,
         bool $debug = false,
         string $workspaceType = "sites"
     ): bool {

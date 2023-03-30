@@ -48,8 +48,8 @@ class SecretOrganizationSetCommand extends SecretBaseCommand
         string $name,
         string $value,
         array $options = [
-            'type' => 'env',
-            'scope' => 'ic',
+            'type' => null,
+            'scope' => null,
             'env' => null,
             'debug' => false,
         ]
