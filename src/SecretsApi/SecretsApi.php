@@ -105,13 +105,13 @@ class SecretsApi
     /**
      * Set secret for a given site.
      *
-     * @param string $site_id
-     *   Site id to set secret for.
+     * @param string $workspaceId
+     *   Site/Org id to set secret for.
      * @param string $name
      *   Secret name.
      * @param string $value
      *   Secret value.
-     * @param string $env
+     * @param string $env_name
      *  Environment to set secret for.
      * @param string $type
      *   Secret type.
@@ -119,6 +119,8 @@ class SecretsApi
      *   Secret scopes.
      * @param bool $debug
      *   Whether to return the secrets in debug mode.
+     * @param string $workspaceType
+     *   Whether to return the secrets for a site or org.
      *
      * @return bool
      *   Whether saving the secret was successful or not.
@@ -170,7 +172,7 @@ class SecretsApi
         }
 
         if ($env_name) {
-            $url = sprintf('%s/sites/%s/secrets/%s', $this->getBaseURI(), $site_id, $name);
+            $url = sprintf('%s/%s/%s/secrets/%s', $this->getBaseURI(), $workspaceType, $workspaceId, $name);
             $body['env'] = $env_name;
             $options['method'] = 'PATCH';
 

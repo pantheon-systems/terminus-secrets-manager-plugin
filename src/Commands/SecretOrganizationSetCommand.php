@@ -27,6 +27,7 @@ class SecretOrganizationSetCommand extends SecretBaseCommand
      * @option string $type Secret type
      * @option array $scope Secret scope. Available options are ic (integrated composer), user, web, and ops.
      *   Multiple options should be specified in comma separated format. Ex: --scope=ic,ops,web.
+     * @option string $env Environment name
      * @option boolean $debug Run command in debug mode
      *
      * @param string $org_id The name or UUID of a org to retrieve information on
@@ -47,9 +48,10 @@ class SecretOrganizationSetCommand extends SecretBaseCommand
         string $name,
         string $value,
         array $options = [
-        'type' => 'env',
-        'scope' => 'ic',
-        'debug' => false,
+            'type' => 'env',
+            'scope' => 'ic',
+            'env' => null,
+            'debug' => false,
         ]
     ) {
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($org_id)->getOrganization();
@@ -62,7 +64,7 @@ class SecretOrganizationSetCommand extends SecretBaseCommand
                 $org->id,
                 $name,
                 $value,
-                null,
+                $options['env'],
                 $options['type'],
                 $options['scope'],
                 $options['debug'],
