@@ -47,10 +47,12 @@ class SecretsApi
     /**
      * List secrets for a given site.
      *
-     * @param string $site_id
-     *   Site id to get secrets for.
+     * @param string $workspaceId
+     *   Site/org id to get secrets for.
      * @param bool $debug
      *   Whether to return the secrets in debug mode.
+     * @param string $workspaceType
+     *   Whether to return the secrets for a site or org.
      *
      * @return array
      *   Secrets for given site.
@@ -92,8 +94,10 @@ class SecretsApi
                 'value' => $secretValue->Value ?? null,
                 'scopes' => $secretValue->Scopes,
                 'env-values' => (array) ($secretValue->EnvValues ?? []),
-                'org-values' => (array) ($secretValue->OrgValues ?? []),
             ];
+            if ($workspaceType === "sites") {
+                $secrets[$secretKey]["org-values"] = (array) ($secretValue->OrgValues ?? []);
+            }
         }
         return $secrets;
     }
@@ -101,13 +105,13 @@ class SecretsApi
     /**
      * Set secret for a given site.
      *
-     * @param string $site_id
-     *   Site id to set secret for.
+     * @param string $workspaceId
+     *   Site/Org id to set secret for.
      * @param string $name
      *   Secret name.
      * @param string $value
      *   Secret value.
-     * @param string $env
+     * @param string $env_name
      *  Environment to set secret for.
      * @param string $type
      *   Secret type.
@@ -115,6 +119,8 @@ class SecretsApi
      *   Secret scopes.
      * @param bool $debug
      *   Whether to return the secrets in debug mode.
+     * @param string $workspaceType
+     *   Whether to return the secrets for a site or org.
      *
      * @return bool
      *   Whether saving the secret was successful or not.
@@ -127,8 +133,8 @@ class SecretsApi
         string $name,
         string $value,
         string $env_name = null,
-        string $type = '',
-        string $scopes = 'ic',
+        string $type = null,
+        string $scopes = null,
         bool $debug = false,
         string $workspaceType = "sites"
     ): bool {
@@ -166,7 +172,7 @@ class SecretsApi
         }
 
         if ($env_name) {
-            $url = sprintf('%s/sites/%s/secrets/%s', $this->getBaseURI(), $site_id, $name);
+            $url = sprintf('%s/%s/%s/secrets/%s', $this->getBaseURI(), $workspaceType, $workspaceId, $name);
             $body['env'] = $env_name;
             $options['method'] = 'PATCH';
 
@@ -178,6 +184,17 @@ class SecretsApi
         $options['json'] = $body;
 
         $result = $this->request()->request($url, $options);
+
+        // If code is 400 and data contains "PATCH", the secret exists; re-send the request as patch.
+        if ($result->getStatusCode() == 400 && strpos($result->getData(), 'PATCH') !== false) {
+            if (empty($body['type']) && empty($body['scopes'])) {
+                // PATCH can only be sent with empty type and scopes.
+                $options['method'] = 'PATCH';
+                $url = sprintf('%s/%s/%s/secrets/%s', $this->getBaseURI(), $workspaceType, $workspaceId, $name);
+                unset($options['json']['name']);
+                $result = $this->request()->request($url, $options);
+            }
+        }
         return !$result->isError();
     }
 
