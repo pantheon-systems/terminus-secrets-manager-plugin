@@ -6,12 +6,12 @@ Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best
 
 ### Key Features
 
-- Securely host and maintain Secrets on Pantheon
+- Securely host and maintain secrets on Pantheon
 - Use private repositories in Integrated Composer builds
 - Create and update secrets via Terminus
 - Ability to set a `COMPOSER_AUTH` environment variable and/or a `Composer auth.json` authentication file with Terminus commands
-- Ability to define site and org specific Secrets
-- Ability to define the level of secrecy for each managed item (this determines which users can view the value of a Secret after entering it)
+- Ability to define site and org specific secrets
+- Ability to define the level of secrecy for each managed item
 - Secrets are encrypted at rest
 
 ### Early Access
@@ -67,7 +67,6 @@ Secrets Manager requires the following:
 - A site that uses [Integrated Composer](https://docs.pantheon.io/guides/integrated-composer) and runs PHP >= 8.0
 - Terminus 3
 
-
 ### Installation
 
 Terminus 3.x has built in plugin management.
@@ -82,16 +81,15 @@ terminus self:plugin:install terminus-secrets-manager-plugin
 
 #### Set a secret
 
-The Secrets `set` command takes the following format:
+The secrets `set` command takes the following format:
 
 - `Name`
 - `Value`
+- `Type`
 - `One or more scopes`
 
-The scope determines access to the Secret’s value. For example, if the scope is set to `users`, it will allow the user to view the Secret in Terminus. If the scope is set to `ic`, it makes the Secret available to the Integrated Composer build. 
 
-
-Run the command below to set a Secret in Terminus:
+Run the command below to set a secret in Terminus:
 
 ```
 terminus secret:site:set <site> <secret-name> <secret-value>
@@ -119,7 +117,7 @@ Note: If you do not include a `type` or `scope` flag, their defaults will be `ru
 
 #### List secrets
 
-The secrets `list` command provides a list of all Secrets available for a site. The following fields are available:
+The secrets `list` command provides a list of all secrets available for a site. The following fields are available:
 
 - `Name`
 - `Scope`
@@ -130,7 +128,7 @@ The secrets `list` command provides a list of all Secrets available for a site. 
 
 Note that the `value` field will contain a placeholder value unless the `user` scope was specified when the secret was set.
 
-Run the command below to list a site’s Secrets:
+Run the command below to list a site’s secrets:
 
 `terminus secret:site:list`
 
@@ -160,9 +158,9 @@ terminus secret:site:list <site> --fields="*"
 
 #### Delete a secret
 
-The secrets `delete` command will remove a Secret and all of its overrides.
+The secrets `delete` command will remove a secret and all of its overrides.
 
-Run the command below to delete a Secret:
+Run the command below to delete a secret:
 
 ```
 terminus secret:site:delete <site> <secret-name>
@@ -173,6 +171,93 @@ terminus secret:site:delete <site> <secret-name>
 
 ### Organization secrets Commands
 
+#### Set a secret
+
+The secrets `set` command takes the following format:
+
+- `Name`
+- `Value`
+- `Type`
+- `One or more scopes`
+
+Run the command below to set a secret in Terminus:
+
+```
+terminus secret:org:set <org> <secret-name> <secret-value>
+
+[notice] Success
+
+```
+
+```
+terminus secret:org:set <org> file.json "{}" --type=file
+
+[notice] Success
+
+```
+
+```
+terminus secret:org:set <org> <secret-name> --scope=user,ic
+
+[notice] Success
+
+```
+
+Note: If you do not include a `type` or `scope` flag, their defaults will be `runtime` and `user` respectively.
+
+
+#### List secrets
+
+The secrets `list` command provides a list of all secrets available for an organization. The following fields are available:
+
+- `Name`
+- `Scope`
+- `Type`
+- `Value`
+- `Environment Override Values`
+
+Note that the `value` field will contain a placeholder value unless the `user` scope was specified when the secret was set.
+
+Run the command below to list a site’s secrets:
+
+`terminus secret:org:list`
+
+```
+terminus secret:org:list <org>
+
+ ------------- ------------- ---------------------------
+  Secret name   Secret type   Secret value
+ ------------- ------------- ---------------------------
+  secret-name   env           secrets-content
+ ------------- ------------- ---------------------------
+```
+
+`terminus secret:org:list`
+
+```
+terminus secret:org:list <org> --fields="*"
+
+ ---------------- ------------- ------------------------------------------ --------------- -----------------------------
+  Secret name      Secret type   Secret value                               Secret scopes   Environment override values
+ ---------------- ------------- ------------------------------------------ --------------- -----------------------------
+  foo              env           bar                                        web, user
+  foo2             runtime       bar2                                       web, user
+  foo3             env           dummykey                                   web, user       live=sendgrid-live
+ ---------------- ------------- ------------------------------------------ --------------- -----------------------------
+ ```
+
+#### Delete a secret
+
+The secrets `delete` command will remove a secret and all of its overrides.
+
+Run the command below to delete a secret:
+
+```
+terminus secret:org:delete <org> <secret-name>
+
+[notice] Success
+
+```
 
 ### Help
 
