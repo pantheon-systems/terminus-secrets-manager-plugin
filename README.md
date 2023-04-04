@@ -12,11 +12,11 @@ Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best
 
 - Create and update secrets via Terminus
 
-- Ability to set a `COMPOSER_AUTH` environment variable and/or a `Composer auth.json` authentication file with Terminus commands
+- Ability to set a `COMPOSER_AUTH` environment variable and/or a Composer `auth.json` authentication file with Terminus commands
 
 - Ability to define site and org ownership of secrets
 
-- Propegate organization-owned secrets to all the sites in the org
+- Propagate organization-owned secrets to all the sites in the org
 
 - Ability to define the degree of secrecy for each managed item
 
@@ -30,7 +30,7 @@ The Secrets Manager plugin is available for Early Access participants. Features 
 
 ### Secret
 
-A key-value pair that should not be exposed to the general public, typically something like a password, API key, or the contents of a peer-to-peer cryptographic certificiate. SSL certificates that your site uses to serve pages are out of scope of this process and are managed by the dashboard in a different place. See the documentation for SSL certificate for details.
+A key-value pair that should not be exposed to the general public, typically something like a password, API key, or the contents of a peer-to-peer cryptographic certificate. SSL certificates that your site uses to serve pages are out of scope of this process and are managed by the dashboard in a different place. See the documentation for SSL certificate for details.
 
 ### Secret type
 
