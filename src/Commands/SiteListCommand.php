@@ -34,7 +34,7 @@ class SiteListCommand extends SecretBaseCommand implements SiteAwareInterface
      *   value: Secret value
      *   scopes: Secret scopes
      *   env-values: Environment override values
-     *   org-values: Org default values
+     *   org-values: Org values
      * @default-table-fields name,type,value,scopes
      *
      * @option boolean $debug Run command in debug mode
