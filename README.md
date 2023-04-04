@@ -2,6 +2,31 @@
 
 Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best practices for secure builds and application implementation. Secrets Manager provides a convenient mechanism for you to manage your secrets and API keys directly on the Pantheon platform.
 
+## Table of Contents
+
+- [Overview](#overview)
+  * [Key Features](#key-features)
+  * [Early Access](#early-access)
+- [Concepts](#concepts)
+  * [Secret](#secret)
+  * [Secret type](#secret-type)
+  * [Secret scope](#secret-scope)
+  * [Owning entity](#owning-entity)
+  * [Site-owned secrets](#site-owned-secrets)
+  * [Organization-owned secrets](#organization-owned-secrets)
+  * [Environment override](#environment-override)
+- [The life of a secret](#the-life-of-a-secret)
+- [Plugin Usage](#plugin-usage)
+  * [Secrets Manager Plugin Requirements](#secrets-manager-plugin-requirements)
+  * [Installation](#installation)
+  * [Site secrets Commands](#site-secrets-commands)
+  * [Organization secrets Commands](#organization-secrets-commands)
+  * [Help](#help)
+- [Use Secrets with Integrated Composer](#use-secrets-with-integrated-composer)
+  * [Mechanism 1: Oauth Composer authentication](#mechanism-1-oauth-composer-authentication)
+  * [Mechanism 2: HTTP Basic Authentication](#mechanism-2-http-basic-authentication)
+
+
 ## Overview
 
 ### Key Features
