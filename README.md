@@ -37,7 +37,7 @@ This is a field on the secret record. It defines the usage for this secret. Curr
 - `composer`: this secret type is used for composer authentication to private packages.
 - `file`: this type allows you to store files in the secrets. More info on this to come at a later stage of the Secrets project.
 
-Note that you can only set a type per secret and this cannot be changed later (unless you delete and recreate the secret).
+Note that you can only set one type per secret and this cannot be changed later (unless you delete and recreate the secret).
 
 ### Secret scope
 
@@ -175,7 +175,7 @@ terminus secret:site:list <site> --fields="*"
  ---------------- ------------- ------------------------------------------ --------------- ----------------------------- --------------------
   Secret name      Secret type   Secret value                               Secret scopes   Environment override values   Org values
  ---------------- ------------- ------------------------------------------ --------------- ----------------------------- --------------------
-  foo              env           bar                                        web, user
+  foo              env           ***                                        web, user
   foo2             runtime       bar2                                       web, user                                     default=barorg
   foo3             env           dummykey                                   web, user       live=sendgrid-live
  ---------------- ------------- ------------------------------------------ --------------- ----------------------------- --------------------
@@ -290,7 +290,7 @@ Run `terminus list secret` for a complete list of available commands. Use termin
 
 ## Use Secrets with Integrated Composer
 
-You must configure your private repository and provide an authentication token before you can use the Secrets Manager Terminus plugin with Integrated Composer.
+You must configure your private repository and provide an authentication token before you can use the Secrets Manager Terminus plugin with Integrated Composer. You could use either of the following mechanisms to setup this authentication.
 
 
 ### Mechanism 1: Oauth Composer authentication
@@ -339,6 +339,8 @@ You must configure your private repository and provide an authentication token b
     }
     ```
 
+    Your repository should contain a `composer.json` that declares a package name in its `name` field. If it is a WordPress plugin or a Drupal module, it should specify a `type` of `wordpress-plugin` or `drupal-module` respectively. For these instructions, we will assume your package name is `your-organization/your-package-name`.
+
 1. Require the package defined by your private repository's `composer.json` by either adding a new record to the `require` section of the site's `composer.json` or with a `composer require` command:
 
     ```bash
@@ -361,6 +363,8 @@ You must configure your private repository and provide an authentication token b
         "url": "https://bitbucket.org/your-organization/your-repository-name"
     }
     ```
+
+    Your repository should contain a `composer.json` that declares a package name in its `name` field. If it is a WordPress plugin or a Drupal module, it should specify a `type` of `wordpress-plugin` or `drupal-module` respectively. For these instructions, we will assume your package name is `your-organization/your-package-name`.
 
 1. Require the package defined by your private repository's `composer.json` by either adding a new record to the `require` section of the site's `composer.json` or with a `composer require` command:
 
