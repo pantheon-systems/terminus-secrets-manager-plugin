@@ -2,30 +2,73 @@
 
 Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best practices for secure builds and application implementation. Secrets Manager provides a convenient mechanism for you to manage your secrets and API keys directly on the Pantheon platform.
 
-## Key Features
+## Overview
+
+### Key Features
 
 - Securely host and maintain Secrets on Pantheon
 - Use private repositories in Integrated Composer builds
 - Create and update secrets via Terminus
 - Ability to set a `COMPOSER_AUTH` environment variable and/or a `Composer auth.json` authentication file with Terminus commands
-- Ability to define site-specific Secrets (organization-specific Secrets are not yet supported)
+- Ability to define site and org specific Secrets
 - Ability to define the level of secrecy for each managed item (this determines which users can view the value of a Secret after entering it)
 - Secrets are encrypted at rest
 
-## Secrets Manager Plugin Requirements
+### Early Access
+
+The Secrets Manager plugin is available for Early Access participants. Features for Secrets Manager are in active development. Pantheon's development team is rolling out new functionality often while this product is in Early Access. Visit the [Pantheon Slack channel](https://slackin.pantheon.io/) (or sign up for the channel if you don't already have an account) to learn how you can enroll in our Early Access program. Please review [Pantheon's Software Evaluation Licensing Terms](https://legal.pantheon.io/#contract-hkqlbwpxo) for more information about access to our software.
+
+## Concepts
+
+### Site level secret
+
+This is a secret that is set for a specific site using the site id. Based on the type and scope, this secret will be loaded on the different scenarios that will be supported by Secrets in Pantheon.
+
+### Organization level secret
+
+This is a secret that is set not for a given site but for an organization. This secret will be inherited by ALL of the sites that are OWNED by this organization. Please note that a [Supporting Organization](https://docs.pantheon.io/agency-tips#become-a-supporting-organization) won't inherit its secrets to the sites, only the Owner organization.
+
+### Secret type
+
+This is a field on the secret record. It defines the usage for this secret. Current types are:
+
+- `runtime`: this secret will be used to retrieve it in application runtime using API calls to the secret service. More info on this to come at a later stage of the Secrets project. This will be the recommended way to set stuff like API keys for third-party integrations in your application.
+- `env`: this secret will be used to set environment variables in the application runtime. More info on this to come at a later stage of the Secrets project.
+- `composer`: this secret type is used for composer authentication to private packages.
+- `file`: this type allows you to store files in the secrets. More info on this to come at a later stage of the Secrets project.
+
+Note that you can only set a type per secret and this cannot be changed later (unless you delete and recreate the secret).
+
+### Secret scope
+
+This is a field on the secret record. It defines the components that have access to the secret value. Current scopes are:
+
+- `ic`: this secret will be readable by the Integrated Composer runtime. You should use this scope to get access to your private repositories.
+- `web`: this secret will be readable by the application runtime. More info on this to come at a later stage of the Secrets project.
+- `user`: this secret will be readable by the user. This scope should be set if you need to retrieve the secret value at a later stage.
+- `ops`: behavior to be defined. More info on this to come at a later stage of the Secrets project.
+
+Note that you can set multiple scopes per secret and they cannot be changed later (unless you delete and recreate the secret).
+
+## Organization and Site level secrets
+
+This section describes how the secrets set at the organization and site level interact within them.
+
+
+
+
+## Plugin Usage
+
+### Secrets Manager Plugin Requirements
 
 Secrets Manager requires the following:
 
 - A Pantheon account
-- Integrated Composer
-- Terminus
-- PHP (v8.0+)
+- A site that uses [Integrated Composer](https://docs.pantheon.io/guides/integrated-composer) and runs PHP >= 8.0
+- Terminus 3
 
-## Early Access
 
-The Secrets Manager plugin is available for Early Access participants. Features for Secrets Manager are in active development. Pantheon's development team is rolling out new functionality often while this product is in Early Access. Visit the [Pantheon Slack channel](https://slackin.pantheon.io/) (or sign up for the channel if you don't already have an account) to learn how you can enroll in our Early Access program. Please review [Pantheon's Software Evaluation Licensing Terms](https://legal.pantheon.io/#contract-hkqlbwpxo) for more information about access to our software.
-
-## Installation
+### Installation
 
 Terminus 3.x has built in plugin management.
 
@@ -35,9 +78,9 @@ Run the command below to install Terminus Secrets Manager.
 terminus self:plugin:install terminus-secrets-manager-plugin
 ```
 
-## Terminus Secrets Manager Commands
+### Site secrets Commands
 
-### Set a Secret
+#### Set a secret
 
 The Secrets `set` command takes the following format:
 
@@ -71,37 +114,21 @@ terminus secret:site:set <site> <secret-name> --scope=user,ic
 
 ```
 
-Note: If you do not include a `type` or `scope` flag, their defaults will be `env` and `ic` respectively.
+Note: If you do not include a `type` or `scope` flag, their defaults will be `runtime` and `user` respectively.
 
-#### Multiple Key Versions 
 
-If you need multiple versions of a key for different environments or one key for development and one key for production:
+#### List secrets
 
-Add all keys with a naming structure that helps when listing the keys:
-
-```
-keyName_production: value
-keyName_development: value
-```
-
-or
-
-```
-keyName_multiDevName: value
-```
-
-NOTE: There are no key arrays in the json file; all keys are at the root. 
-
-### List Secrets
-
-The Secrets `list` command provides a list of all Secrets available for a site. The following fields are available:
+The secrets `list` command provides a list of all Secrets available for a site. The following fields are available:
 
 - `Name`
 - `Scope`
 - `Type`
 - `Value`
+- `Environment Override Values`
+- `Org Values`
 
-Note that the `value` field will be empty or contain a placeholder value unless the `user` scope was specified when the secret was set.
+Note that the `value` field will contain a placeholder value unless the `user` scope was specified when the secret was set.
 
 Run the command below to list a site’s Secrets:
 
@@ -113,14 +140,27 @@ terminus secret:site:list <site>
  ------------- ------------- ---------------------------
   Secret name   Secret type   Secret value
  ------------- ------------- ---------------------------
-  file.json     file          contents of a secret file
   secret-name   env           secrets-content
  ------------- ------------- ---------------------------
 ```
 
-### Delete a Secret
+`terminus secret:site:list`
 
-The Secrets `delete` command will remove a Secret from all of its scopes.
+```
+terminus secret:site:list <site> --fields="*"
+
+ ---------------- ------------- ------------------------------------------ --------------- ----------------------------- --------------------
+  Secret name      Secret type   Secret value                               Secret scopes   Environment override values   Org values
+ ---------------- ------------- ------------------------------------------ --------------- ----------------------------- --------------------
+  foo              env           bar                                        web, user
+  foo2             runtime       bar2                                       web, user                                     default=barorg
+  foo3             env           dummykey                                   web, user       live=sendgrid-live
+ ---------------- ------------- ------------------------------------------ --------------- ----------------------------- --------------------
+ ```
+
+#### Delete a secret
+
+The secrets `delete` command will remove a Secret and all of its overrides.
 
 Run the command below to delete a Secret:
 
@@ -131,6 +171,9 @@ terminus secret:site:delete <site> <secret-name>
 
 ```
 
+### Organization secrets Commands
+
+
 ### Help
 
 Run `terminus list secret` for a complete list of available commands. Use terminus help <command> to get help with a specific command.
@@ -139,7 +182,10 @@ Run `terminus list secret` for a complete list of available commands. Use termin
 
 You must configure your private repository and provide an authentication token before you can use the Secrets Manager Terminus plugin with Integrated Composer.
 
-### GitHub Repository
+
+### Mechanism 1: Oauth Composer authentication
+
+#### GitHub Repository
 
 1. [Generate a Github token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token). The Github token must have all "repo" permissions selected.
 
@@ -168,7 +214,7 @@ You must configure your private repository and provide an authentication token b
 
 1. Commit your changes and push to Pantheon.
 
-### GitLab Repository
+#### GitLab Repository
 
 1. [Generate a GitLab token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html). Ensure that `read_repository` scope is selected for the token.
 
@@ -191,7 +237,7 @@ You must configure your private repository and provide an authentication token b
 
 1. Commit your changes and push to Pantheon.
 
-### Bitbucket Repository
+#### Bitbucket Repository
 
 1. [Generate a Bitbucket oauth consumer](https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud/). Ensure that Read repositories permission is selected for the consumer. Also, set the consumer as private and put a (dummy) callback URL.
 
@@ -214,25 +260,11 @@ You must configure your private repository and provide an authentication token b
 
 1. Commit your changes and push to Pantheon.
 
-## Authentication
+### Mechanism 2: HTTP Basic Authentication
 
-### GitHub
+You may create a `COMPOSER_AUTH json` and make it available via the `COMPOSER_AUTH` environment variable if you have multiple private repositories on multiple private domains.
 
-`github-oauth.github.com` is a magic token name for composer that authenticates all Github URLs with the credentials from the token you provide. There are several ["magic" variable names](https://getcomposer.org/doc/articles/authentication-for-private-packages.md#command-line-global-credential-editing), or you can choose "basic authentication" by providing a `COMPOSER_AUTH` variable.
-
-### GitLab
-
-`gitlab-oauth.gitlab.com` is a magic token name for Composer that authenticates all GitLab URLs with the credentials from the token you provide. There are several ["magic" variable names](https://getcomposer.org/doc/articles/authentication-for-private-packages.md#command-line-global-credential-editing), or you can choose "basic authentication" by providing a `COMPOSER_AUTH` variable.
-
-### Bitbucket
-
-`bitbucket-oauth.bitbucket.com` is a magic token name for Composer that authenticates all Bitbucket URLs with the credentials from the token you provide. There are several ["magic" variable names](https://getcomposer.org/doc/articles/authentication-for-private-packages.md#command-line-global-credential-editing), or you can choose "basic authentication" by providing a `COMPOSER_AUTH` variable.
-
-### HTTP Basic Authentication
-
-You must create a `COMPOSER_AUTH json` and make it available via the `COMPOSER_AUTH` environment variable if you have multiple private repositories on multiple private domains.
-
-Composer has the ability to read private repository access information from the environment variable: `COMPOSER_AUTH`. The `COMPOSER_AUTH` variables must be in a [specific JSON format](https://doc.codingdict.com/composer/doc/articles/http-basic-authentication.html). 
+Composer has the ability to read private repository access information from the environment variable: `COMPOSER_AUTH`. The `COMPOSER_AUTH` variables must be in a [specific JSON format](https://getcomposer.org/doc/articles/authentication-for-private-packages.md#http-basic). 
 
 Format example:
 
