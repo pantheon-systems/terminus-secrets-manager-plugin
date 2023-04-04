@@ -52,10 +52,35 @@ Note that you can set multiple scopes per secret and they cannot be changed late
 
 ## Organization and Site level secrets
 
-This section describes how the secrets set at the organization and site level interact within them.
+When a given runtime (e.g. Integrated Composer runtime or the application runtime) fetches secrets for a given site (and env), it will go like this:
 
+- Fetch secrets for site (of the given type and within the given scopes)
+- Apply environment overrides (if any). More info on this to come soon.
+- If the site is owned by an organization:
+    - Get the organization secrets
+    - Apply environment overrides (if any).
+    - Merge the organization secrets with the site secrets
 
+Let's go through this with an example: assume you have a site named `my-site` which belongs to an organization `my-org`. You also have another site `my-other-site` which belongs to your personal Pantheon account.
 
+When Integrated Composer attempts to get secrets for `my-other-site` it will go like this:
+- Get the secrets of scope `ic` for `my-other-site`.
+- Apply environment overrides for the current environment (*).
+- Look at `my-other-site` owner. In this case, it is NOT an organization so there are no organization secrets to merge.
+- Process the resulting secrets to make them available to Composer.
+
+On the other hand, when Integrated Composer attempts to get secrets for `my-site`, it will go like this:
+- Get the secrets of scope `ic` for `my-site`.
+- Apply environment overrides for the current environment (see **Note** below).
+- Look at the site owner. It determines it is the organization `my-org`.
+- Get the secrets for the organization `my-org` with scope `ic`.
+- Apply the environment overrides to those secrets for the current environment (see **Note** below).
+- Merge the resulting organization secrets with the site secrets with the following caveats:
+    - Site secrets take precedence over organization secrets: this mean that the value for site-level secret named `foo` will be used instead of the value for an org-level secret with the same name `foo`
+    - Only the secrets for the OWNER organization are being merged. If the site has a Supporting Organization, it will be ignored.
+- Process the resulting secrets to make them available to Composer.
+
+**Note:** Due to platform design, the environment for Integrated Composer will always be either `dev` or a multidev. It will never be `test` or `live` so we don't recommend using environment overrides for composer access.
 
 ## Plugin Usage
 
