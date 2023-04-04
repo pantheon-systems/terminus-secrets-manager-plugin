@@ -28,32 +28,13 @@ The Secrets Manager plugin is available for Early Access participants. Features 
 
 ## Concepts
 
-### 👀 Jargon Watch 👀
+### Secret
 
-<dl>
-    <dt>Secret</dt>
-    <dd>A key-value pair that should not be exposed to the general public, typically something like a password, API key, or the contents of a peer-to-peer cryptographic certificiate. SSL certificates that your site uses to serve pages are out of scope of this process and are managed by the dashboard in a different place. See the documentation for SSL certificate for details.</dd>
-    <dt>Scope</dt>
-    <dd>Short representations of the parts of the pantheon platform that have access to the secret's value.</dd>
-    <dt>Type</dt>
-    <dd>A context or format in which the secret is stored that indicates how it should be consumed. e.g. a "file" secret is a series of lines terminated by newline characters such as a cryptographic key that can be written to a file to be consumed by the platform tenant.</dd>
-    <dt>Owning Entity</dt>
-    <dd>Secrets are currently either owned by a site or an organization. Within that owning entity, the secret may have zero or more environment overrides.</dd>
-    <dt>Environment Override</dt>
-    <dd>In some cases it will be necessary to have different values for the secret when that secret is accessed in different pantheon environments. You may set an environment override value for any existing secret value. If the secret does not exist, it may not be overriden in any environment and you will get an error trying to set an environment override.</dd>
-</dl>
-
-### Site-owned secrets
-
-This is a secret that is set for a specific site using the site id. Based on the type and scope, this secret will be loaded on the different scenarios that will be supported by Secrets in Pantheon.
-
-### Organization-owned secrets
-
-This is a secret that is set not for a given site but for an organization. This secret will be inherited by ALL of the sites that are OWNED by this organization. Please note that a [Supporting Organization](https://docs.pantheon.io/agency-tips#become-a-supporting-organization) won't inherit its secrets to the sites, only the Owner organization.
+A key-value pair that should not be exposed to the general public, typically something like a password, API key, or the contents of a peer-to-peer cryptographic certificiate. SSL certificates that your site uses to serve pages are out of scope of this process and are managed by the dashboard in a different place. See the documentation for SSL certificate for details.
 
 ### Secret type
 
-This is a field on the secret record. It defines the usage for this secret. Current types are:
+This is a field on the secret record. It defines the usage for this secret and how it is consumed. Current types are:
 
 - `runtime`: this secret will be used to retrieve it in application runtime using API calls to the secret service. More info on this to come at a later stage of the Secrets project. This will be the recommended way to set stuff like API keys for third-party integrations in your application.
 
@@ -78,6 +59,22 @@ This is a field on the secret record. It defines the components that have access
 - `ops`: behavior to be defined. More info on this to come at a later stage of the Secrets project.
 
 Note that you can set multiple scopes per secret and they cannot be changed later (unless you delete and recreate the secret).
+
+### Owning entity
+
+Secrets are currently either owned by a site or an organization. Within that owning entity, the secret may have zero or more environment overrides.
+
+### Site-owned secrets
+
+This is a secret that is set for a specific site using the site id. Based on the type and scope, this secret will be loaded on the different scenarios that will be supported by Secrets in Pantheon.
+
+### Organization-owned secrets
+
+This is a secret that is set not for a given site but for an organization. This secret will be inherited by ALL of the sites that are OWNED by this organization. Please note that a [Supporting Organization](https://docs.pantheon.io/agency-tips#become-a-supporting-organization) won't inherit its secrets to the sites, only the Owner organization.
+
+### Environment override
+
+In some cases it will be necessary to have different values for the secret when that secret is accessed in different pantheon environments. You may set an environment override value for any existing secret value. If the secret does not exist, it may not be overriden in any environment and you will get an error trying to set an environment override.
 
 ## The life of a secret
 
