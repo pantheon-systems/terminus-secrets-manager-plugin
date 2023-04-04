@@ -269,7 +269,7 @@ The secrets `set` command takes the following format:
 - `Type`
 - `One or more scopes`
 
-Run the command below to set a secret in Terminus:
+Run the command below to set a new secret in Terminus:
 
 ```
 terminus secret:org:set <org> <secret-name> <secret-value>
@@ -293,6 +293,28 @@ terminus secret:org:set <org> <secret-name> --scope=user,ic
 ```
 
 Note: If you do not include a `type` or `scope` flag, their defaults will be `runtime` and `user` respectively.
+
+Run the command below to update an existing secret in Terminus:
+
+```
+terminus secret:org:set <org> <secret-name> <secret-value>
+
+[notice] Success
+
+```
+
+Note: When updating an existing secret, `type` and `scope` should NOT be passed as they are immutable. You should delete and recreate the secret if you need to update those roperties.
+
+Add or update an environment override for an existing secret in Terminus:
+
+```
+terminus secret:org:set --env=<env> <org> <secret-name> <secret-value>
+
+[notice] Success
+
+```
+
+Note: You can add an environment override only to existing secrets; otherwise, it will fail.
 
 
 #### List secrets
@@ -343,6 +365,15 @@ Run the command below to delete a secret:
 
 ```
 terminus secret:org:delete <org> <secret-name>
+
+[notice] Success
+
+```
+
+Run the command below to delete an environment override for a secret:
+
+```
+terminus secret:org:delete --env=<env> <org> <secret-name>
 
 [notice] Success
 
