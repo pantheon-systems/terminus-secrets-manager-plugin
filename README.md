@@ -84,13 +84,13 @@ When a given runtime (e.g. Integrated Composer runtime or the application runtim
 
 - Fetch secrets for site (of the given type and within the given scopes)
 
-- Apply environment overrides (if any). More info on this to come soon.
+- Apply environment overrides (if any) based on the requester environment.
 
 - If the site is owned by an organization:
 
     - Get the organization secrets
 
-    - Apply environment overrides (if any).
+    - Apply environment overrides (if any) based on the requester environment.
 
     - Merge the organization secrets with the site secrets
 
@@ -113,7 +113,7 @@ On the other hand, when Integrated Composer attempts to get secrets for `my-site
     - Only the secrets for the OWNER organization are being merged. If the site has a Supporting Organization, it will be ignored.
 - Process the resulting secrets to make them available to Composer.
 
-**Note:** Due to platform design, the "environment" for Integrated Composer will always be either `dev` or a multidev. It will never be `test` or `live` so we don't recommend using "environment" overrides for composer access. The primary use-case for environment overrides is for the CMS key-values and environment variables that need to be different between your production and non-production environments.
+**Note:** Due to platform design, the "environment" for Integrated Composer will always be either `dev` or a multidev. It will never be `test` or `live` so we don't recommend using environment overrides for composer access. The primary use-case for environment overrides is for the CMS key-values and environment variables that need to be different between your live and non-live environments.
 
 ## Plugin Usage
 
