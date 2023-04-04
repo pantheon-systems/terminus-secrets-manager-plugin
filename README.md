@@ -147,49 +147,46 @@ The secrets `set` command takes the following format:
 - `One or more scopes`
 
 
-Run the command below to set a new secret in Terminus:
+**Run the command below to set a new secret in Terminus:**
 
 ```
 terminus secret:site:set <site> <secret-name> <secret-value>
 
 [notice] Success
-
 ```
 
 ```
 terminus secret:site:set <site> file.json "{}" --type=file
 
 [notice] Success
-
 ```
 
 ```
 terminus secret:site:set <site> <secret-name> --scope=user,ic
 
 [notice] Success
-
 ```
 
 Note: If you do not include a `type` or `scope` flag, their defaults will be `runtime` and `user` respectively.
 
-Run the command below to update an existing secret in Terminus:
+
+**Run the command below to update an existing secret in Terminus:**
 
 ```
 terminus secret:site:set <site> <secret-name> <secret-value>
 
 [notice] Success
-
 ```
 
 Note: When updating an existing secret, `type` and `scope` should NOT be passed as they are immutable. You should delete and recreate the secret if you need to update those properties.
 
-Add or update an environment override for an existing secret in Terminus:
+
+**Add or update an environment override for an existing secret in Terminus:**
 
 ```
 terminus secret:site:set <site>.<env> <secret-name> <secret-value>
 
 [notice] Success
-
 ```
 
 Note: You can add an environment override only to existing secrets; otherwise, it will fail.
@@ -208,9 +205,8 @@ The secrets `list` command provides a list of all secrets available for a site. 
 
 Note that the `value` field will contain a placeholder value unless the `user` scope was specified when the secret was set.
 
-Run the command below to list a site’s secrets:
+**Run the command below to list a site’s secrets:**
 
-`terminus secret:site:list`
 
 ```
 terminus secret:site:list <site>
@@ -221,8 +217,6 @@ terminus secret:site:list <site>
   secret-name   env           secrets-content
  ------------- ------------- ---------------------------
 ```
-
-`terminus secret:site:list`
 
 ```
 terminus secret:site:list <site> --fields="*"
@@ -240,22 +234,20 @@ terminus secret:site:list <site> --fields="*"
 
 The secrets `delete` command will remove a secret and all of its overrides.
 
-Run the command below to delete a secret:
+**Run the command below to delete a secret:**
 
 ```
 terminus secret:site:delete <site> <secret-name>
 
 [notice] Success
-
 ```
 
-Run the command below to delete an environment override for a secret:
+**Run the command below to delete an environment override for a secret:**
 
 ```
 terminus secret:site:delete <site>.<env> <secret-name>
 
 [notice] Success
-
 ```
 
 ### Organization secrets Commands
@@ -269,49 +261,44 @@ The secrets `set` command takes the following format:
 - `Type`
 - `One or more scopes`
 
-Run the command below to set a new secret in Terminus:
+**Run the command below to set a new secret in Terminus:**
 
 ```
 terminus secret:org:set <org> <secret-name> <secret-value>
 
 [notice] Success
-
 ```
 
 ```
 terminus secret:org:set <org> file.json "{}" --type=file
 
 [notice] Success
-
 ```
 
 ```
 terminus secret:org:set <org> <secret-name> --scope=user,ic
 
 [notice] Success
-
 ```
 
 Note: If you do not include a `type` or `scope` flag, their defaults will be `runtime` and `user` respectively.
 
-Run the command below to update an existing secret in Terminus:
+**Run the command below to update an existing secret in Terminus:**
 
 ```
 terminus secret:org:set <org> <secret-name> <secret-value>
 
 [notice] Success
-
 ```
 
-Note: When updating an existing secret, `type` and `scope` should NOT be passed as they are immutable. You should delete and recreate the secret if you need to update those roperties.
+Note: When updating an existing secret, `type` and `scope` should NOT be passed as they are immutable. You should delete and recreate the secret if you need to update those properties.
 
-Add or update an environment override for an existing secret in Terminus:
+**Add or update an environment override for an existing secret in Terminus:**
 
 ```
 terminus secret:org:set --env=<env> <org> <secret-name> <secret-value>
 
 [notice] Success
-
 ```
 
 Note: You can add an environment override only to existing secrets; otherwise, it will fail.
@@ -329,9 +316,8 @@ The secrets `list` command provides a list of all secrets available for an organ
 
 Note that the `value` field will contain a placeholder value unless the `user` scope was specified when the secret was set.
 
-Run the command below to list a site’s secrets:
+**Run the command below to list a site’s secrets:**
 
-`terminus secret:org:list`
 
 ```
 terminus secret:org:list <org>
@@ -343,7 +329,6 @@ terminus secret:org:list <org>
  ------------- ------------- ---------------------------
 ```
 
-`terminus secret:org:list`
 
 ```
 terminus secret:org:list <org> --fields="*"
@@ -361,22 +346,20 @@ terminus secret:org:list <org> --fields="*"
 
 The secrets `delete` command will remove a secret and all of its overrides.
 
-Run the command below to delete a secret:
+**Run the command below to delete a secret:**
 
 ```
 terminus secret:org:delete <org> <secret-name>
 
 [notice] Success
-
 ```
 
-Run the command below to delete an environment override for a secret:
+**Run the command below to delete an environment override for a secret:**
 
 ```
 terminus secret:org:delete --env=<env> <org> <secret-name>
 
 [notice] Success
-
 ```
 
 ### Help
