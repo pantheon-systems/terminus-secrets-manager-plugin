@@ -2,6 +2,31 @@
 
 Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best practices for secure builds and application implementation. Secrets Manager provides a convenient mechanism for you to manage your secrets and API keys directly on the Pantheon platform.
 
+## Table of Contents
+
+- [Overview](#overview)
+  * [Key Features](#key-features)
+  * [Early Access](#early-access)
+- [Concepts](#concepts)
+  * [Secret](#secret)
+  * [Secret type](#secret-type)
+  * [Secret scope](#secret-scope)
+  * [Owning entity](#owning-entity)
+  * [Site-owned secrets](#site-owned-secrets)
+  * [Organization-owned secrets](#organization-owned-secrets)
+  * [Environment override](#environment-override)
+- [The life of a secret](#the-life-of-a-secret)
+- [Plugin Usage](#plugin-usage)
+  * [Secrets Manager Plugin Requirements](#secrets-manager-plugin-requirements)
+  * [Installation](#installation)
+  * [Site secrets Commands](#site-secrets-commands)
+  * [Organization secrets Commands](#organization-secrets-commands)
+  * [Help](#help)
+- [Use Secrets with Integrated Composer](#use-secrets-with-integrated-composer)
+  * [Mechanism 1: Oauth Composer authentication](#mechanism-1-oauth-composer-authentication)
+  * [Mechanism 2: HTTP Basic Authentication](#mechanism-2-http-basic-authentication)
+
+
 ## Overview
 
 ### Key Features
@@ -84,13 +109,13 @@ When a given runtime (e.g. Integrated Composer runtime or the application runtim
 
 - Fetch secrets for site (of the given type and within the given scopes)
 
-- Apply environment overrides (if any). More info on this to come soon.
+- Apply environment overrides (if any) based on the requester environment.
 
 - If the site is owned by an organization:
 
     - Get the organization secrets
 
-    - Apply environment overrides (if any).
+    - Apply environment overrides (if any) based on the requester environment.
 
     - Merge the organization secrets with the site secrets
 
@@ -113,7 +138,7 @@ On the other hand, when Integrated Composer attempts to get secrets for `my-site
     - Only the secrets for the OWNER organization are being merged. If the site has a Supporting Organization, it will be ignored.
 - Process the resulting secrets to make them available to Composer.
 
-**Note:** Due to platform design, the "environment" for Integrated Composer will always be either `dev` or a multidev. It will never be `test` or `live` so we don't recommend using "environment" overrides for composer access. The primary use-case for environment overrides is for the CMS key-values and environment variables that need to be different between your production and non-production environments.
+**Note:** Due to platform design, the "environment" for Integrated Composer will always be either `dev` or a multidev. It will never be `test` or `live` so we don't recommend using environment overrides for composer access. The primary use-case for environment overrides is for the CMS key-values and environment variables that need to be different between your live and non-live environments.
 
 ## Plugin Usage
 
@@ -147,30 +172,49 @@ The secrets `set` command takes the following format:
 - `One or more scopes`
 
 
-Run the command below to set a secret in Terminus:
+**Run the command below to set a new secret in Terminus:**
 
 ```
 terminus secret:site:set <site> <secret-name> <secret-value>
 
 [notice] Success
-
 ```
 
 ```
 terminus secret:site:set <site> file.json "{}" --type=file
 
 [notice] Success
-
 ```
 
 ```
 terminus secret:site:set <site> <secret-name> --scope=user,ic
 
 [notice] Success
-
 ```
 
 Note: If you do not include a `type` or `scope` flag, their defaults will be `runtime` and `user` respectively.
+
+
+**Run the command below to update an existing secret in Terminus:**
+
+```
+terminus secret:site:set <site> <secret-name> <secret-value>
+
+[notice] Success
+```
+
+Note: When updating an existing secret, `type` and `scope` should NOT be passed as they are immutable. You should delete and recreate the secret if you need to update those properties.
+
+
+**Add or update an environment override for an existing secret in Terminus:**
+
+```
+terminus secret:site:set <site>.<env> <secret-name> <secret-value>
+
+[notice] Success
+```
+
+Note: You can add an environment override only to existing secrets; otherwise, it will fail.
 
 
 #### List secrets
@@ -186,9 +230,8 @@ The secrets `list` command provides a list of all secrets available for a site. 
 
 Note that the `value` field will contain a placeholder value unless the `user` scope was specified when the secret was set.
 
-Run the command below to list a site’s secrets:
+**Run the command below to list a site’s secrets:**
 
-`terminus secret:site:list`
 
 ```
 terminus secret:site:list <site>
@@ -199,8 +242,6 @@ terminus secret:site:list <site>
   secret-name   env           secrets-content
  ------------- ------------- ---------------------------
 ```
-
-`terminus secret:site:list`
 
 ```
 terminus secret:site:list <site> --fields="*"
@@ -218,13 +259,20 @@ terminus secret:site:list <site> --fields="*"
 
 The secrets `delete` command will remove a secret and all of its overrides.
 
-Run the command below to delete a secret:
+**Run the command below to delete a secret:**
 
 ```
 terminus secret:site:delete <site> <secret-name>
 
 [notice] Success
+```
 
+**Run the command below to delete an environment override for a secret:**
+
+```
+terminus secret:site:delete <site>.<env> <secret-name>
+
+[notice] Success
 ```
 
 ### Organization secrets Commands
@@ -238,30 +286,47 @@ The secrets `set` command takes the following format:
 - `Type`
 - `One or more scopes`
 
-Run the command below to set a secret in Terminus:
+**Run the command below to set a new secret in Terminus:**
 
 ```
 terminus secret:org:set <org> <secret-name> <secret-value>
 
 [notice] Success
-
 ```
 
 ```
 terminus secret:org:set <org> file.json "{}" --type=file
 
 [notice] Success
-
 ```
 
 ```
 terminus secret:org:set <org> <secret-name> --scope=user,ic
 
 [notice] Success
-
 ```
 
 Note: If you do not include a `type` or `scope` flag, their defaults will be `runtime` and `user` respectively.
+
+**Run the command below to update an existing secret in Terminus:**
+
+```
+terminus secret:org:set <org> <secret-name> <secret-value>
+
+[notice] Success
+```
+
+Note: When updating an existing secret, `type` and `scope` should NOT be passed as they are immutable. You should delete and recreate the secret if you need to update those properties.
+
+**Add or update an environment override for an existing secret in Terminus:**
+
+```
+terminus secret:org:set --env=<env> <org> <secret-name> <secret-value>
+
+[notice] Success
+```
+
+Note: You can add an environment override only to existing secrets; otherwise, it will fail.
 
 
 #### List secrets
@@ -276,9 +341,8 @@ The secrets `list` command provides a list of all secrets available for an organ
 
 Note that the `value` field will contain a placeholder value unless the `user` scope was specified when the secret was set.
 
-Run the command below to list a site’s secrets:
+**Run the command below to list a site’s secrets:**
 
-`terminus secret:org:list`
 
 ```
 terminus secret:org:list <org>
@@ -290,7 +354,6 @@ terminus secret:org:list <org>
  ------------- ------------- ---------------------------
 ```
 
-`terminus secret:org:list`
 
 ```
 terminus secret:org:list <org> --fields="*"
@@ -308,13 +371,20 @@ terminus secret:org:list <org> --fields="*"
 
 The secrets `delete` command will remove a secret and all of its overrides.
 
-Run the command below to delete a secret:
+**Run the command below to delete a secret:**
 
 ```
 terminus secret:org:delete <org> <secret-name>
 
 [notice] Success
+```
 
+**Run the command below to delete an environment override for a secret:**
+
+```
+terminus secret:org:delete --env=<env> <org> <secret-name>
+
+[notice] Success
 ```
 
 ### Help
