@@ -6,6 +6,8 @@ use Pantheon\Terminus\Commands\StructuredListTrait;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
+use Pantheon\Terminus\Request\RequestOperationResult;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class SiteListCommand.
@@ -59,19 +61,22 @@ class SiteListCommand extends SecretBaseCommand implements SiteAwareInterface
         }
         $site = $this->getSite($site_id);
         $this->setupRequest();
-        $secrets = $this->secretsApi->listSecrets($site->id, $options['debug']);
+        $result = $this->secretsApi->listSecrets($site->id, $options['debug']);
+        if ($result instanceof RequestOperationResult) {
+            throw new TerminusException($result->getData());
+        }
         $print_options = [
             'message' => 'You have no Secrets.'
         ];
         // If the user requested secrets from a specific environment, then
         // filter down to just the secret values there.
         if (!empty($env_name)) {
-            $secrets = $this->secretsForEnv($secrets, $env_name);
+            $secrets = $this->secretsForEnv($result, $env_name);
             $print_options = [
                 'message' => "There are no environment overrides in the environment '$env_name'.",
             ];
         }
-        return $this->getTableFromData($secrets, $print_options);
+        return $this->getTableFromData($result, $print_options);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Pantheon\TerminusSecretsManager\SecretsApi;
 
 use Pantheon\Terminus\Request\RequestAwareTrait;
+use Pantheon\Terminus\Request\RequestOperationResult;
 
 /**
  * Temporary Secrets API client until formal PantheonAPI client is available.
@@ -60,7 +61,7 @@ class SecretsApi
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function listSecrets(string $workspaceId, bool $debug = false, string $workspaceType = "sites"): array
+    public function listSecrets(string $workspaceId, bool $debug = false, string $workspaceType = "sites"): array|RequestOperationResult
     {
         if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
             if (file_exists('/tmp/secrets.json')) {
@@ -84,6 +85,9 @@ class SecretsApi
             'debug' => $debug,
         ];
         $result = $this->request()->request($url, $options);
+        if ($result->getStatusCode() !== 200) {
+            return $result;
+        }
         $data = $result->getData();
         $secrets = [];
         foreach ($data->Secrets ?? [] as $secretKey => $secretValue) {
