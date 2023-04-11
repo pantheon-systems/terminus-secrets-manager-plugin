@@ -9,6 +9,8 @@ use Pantheon\Terminus\org\orgAwareTrait;
 use Pantheon\Terminus\org\orgAwareInterface;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Site\SiteAwareTrait;
+use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
  * Class SecretOrganizationListCommand.
@@ -49,9 +51,14 @@ class SecretOrganizationListCommand extends SecretBaseCommand
      */
     public function listSecrets(string $org_id, array $options = ['debug' => false,])
     {
-        $org = $this->session()->getUser()->getOrganizationMemberships()->get($org_id)->getOrganization();
-        if (empty($org)) {
-            $this->log()->error('Either the org is unavailable or you dont have permission to access it.');
+        try {
+            $org = $this->session()->getUser()->getOrganizationMemberships()->get($org_id)->getOrganization();
+            if (empty($org)) {
+                throw new TerminusException('Either the org is unavailable or you dont have permission to access it.');
+            }
+        } catch (TerminusNotFoundException $e) {
+            // Catch the exception just to throw it again with a more human friendly message.
+            throw new TerminusException('Either the org is unavailable or you dont have permission to access it.');
         }
         $this->setupRequest();
         $secrets = $this->secretsApi->listSecrets($org->id, $options['debug'], "organizations");
