@@ -11,6 +11,7 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Request\RequestOperationResult;
 
 /**
  * Class SecretOrganizationListCommand.
@@ -61,11 +62,14 @@ class SecretOrganizationListCommand extends SecretBaseCommand
             throw new TerminusException('Either the org is unavailable or you dont have permission to access it.');
         }
         $this->setupRequest();
-        $secrets = $this->secretsApi->listSecrets($org->id, $options['debug'], "organizations");
+        $result = $this->secretsApi->listSecrets($org->id, $options['debug'], "organizations");
+        if ($result instanceof RequestOperationResult) {
+            throw new TerminusException($result->getData());
+        }
         $print_options = [
             'message' => 'You have no Secrets.'
         ];
-        return $this->getTableFromData($secrets, $print_options);
+        return $this->getTableFromData($result, $print_options);
     }
 
 }
