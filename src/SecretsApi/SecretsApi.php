@@ -3,7 +3,6 @@
 namespace Pantheon\TerminusSecretsManager\SecretsApi;
 
 use Pantheon\Terminus\Request\RequestAwareTrait;
-use Pantheon\Terminus\Request\RequestOperationResult;
 
 /**
  * Temporary Secrets API client until formal PantheonAPI client is available.
