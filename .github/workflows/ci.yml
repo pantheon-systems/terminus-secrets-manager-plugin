@@ -7,7 +7,7 @@ jobs:
   checkout_build:
     runs-on: ubuntu-latest
     container:
-      image: quay.io/pantheon-public/php-ci:v7.4
+      image: quay.io/pantheon-public/php-ci:v8.0
     name: Checkout & Lint
     steps:
       - name: Checkout
@@ -30,7 +30,7 @@ jobs:
       - name: PHPCompatibility
         uses: pantheon-systems/phpcompatibility-action@v1
         with:
-          test-versions: 7.4-8.3
+          test-versions: 8.0-8.3
           paths: ${{ github.workspace }}/src
   functional:
     runs-on: ${{ matrix.operating-system }}
@@ -39,7 +39,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ 'macos-latest' ]
-        php-versions: [ '7.4', '8.1' ]
+        php-versions: [ '8.0', '8.1' ]
       max-parallel: 3
     env:
       TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
@@ -80,4 +80,4 @@ jobs:
         env:
           pantheon-machine-token: ${{ secrets.TERMINUS_TOKEN }}
           terminus-version: ${{ env.TERMINUS_VERSION }}
-          test-versions: 7.4-
+          test-versions: 8.0-
