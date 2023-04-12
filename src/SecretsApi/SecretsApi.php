@@ -54,13 +54,13 @@ class SecretsApi
      * @param string $workspaceType
      *   Whether to return the secrets for a site or org.
      *
-     * @return array
-     *   Secrets for given site.
+     * @return array|Pantheon\Terminus\Request\RequestOperationResult
+     *   Secrets for given site or the operation result in case of error.
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function listSecrets(string $workspaceId, bool $debug = false, string $workspaceType = "sites"): array
+    public function listSecrets(string $workspaceId, bool $debug = false, string $workspaceType = "sites")
     {
         if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
             if (file_exists('/tmp/secrets.json')) {
@@ -84,6 +84,9 @@ class SecretsApi
             'debug' => $debug,
         ];
         $result = $this->request()->request($url, $options);
+        if ($result->getStatusCode() !== 200) {
+            return $result;
+        }
         $data = $result->getData();
         $secrets = [];
         foreach ($data->Secrets ?? [] as $secretKey => $secretValue) {
