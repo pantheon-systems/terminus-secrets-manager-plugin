@@ -33,9 +33,9 @@ Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best
 
 - Securely host and maintain secrets on Pantheon
 
-- Use private repositories in Integrated Composer builds
-
 - Create and update secrets via Terminus
+
+- Use private repositories in Integrated Composer builds
 
 - Ability to set a `COMPOSER_AUTH` environment variable and/or a Composer `auth.json` authentication file with Terminus commands
 
@@ -55,19 +55,19 @@ The Secrets Manager plugin is available for Early Access participants. Features 
 
 ### Secret
 
-A key-value pair that should not be exposed to the general public, typically something like a password, API key, or the contents of a peer-to-peer cryptographic certificate. SSL certificates that your site uses to serve pages are out of scope of this process and are managed by the dashboard in a different place. See the documentation for SSL certificate for details.
+A key-value pair that should not be exposed to the general public, typically something like a password, API key, or the contents of a peer-to-peer cryptographic certificate. SSL certificates that your site uses to serve pages are out of scope of this process and are managed by the dashboard in a different place. See the documentation for SSL certificates for details.
 
 ### Secret type
 
 This is a field on the secret record. It defines the usage for this secret and how it is consumed. Current types are:
 
-- `runtime`: this secret will be used to retrieve it in application runtime using API calls to the secret service. More info on this to come at a later stage of the Secrets project. This will be the recommended way to set stuff like API keys for third-party integrations in your application.
+- `runtime`: this secret will be used to retrieve it in application runtime using API calls to the secret service. This type is not yet in use in Early Access, but will be the recommended way to set information like API keys for third-party integrations in your application.
 
-- `env`: this secret will be used to set environment variables in the application runtime. More info on this to come at a later stage of the Secrets project.
+- `env`: this secret will be used to set environment variables in the application runtime. This type is not yet in use in Early Access.
 
 - `composer`: this secret type is used for composer authentication to private packages.
 
-- `file`: this type allows you to store files in the secrets. More info on this to come at a later stage of the Secrets project.
+- `file`: this type allows you to store files in the secrets. This type is not yet in use in Early Access.
 
 Note that you can only set one type per secret and this cannot be changed later (unless you delete and recreate the secret).
 
@@ -77,13 +77,11 @@ This is a field on the secret record. It defines the components that have access
 
 - `ic`: this secret will be readable by the Integrated Composer runtime. You should use this scope to get access to your private repositories.
 
-- `web`: this secret will be readable by the application runtime. More info on this to come at a later stage of the Secrets project.
+- `web`: this secret will be readable by the application runtime. This type is not yet in use in Early Access.
 
 - `user`: this secret will be readable by the user. This scope should be set if you need to retrieve the secret value at a later stage.
 
-- `ops`: behavior to be defined. More info on this to come at a later stage of the Secrets project.
-
-Note that you can set multiple scopes per secret and they cannot be changed later (unless you delete and recreate the secret).
+Note that you can set multiple scopes per secret, but scopes cannot be changed later (unless you delete and recreate the secret).
 
 ### Owning entity
 
@@ -91,39 +89,41 @@ Secrets are currently either owned by a site or an organization. Within that own
 
 ### Site-owned secrets
 
-This is a secret that is set for a specific site using the site id. Based on the type and scope, this secret will be loaded on the different scenarios that will be supported by Secrets in Pantheon.
+This is a secret set for a specific site using the site ID. Based on the type and scope, this secret will be loaded on the different scenarios that will be supported by Secrets in Pantheon.
 
 ### Organization-owned secrets
 
-This is a secret that is set not for a given site but for an organization. This secret will be inherited by ALL of the sites that are OWNED by this organization. Please note that a [Supporting Organization](https://docs.pantheon.io/agency-tips#become-a-supporting-organization) won't inherit its secrets to the sites, only the Owner organization.
+This is a secret set not for a given site but for an organization. This secret will be inherited by ALL sites OWNED by this organization. 
+
+**Note**: Secrets owned by [Supporting Organizations](https://docs.pantheon.io/agency-tips#become-a-supporting-organization) won't apply to sites they support. Only the Owner organization's secrets will apply.
 
 ### Environment override
 
-In some cases it will be necessary to have different values for the secret when that secret is accessed in different pantheon environments. You may set an environment override value for any existing secret value. If the secret does not exist, it may not be overriden in any environment and you will get an error trying to set an environment override.
+In some cases it will be necessary to have different values for the secret when that secret is accessed in different Pantheon environments. You may set an environment override value for any existing secret value. 
+
+**Note**: If the secret does not exist, there is no secret environment to override, and you will get an error.
 
 ## The life of a secret
 
-When a given runtime (e.g. Integrated Composer runtime or the application runtime) fetches secrets for a given site (and env), it will go like this:
+When a given runtime (e.g. Integrated Composer runtime or the application runtime) fetches secrets for a given site (and env), the process will be as follows:
 
-[- NOTE - GRAPH DECISION TREE BEFORE GA - ]
+- Fetch secrets for site (of the given type and scopes).
 
-- Fetch secrets for site (of the given type and within the given scopes)
-
-- Apply environment overrides (if any) based on the requester environment.
+- Apply environment overrides (if any) based on the requesting site environment.
 
 - If the site is owned by an organization:
 
-    - Get the organization secrets
+    - Fetch the organization secrets.
 
-    - Apply environment overrides (if any) based on the requester environment.
+    - Apply environment overrides (if any) based on the requesting site environment.
 
-    - Merge the organization secrets with the site secrets
+    - Merge the organization secrets with the site secrets (the following example will describe this process in more detail).
 
 Let's go through this with an example: assume you have a site named `my-site` which belongs to an organization `my-org`. You also have another site `my-other-site` which belongs to your personal Pantheon account.
 
 When Integrated Composer attempts to get secrets for `my-other-site` it will go like this:
 - Get the secrets of scope `ic` for `my-other-site`.
-- Apply environment overrides for the current environment (*).
+- Apply environment overrides for the current environment (see **Note** below).
 - Look at `my-other-site` owner. In this case, it is NOT an organization so there are no organization secrets to merge.
 - Process the resulting secrets to make them available to Composer.
 
@@ -134,11 +134,11 @@ On the other hand, when Integrated Composer attempts to get secrets for `my-site
 - Get the secrets for the organization `my-org` with scope `ic`.
 - Apply the environment overrides to those secrets for the current environment (see **Note** below).
 - Merge the resulting organization secrets with the site secrets with the following caveats:
-    - Site secrets take precedence over organization secrets: this mean that the value for site-owned secret named `foo` will be used instead of the value for an org-owned secret with the same name `foo`
+    - Site secrets take precedence over organization secrets. This means that the value for site-owned secret named `foo` will be used instead of the value for an org-owned secret with the same name `foo`.
     - Only the secrets for the OWNER organization are being merged. If the site has a Supporting Organization, it will be ignored.
 - Process the resulting secrets to make them available to Composer.
 
-**Note:** Due to platform design, the "environment" for Integrated Composer will always be either `dev` or a multidev. It will never be `test` or `live` so we don't recommend using environment overrides for composer access. The primary use-case for environment overrides is for the CMS key-values and environment variables that need to be different between your live and non-live environments.
+**Note:** Due to platform design, the "environment" for Integrated Composer will always be either `dev` or a multidev. It will never be `test` or `live`. Therefore we do not recommend using environment overrides for Composer access. The primary use-case for environment overrides is for the CMS key-values and environment variables that need to be different between your live and non-live environments.
 
 ## Plugin Usage
 
@@ -192,7 +192,7 @@ terminus secret:site:set <site> <secret-name> --scope=user,ic
 [notice] Success
 ```
 
-Note: If you do not include a `type` or `scope` flag, their defaults will be `runtime` and `user` respectively.
+Note: If you do not include a `type` or `scope` flag, these values will be set to the defaults (`runtime` and `user` respectively).
 
 
 **Run the command below to update an existing secret in Terminus:**
