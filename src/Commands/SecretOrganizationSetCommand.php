@@ -59,21 +59,21 @@ class SecretOrganizationSetCommand extends SecretBaseCommand
             $this->log()->error('Either the org is unavailable or you dont have permission to access it..');
         }
         $this->setupRequest();
-        if (
-            $this->secretsApi->setSecret(
-                $org->id,
-                $name,
-                $value,
-                $options['env'],
-                $options['type'],
-                $options['scope'],
-                $options['debug'],
-                "organizations"
-            )
-        ) {
-            $this->log()->notice('Success');
-        } else {
+        $result = $this->secretsApi->setSecret(
+            $org->id,
+            $name,
+            $value,
+            $options['env'],
+            $options['type'],
+            $options['scope'],
+            $options['debug'],
+            "organizations"
+        );
+
+        if ($result->isError()) {
             $this->log()->error('An error happened when trying to set the secret.');
+            throw new TerminusException($result->getData());
         }
+        $this->log()->notice('Secret successfully set.');
     }
 }
