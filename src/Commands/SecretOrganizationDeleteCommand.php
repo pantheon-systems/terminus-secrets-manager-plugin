@@ -50,6 +50,10 @@ class SecretOrganizationDeleteCommand extends SecretBaseCommand
             $this->log()->error('An error happened when trying to delete the secret.');
             throw new TerminusException($result->getData());
         }
-        $this->log()->notice('Secret successfully deleted.');
+        $success_message = 'Secret successfully deleted.';
+        if (!empty($options['env'])) {
+            $success_message = 'Secret environment override deleted if it existed.';
+        }
+        $this->log()->notice($success_message);
     }
 }
