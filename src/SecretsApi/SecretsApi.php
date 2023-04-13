@@ -3,6 +3,7 @@
 namespace Pantheon\TerminusSecretsManager\SecretsApi;
 
 use Pantheon\Terminus\Request\RequestAwareTrait;
+use Pantheon\Terminus\Request\RequestOperationResult;
 
 /**
  * Temporary Secrets API client until formal PantheonAPI client is available.
@@ -125,8 +126,8 @@ class SecretsApi
      * @param string $workspaceType
      *   Whether to return the secrets for a site or org.
      *
-     * @return bool
-     *   Whether saving the secret was successful or not.
+     * @return Pantheon\Terminus\Request\RequestOperationResult
+     *   Result of the request operation.
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
@@ -140,7 +141,7 @@ class SecretsApi
         string $scopes = null,
         bool $debug = false,
         string $workspaceType = "sites"
-    ): bool {
+    ): RequestOperationResult {
         if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
             if (file_exists('/tmp/secrets.json')) {
                 $this->secrets = json_decode(file_get_contents('/tmp/secrets.json'), true);
@@ -198,7 +199,7 @@ class SecretsApi
                 $result = $this->request()->request($url, $options);
             }
         }
-        return !$result->isError();
+        return $result;
     }
 
     /**
@@ -208,7 +209,8 @@ class SecretsApi
      * @param bool $debug
      * @param string $workspaceType
      *
-     * @return bool
+     * @return Pantheon\Terminus\Request\RequestOperationResult
+     *   Result of the request operation.
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
@@ -218,7 +220,7 @@ class SecretsApi
         string $env = null,
         bool $debug = false,
         string $workspaceType = "sites"
-    ): bool {
+    ): RequestOperationResult {
         if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
             if (file_exists('/tmp/secrets.json')) {
                 $this->secrets = json_decode(file_get_contents('/tmp/secrets.json'), true);
@@ -246,10 +248,6 @@ class SecretsApi
             // null value deletes the secret for the given env.
             $options['json'] = ['env' => $env, 'value' => null];
         }
-        $result = $this->request()->request($url, $options);
-        if ($result->isError()) {
-            throw new \Exception($result->getStatusCodeReason());
-        }
-        return !$result->isError();
+        return $this->request()->request($url, $options);
     }
 }
