@@ -2,13 +2,6 @@
 
 namespace Pantheon\TerminusSecretsManager\Commands;
 
-use Pantheon\Terminus\Commands\StructuredListTrait;
-use Pantheon\Terminus\Friends\OrganizationInterface;
-use Pantheon\Terminus\Friends\OrganizationTrait;
-use Pantheon\Terminus\org\orgAwareTrait;
-use Pantheon\Terminus\org\orgAwareInterface;
-use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Request\RequestOperationResult;
@@ -46,7 +39,7 @@ class SecretOrganizationListCommand extends SecretBaseCommand
      * @param string $org_id The name or UUID of a org to retrieve information on
      * @param array $options
      *
-     * @return RowsOfFields
+     * @return Consolidation\OutputFormatters\StructuredData\RowsOfFields
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */

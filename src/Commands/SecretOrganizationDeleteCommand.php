@@ -2,10 +2,7 @@
 
 namespace Pantheon\TerminusSecretsManager\Commands;
 
-use Pantheon\Terminus\Friends\OrganizationTrait;
-use Pantheon\Terminus\org\orgAwareTrait;
-use Pantheon\Terminus\org\orgAwareInterface;
-use Pantheon\Terminus\Site\SiteAwareTrait;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class SecretOrganizationDeleteCommand.
