@@ -25,8 +25,8 @@ class SiteSetCommand extends SecretBaseCommand implements SiteAwareInterface
      * @aliases secret-set, secret:set
      *
      * @option string $type Secret type
-     * @option array $scope Secret scope. Available options are ic (integrated composer), user, web, and ops.
-     *   Multiple options should be specified in comma separated format. Ex: --scope=ic,ops,web.
+     * @option array $scope Secret scope. Available options are ic (integrated composer), user, and web.
+     *   Multiple options should be specified in comma separated format. Ex: --scope=ic,web.
      * @option boolean $debug Run command in debug mode
      *
      * @param string $siteish <site_name>, site UUID, or <site.env> for environment-specific secrets
