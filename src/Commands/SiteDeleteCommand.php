@@ -4,6 +4,7 @@ namespace Pantheon\TerminusSecretsManager\Commands;
 
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class SiteDeleteCommand.
@@ -49,10 +50,15 @@ class SiteDeleteCommand extends SecretBaseCommand implements SiteAwareInterface
 
         $site = $this->getSite($site_id);
         $this->setupRequest();
-        if ($this->secretsApi->deleteSecret($site->id, $name, $env_name, $options['debug'])) {
-            $this->log()->notice('Success');
-        } else {
+        $result = $this->secretsApi->deleteSecret($site->id, $name, $env_name, $options['debug']);
+        if ($result->isError()) {
             $this->log()->error('An error happened when trying to delete the secret.');
+            throw new TerminusException($result->getData());
         }
+        $success_message = 'Secret successfully deleted.';
+        if ($env_name) {
+            $success_message = 'Secret environment override deleted if it existed.';
+        }
+        $this->log()->notice($success_message);
     }
 }

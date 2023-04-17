@@ -4,6 +4,7 @@ namespace Pantheon\TerminusSecretsManager\Commands;
 
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class SiteSetCommand.
@@ -57,20 +58,19 @@ class SiteSetCommand extends SecretBaseCommand implements SiteAwareInterface
 
         $site = $this->getSite($site_id);
         $this->setupRequest();
-        if (
-            $this->secretsApi->setSecret(
-                $site->id,
-                $name,
-                $value,
-                $env_name,
-                $options['type'],
-                $options['scope'],
-                $options['debug']
-            )
-        ) {
-            $this->log()->notice('Success');
-        } else {
+        $result = $this->secretsApi->setSecret(
+            $site->id,
+            $name,
+            $value,
+            $env_name,
+            $options['type'],
+            $options['scope'],
+            $options['debug']
+        );
+        if ($result->isError()) {
             $this->log()->error('An error happened when trying to set the secret.');
+            throw new TerminusException($result->getData());
         }
+        $this->log()->notice('Secret successfully set.');
     }
 }
