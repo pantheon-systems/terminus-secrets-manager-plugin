@@ -21,9 +21,9 @@ class SecretOrganizationSetCommand extends SecretBaseCommand
      * @command secret:org:set
      * @aliases secret-org-set, secret:org:set
      *
-     * @option string $type Secret type
-     * @option array $scope Secret scope. Available options are ic (integrated composer), user, web, and ops.
-     *   Multiple options should be specified in comma separated format. Ex: --scope=ic,ops,web.
+     * @option string $type Secret type. Available options are env, runtime, composer, file and vcs.
+     * @option array $scope Secret scope. Available options are ic (integrated composer), user, and web.
+     *   Multiple options should be specified in comma separated format. Ex: --scope=ic,web.
      * @option string $env Environment name
      * @option boolean $debug Run command in debug mode
      *
