@@ -72,7 +72,7 @@ abstract class SecretBaseCommand extends TerminusCommand implements SecretsApiAw
                         if ($v) {
                             $rows[] = "$k=$v";
                         } else {
-                            $rows[] = "$k";
+                            $rows[] = "$k=[REDACTED]";
                         }
                     }
                     return implode(', ', $rows);
