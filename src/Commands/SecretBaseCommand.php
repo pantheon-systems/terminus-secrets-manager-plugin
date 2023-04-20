@@ -26,6 +26,8 @@ abstract class SecretBaseCommand extends TerminusCommand implements SecretsApiAw
     use SecretsApiAwareTrait;
     use RequestAwareTrait;
 
+    const REDACTED_VALUE = '[REDACTED]';
+
 
     /**
      * Construct function to pass the required dependencies.
@@ -61,7 +63,7 @@ abstract class SecretBaseCommand extends TerminusCommand implements SecretsApiAw
         return (new RowsOfFields($data))->addRendererFunction(
             function ($key, $cellData) {
                 if ($key == 'value' && !$cellData) {
-                    return '[REDACTED]';
+                    return self::REDACTED_VALUE;
                 }
                 if ($key == 'scopes') {
                     return implode(', ', $cellData);
@@ -72,7 +74,7 @@ abstract class SecretBaseCommand extends TerminusCommand implements SecretsApiAw
                         if ($v) {
                             $rows[] = "$k=$v";
                         } else {
-                            $rows[] = "$k";
+                            $rows[] = "$k=" . self::REDACTED_VALUE;
                         }
                     }
                     return implode(', ', $rows);
