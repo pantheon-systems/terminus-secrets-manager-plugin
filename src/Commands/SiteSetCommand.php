@@ -57,6 +57,14 @@ class SiteSetCommand extends SecretBaseCommand implements SiteAwareInterface
         }
 
         $site = $this->getSite($site_id);
+        $env_to_check = $env_name ?? 'dev';
+        $env = $site->getEnvironments()->get($env_to_check);
+        $php_version = $env->getPHPVersion();
+
+        if (version_compare($php_version, '8.0', '<')) {
+            $this->log()->warning('Secrets are only supported on PHP {supported} environments. This environment is running PHP {php_version}.', ['supported' => '>=8.0', 'php_version' => $php_version]);
+        }
+
         $this->setupRequest();
         $result = $this->secretsApi->setSecret(
             $site->id,
