@@ -25,6 +25,7 @@ Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best
 - [Use Secrets with Integrated Composer](#use-secrets-with-integrated-composer)
   * [Mechanism 1: Oauth Composer authentication](#mechanism-1-oauth-composer-authentication)
   * [Mechanism 2: HTTP Basic Authentication](#mechanism-2-http-basic-authentication)
+- [Use Secrets in Drupal through the Key module](#use-secrets-in-drupal-through-the-key-module)
 
 
 ## Overview
@@ -508,3 +509,7 @@ EOF
 
 `terminus secret:site:set ${SITE_NAME} COMPOSER_AUTH ${COMPOSER_AUTH_JSON} --type=env --scope=user,ic`
 ```
+
+## Use Secrets in Drupal through the Key module
+
+If you want to use Pantheon Secrets in your Drupal application through the [Key module](https://www.drupal.org/project/key), you should use the [Pantheon Secrets](https://www.drupal.org/project/pantheon_secrets) module.
