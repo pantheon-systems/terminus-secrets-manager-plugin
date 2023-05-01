@@ -102,7 +102,7 @@ This is a secret set for a specific site using the site ID. Based on the type an
 
 ```mermaid
 flowchart TD
-    B{Orgzaniation name: apipassword // value: ball00n // scope: ic} --> C{SITE: no override}
+    B{Orgzaniation name: github-oauth.github.com // value: ball00n // scope: ic} --> C{SITE: no override}
     C -->|dev use default value| D[Runtime Value: ball00n]
 ```
 
