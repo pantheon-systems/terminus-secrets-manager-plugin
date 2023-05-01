@@ -3,3 +3,4 @@ vendor
 .phpunit.result.cache
 reports
 /.idea
+/.DS_Store
