@@ -102,11 +102,19 @@ This is a secret set not for a given site but for an organization. This secret w
 
 In some cases it will be necessary to have different values for the secret when that secret is accessed in different Pantheon environments. You may set an environment override value for any existing secret value. 
 
+```mermaid
+flowchart TD
+    A[Org Secret] -->|name: apipassword // value: ball00n| C{SITE - No site override, use org value}
+    C -->|no override| D[Runtime Value: ball00n]
+    C -->|test env override| E[Runtime value: ball00n2]
+    C -->|live env override| F[Runtime Value: ball00n3]
+```
+
 **Note**: If the secret does not exist, there is no secret environment to override, and you will get an error.
 
 ## The life of a secret
 
-When a given runtime (e.g. Integrated Composer runtime or the application runtime) fetches secrets for a given site (and env), the process will be as follows:
+When a given runtime (e.g. Integrated Composer or an environment php runtime) fetches secrets for a given site (and env), the process will be as follows:
 
 - Fetch secrets for site (of the given type and scopes).
 
@@ -149,7 +157,7 @@ Secrets Manager requires the following:
 
 - A Pantheon account
 - A site that uses [Integrated Composer](https://docs.pantheon.io/guides/integrated-composer) and runs PHP >= 8.0
-- Terminus 3
+- Terminus 3.0+
 
 ### Installation
 
