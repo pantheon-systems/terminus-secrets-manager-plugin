@@ -90,15 +90,35 @@ Secrets are currently either owned by a site or an organization. Within that own
 
 ### Site-owned secrets
 
+```mermaid
+flowchart TD
+    C{SITE Secret:  name: github-oauth.github.com // value: ball00n // scope: ic}
+    C -->|integrated composer uses default value| D[Runtime Value: ball00n]
+```
+
 This is a secret set for a specific site using the site ID. Based on the type and scope, this secret will be loaded on the different scenarios that will be supported by Secrets in Pantheon.
 
 ### Organization-owned secrets
+
+```mermaid
+flowchart TD
+    B{Orgzaniation name: apipassword // value: ball00n // scope: ic} --> C{SITE: no override}
+    C -->|dev use default value| D[Runtime Value: ball00n]
+```
 
 This is a secret set not for a given site but for an organization. This secret will be inherited by ALL sites OWNED by this organization. 
 
 **Note**: Secrets owned by [Supporting Organizations](https://docs.pantheon.io/agency-tips#become-a-supporting-organization) won't apply to sites they support. Only the Owner organization's secrets will apply.
 
 ### Environment override
+
+```mermaid
+flowchart TD
+    C{SITE Secret:  name: apipassword // value: ball00n // scope: runtime}
+    C -->|dev use default value| D[Runtime Value: ball00n]
+    C -->|test env override| E[Runtime value: ball00n2]
+    C -->|live env override| F[Runtime Value: ball00n3]
+```
 
 In some cases it will be necessary to have different values for the secret when that secret is accessed in different Pantheon environments. You may set an environment override value for any existing secret value. 
 
