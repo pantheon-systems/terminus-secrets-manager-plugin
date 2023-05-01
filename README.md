@@ -104,6 +104,32 @@ In some cases it will be necessary to have different values for the secret when 
 
 **Note**: If the secret does not exist, there is no secret environment to override, and you will get an error.
 
+```mermaid
+classDiagram
+OrgzaniationSecretAPIPassword --> SiteSecretAPIPassword 
+SiteSecretAPIPassword  --> IntegratedComposerAPIPassword : no overrides
+OrgzaniationSecretAPIPassword : string name apipassword
+OrgzaniationSecretAPIPassword : string value ball00n
+SiteSecretAPIPassword : Inherits value from Org 
+SiteSecretAPIPassword : No Overrides
+IntegratedComposerAPIPassword: value ball00n
+
+OrgzaniationSecretOverrideExample --> SiteSecretOverrideExample
+SiteSecretOverrideExample --> SiteSecretOverrideExampleDev : default value
+SiteSecretOverrideExample --> SiteSecretOverrideExampleTest : env override value
+SiteSecretOverrideExample --> SiteSecretOverrideExampleLive : env override value
+OrgzaniationSecretOverrideExample : string name apipassword
+OrgzaniationSecretOverrideExample : string value ball00n
+SiteSecretOverrideExample : Inherits value from Org 
+SiteSecretOverrideExample : No Site Overrides
+SiteSecretOverrideExampleDev: value ball00n
+SiteSecretOverrideExampleDev: defaultValue()
+SiteSecretOverrideExampleTest: value ball00n2
+SiteSecretOverrideExampleTest: overridden()
+SiteSecretOverrideExampleLive: value ball00n3
+SiteSecretOverrideExampleLive: overridden()
+```
+
 ## The life of a secret
 
 When a given runtime (e.g. Integrated Composer or an environment php runtime) fetches secrets for a given site (and env), the process will be as follows:
