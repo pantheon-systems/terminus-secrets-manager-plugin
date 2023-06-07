@@ -106,20 +106,20 @@ In some cases it will be necessary to have different values for the secret when 
 
 ```mermaid
 classDiagram
-OrgzaniationSecretAPIPassword --> SiteSecretAPIPassword 
+OrganizationSecretAPIPassword --> SiteSecretAPIPassword 
 SiteSecretAPIPassword  --> IntegratedComposerAPIPassword : no overrides
-OrgzaniationSecretAPIPassword : string name apipassword
-OrgzaniationSecretAPIPassword : string value ball00n
+OrganizationSecretAPIPassword : string name apipassword
+OrganizationSecretAPIPassword : string value ball00n
 SiteSecretAPIPassword : Inherits value from Org 
 SiteSecretAPIPassword : No Overrides
 IntegratedComposerAPIPassword: value ball00n
 
-OrgzaniationSecretOverrideExample --> SiteSecretOverrideExample
+OrganizationSecretOverrideExample --> SiteSecretOverrideExample
 SiteSecretOverrideExample --> SiteSecretOverrideExampleDev : default value
 SiteSecretOverrideExample --> SiteSecretOverrideExampleTest : env override value
 SiteSecretOverrideExample --> SiteSecretOverrideExampleLive : env override value
-OrgzaniationSecretOverrideExample : string name apipassword
-OrgzaniationSecretOverrideExample : string value ball00n
+OrganizationSecretOverrideExample : string name apipassword
+OrganizationSecretOverrideExample : string value ball00n
 SiteSecretOverrideExample : Inherits value from Org 
 SiteSecretOverrideExample : No Site Overrides
 SiteSecretOverrideExampleDev: value ball00n
