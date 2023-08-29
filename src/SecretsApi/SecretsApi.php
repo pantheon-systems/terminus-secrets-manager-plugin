@@ -46,7 +46,7 @@ class SecretsApi
     }
 
     /**
-     * List secrets for a given site.
+     * Fetch secrets for a given site.
      *
      * @param string $workspaceId
      *   Site/org id to get secrets for.
@@ -55,13 +55,13 @@ class SecretsApi
      * @param string $workspaceType
      *   Whether to return the secrets for a site or org.
      *
-     * @return array|Pantheon\Terminus\Request\RequestOperationResult
-     *   Secrets for given site or the operation result in case of error.
+     * @return Pantheon\Terminus\Request\RequestOperationResult
+     *   Request operation result.
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function listSecrets(string $workspaceId, bool $debug = false, string $workspaceType = "sites")
+    public function fetchSecrets(string $workspaceId, bool $debug = false, string $workspaceType = "sites")
     {
         if (getenv('TERMINUS_PLUGIN_TESTING_MODE')) {
             if (file_exists('/tmp/secrets.json')) {
@@ -84,7 +84,28 @@ class SecretsApi
             ],
             'debug' => $debug,
         ];
-        $result = $this->request()->request($url, $options);
+        return $this->request()->request($url, $options);
+    }
+
+    /**
+     * List secrets for a given site.
+     *
+     * @param string $workspaceId
+     *   Site/org id to get secrets for.
+     * @param bool $debug
+     *   Whether to return the secrets in debug mode.
+     * @param string $workspaceType
+     *   Whether to return the secrets for a site or org.
+     *
+     * @return array|Pantheon\Terminus\Request\RequestOperationResult
+     *   Secrets for given site or the operation result in case of error.
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     */
+    public function listSecrets(string $workspaceId, bool $debug = false, string $workspaceType = "sites")
+    {
+        $result = $this->fetchSecrets($workspaceId, $debug, $workspaceType);
         if ($result->getStatusCode() !== 200) {
             return $result;
         }
