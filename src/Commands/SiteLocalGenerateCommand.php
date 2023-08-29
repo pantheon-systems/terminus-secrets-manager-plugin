@@ -62,7 +62,7 @@ class SiteLocalGenerateCommand extends SecretBaseCommand implements SiteAwareInt
         if ($ret === false) {
             throw new TerminusException('Unable to write to file: ' . $filepath);
         }
-        return sprintf("Secrets file written to: %s. Please review this file and adjust accordingly for your local usage.", $filepath);
+        $this->log()->notice(sprintf("Secrets file written to: %s. Please review this file and adjust accordingly for your local usage.", $filepath));
     }
 
     /**
