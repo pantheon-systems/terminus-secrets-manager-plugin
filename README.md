@@ -302,6 +302,17 @@ terminus secret:site:delete <site>.<env> <secret-name>
 [notice] Success
 ```
 
+#### Generate file for local development
+
+The secrets `local-generate` command will generate a json file useful for local development emulation of secrets.
+
+**Run the command below to get a json file:**
+
+```
+terminus secret:site:local-generate <site> --filepath=./secrets.json
+[notice] Secrets file written to: ./secrets.json. Please review this file and adjust accordingly for your local usage.
+```
+
 ### Organization secrets Commands
 
 #### Set a secret
