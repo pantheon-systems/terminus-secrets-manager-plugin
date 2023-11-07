@@ -220,7 +220,7 @@ class SecretsApi
                 $result = $this->request()->request($url, $options);
             }
             else {
-                $result->setData(sprintf("Secret '%s' already exists. To update it, omit type and scopes options.", $name));
+                $result->setData(sprintf("Secret '%s' already exists. To update the value, omit type and scopes options.", $name));
             }
         }
         return $result;
