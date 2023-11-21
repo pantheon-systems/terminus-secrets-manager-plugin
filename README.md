@@ -78,7 +78,7 @@ This is a field on the secret record. It defines the components that have access
 
 - `ic`: this secret will be readable by the Integrated Composer runtime. You should use this scope to get access to your private repositories.
 
-- `web`: this secret will be readable by the application runtime. This type is not yet in use in Early Access.
+- `web`: this secret will be readable by the application runtime.
 
 - `user`: this secret will be readable by the user. This scope should be set if you need to retrieve the secret value at a later stage.
 
