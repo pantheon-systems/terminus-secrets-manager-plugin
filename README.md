@@ -22,6 +22,7 @@ Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best
   * [Site secrets Commands](#site-secrets-commands)
   * [Organization secrets Commands](#organization-secrets-commands)
   * [Help](#help)
+- [Rate Limiting](#rate-limiting)
 - [Use Secrets with Integrated Composer](#use-secrets-with-integrated-composer)
   * [Mechanism 1: Oauth Composer authentication](#mechanism-1-oauth-composer-authentication)
   * [Mechanism 2: HTTP Basic Authentication](#mechanism-2-http-basic-authentication)
@@ -428,6 +429,10 @@ terminus secret:org:delete --env=<env> <org> <secret-name>
 ### Help
 
 Run `terminus list secret` for a complete list of available commands. Use terminus help <command> to get help with a specific command.
+
+## Rate Limiting
+
+The service supports up to 3 requests per second per user. If you hit that limit, the API will return a `429` error code and the plugin will throw an error.
 
 ## Use Secrets with Integrated Composer
 
