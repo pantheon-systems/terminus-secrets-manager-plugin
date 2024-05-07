@@ -68,8 +68,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: full-workspace
-      - name: Install jq
-        run: brew install jq
+      - name: Install jq and coreutils
+        run: brew install jq coreutils
       - name: Install Terminus
         uses: pantheon-systems/terminus-github-actions@main
         with:
