@@ -27,7 +27,7 @@ class SiteDeleteCommand extends SecretBaseCommand implements SiteAwareInterface
      *
      * @option boolean $debug Run command in debug mode
      *
-     * @param string $siteish <site_name>, site UUID, or <site.env> for environment-specific secrets
+     * @param string $siteenv <site_name>, site UUID, or <site.env> for environment-specific secrets
      * @param string $name The secret name
      * @param array $options
      *
@@ -39,12 +39,12 @@ class SiteDeleteCommand extends SecretBaseCommand implements SiteAwareInterface
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function deleteSecret($siteish, string $name, array $options = ['debug' => false])
+    public function deleteSecret($siteenv, string $name, array $options = ['debug' => false])
     {
-        if (strpos($siteish, '.') !== false) {
-            list($site_id, $env_name) = explode('.', $siteish);
+        if (strpos($siteenv, '.') !== false) {
+            list($site_id, $env_name) = explode('.', $siteenv);
         } else {
-            $site_id = $siteish;
+            $site_id = $siteenv;
             $env_name = null;
         }
 
