@@ -30,7 +30,7 @@ class SiteSetCommand extends SecretBaseCommand implements SiteAwareInterface
      *   Multiple options should be specified in comma separated format. Ex: --scope=ic,web.
      * @option boolean $debug Run command in debug mode
      *
-     * @param string $siteish <site_name>, site UUID, or <site.env> for environment-specific secrets
+     * @param string $siteenv <site_name>, site UUID, or <site.env> for environment-specific secrets
      * @param string $name The secret name
      * @param string $value The secret value
      * @param array $options
@@ -43,16 +43,16 @@ class SiteSetCommand extends SecretBaseCommand implements SiteAwareInterface
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function setSecret($siteish, string $name, string $value, array $options = [
+    public function setSecret($siteenv, string $name, string $value, array $options = [
         'type' => null,
         'scope' => null,
         'debug' => false,
     ])
     {
-        if (strpos($siteish, '.') !== false) {
-            list($site_id, $env_name) = explode('.', $siteish);
+        if (strpos($siteenv, '.') !== false) {
+            list($site_id, $env_name) = explode('.', $siteenv);
         } else {
-            $site_id = $siteish;
+            $site_id = $siteenv;
             $env_name = null;
         }
 
