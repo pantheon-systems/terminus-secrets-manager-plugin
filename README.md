@@ -434,7 +434,7 @@ Run `terminus list secret` for a complete list of available commands. Use termin
 
 The service supports up to 3 requests per second per user through Terminus. If you hit that limit, the API will return a `429` error code and the plugin will throw an error.
 
-The PHP SDK and `get_pantheon_secret()` function are not affected by this rate limiting.
+The PHP SDK and `pantheon_get_secret()` function are not affected by this rate limiting.
 
 ## Use Secrets with Integrated Composer
 
