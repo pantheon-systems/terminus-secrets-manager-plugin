@@ -32,6 +32,9 @@ class SecretsApi
         if (!$host && strpos($config->get('host'), 'hermes.sandbox-') !== false) {
             $host = str_replace('hermes', 'pantheonapi', $config->get('host'));
         }
+        if (!$host && strpos($config->get('host'), 'sandbox-') !== false) {
+            $host = $config->get('host');
+        }
         // If host is still not set, use the default host.
         if (!$host) {
             $host = 'api.pantheon.io';
