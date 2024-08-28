@@ -1,0 +1,12 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: terminus-secrets-manager-plugin
+  description: Auto-generated catalog info for pantheon-systems/terminus-secrets-manager-plugin
+  annotations:
+    backstage.io/techdocs-ref: dir:docs/
+spec:
+  type: tool
+  lifecycle: mature
+  owner: devx
