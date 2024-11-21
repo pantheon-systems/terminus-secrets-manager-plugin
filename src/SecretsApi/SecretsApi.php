@@ -26,9 +26,9 @@ class SecretsApi
     {
         $config = $this->request()->getConfig();
 
-        $protocol = $config->get('papi_protocol') ?? $config->get('protocol');
-        $port = $config->get('papi_port') ?? $config->get('port');
-        $host = $config->get('papi_host');
+        $protocol = $config->get('protocol') ?? $config->get('protocol');
+        $port = $config->get('port') ?? $config->get('port');
+        $host = $config->get('host');
         if (!$host && strpos($config->get('host'), 'hermes.sandbox-') !== false) {
             $host = str_replace('hermes', 'pantheonapi', $config->get('host'));
         }
