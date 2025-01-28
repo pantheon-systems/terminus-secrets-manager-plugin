@@ -72,6 +72,9 @@ class SiteListCommand extends SecretBaseCommand implements SiteAwareInterface
         // filter down to just the secret values there.
         if (!empty($env_name)) {
             $secrets = $this->secretsForEnv($result, $env_name);
+            if(!empty($secrets)) {
+                $result = array_replace($result, $secrets);
+            }
             $print_options = [
                 'message' => "There are no environment overrides in the environment '$env_name'.",
             ];
