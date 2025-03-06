@@ -30,7 +30,7 @@ jobs:
       - name: PHPCompatibility
         uses: pantheon-systems/phpcompatibility-action@v1
         with:
-          test-versions: 7.4-8.3
+          test-versions: 7.4-8.4
           paths: ${{ github.workspace }}/src
   functional:
     runs-on: ${{ matrix.operating-system }}
@@ -39,7 +39,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ 'macos-latest' ]
-        php-versions: [ '7.4', '8.1' ]
+        php-versions: [ '7.4', '8.4' ]
       max-parallel: 3
     env:
       TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
@@ -47,7 +47,6 @@ jobs:
       TERMINUS_ORG: ${{ secrets.TERMINUS_ORG }}
       TERMINUS_USER: ${{ secrets.TERMINUS_USER }}
       TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP: true
-      TERMINUS_VERSION: 3.1.1
     needs:
       - checkout_build
       - phpcompatibility
@@ -70,6 +69,13 @@ jobs:
           name: full-workspace
       - name: Install jq and coreutils
         run: brew install jq coreutils
+      - name: Pick Terminus version to use.
+        run: |
+          if [[ "${{ matrix.php-version }}" = "8.4" ]]; then
+            echo "TERMINUS_VERSION=4.x-dev" >> $GITHUB_ENV
+          else
+            echo "TERMINUS_VERSION=3.6.1" >> $GITHUB_ENV
+          fi
       - name: Install Terminus
         uses: pantheon-systems/terminus-github-actions@main
         with:

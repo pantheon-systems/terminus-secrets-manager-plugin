@@ -32,7 +32,7 @@
     },
     "extra": {
         "terminus": {
-            "compatible-version": "^3"
+            "compatible-version": "^3 || ^4"
         }
     }
 }
