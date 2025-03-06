@@ -4,7 +4,7 @@ on:
   pull_request:
 
 jobs:
-  checkout_build:
+  lint:
     runs-on: ubuntu-latest
     container:
       image: quay.io/pantheon-public/php-ci:v7.4
@@ -12,11 +12,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Save repo content as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: full-workspace
-          path: ${{ github.workspace }}
       - name: Full Composer Install
         run: composer install
       - name: Validate Code
@@ -48,9 +43,11 @@ jobs:
       TERMINUS_USER: ${{ secrets.TERMINUS_USER }}
       TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP: true
     needs:
-      - checkout_build
+      - lint
       - phpcompatibility
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Install SSH key
         uses: webfactory/ssh-agent@v0.5.3
         with:
@@ -63,10 +60,8 @@ jobs:
           extensions: gd, mbstring, zip, ssh2-1.3.1, pcov
           coverage: pcov
           ini-values: error_reporting=E_ALL
-      - name: Download repo content from artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: full-workspace
+      - name: Full Composer Install
+        run: composer install
       - name: Install jq and coreutils
         run: brew install jq coreutils
       - name: Pick Terminus version to use.
