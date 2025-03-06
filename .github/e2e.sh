@@ -25,6 +25,14 @@ echo "Installing Plugin: "
 terminus self:plugin:install "${ROOT_DIR}"
 echo "===================================================="
 
+echo "Ensuring that stderr is empty (no PHP deprecations)"
+stderr=$(terminus --version 2>&1 >/dev/null)
+if [[ -n "$stderr" ]] ; then
+  echo "Terminus is emitting deprecation errors:"
+  echo $stderr
+  exit 1
+fi
+
 echo "Creating Site: ${SITENAME}"
 ## If exists is empty, create the site
 terminus site:create "${SITENAME}" "${SITENAME}" drupal-composer-managed --org="${TERMINUS_ORG}"

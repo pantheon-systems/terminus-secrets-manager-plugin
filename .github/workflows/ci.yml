@@ -4,18 +4,6 @@ on:
   pull_request:
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    container:
-      image: quay.io/pantheon-public/php-ci:v7.4
-    name: Checkout & Lint
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Full Composer Install
-        run: composer install
-      - name: Validate Code
-        run: composer lint
   phpcompatibility:
     runs-on: ubuntu-latest
     name: PHP Compatibility
@@ -43,7 +31,6 @@ jobs:
       TERMINUS_USER: ${{ secrets.TERMINUS_USER }}
       TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP: true
     needs:
-      - lint
       - phpcompatibility
     steps:
       - name: Checkout
@@ -62,11 +49,13 @@ jobs:
           ini-values: error_reporting=E_ALL
       - name: Full Composer Install
         run: composer install
+      - name: Lint check
+        run: composer lint
       - name: Install jq and coreutils
         run: brew install jq coreutils
       - name: Pick Terminus version to use.
         run: |
-          if [[ "${{ matrix.php-version }}" = "8.4" ]]; then
+          if [[ "${{ matrix.php-version }}" -eq "8.4" ]]; then
             echo "TERMINUS_VERSION=4.x-dev" >> $GITHUB_ENV
           else
             echo "TERMINUS_VERSION=3.6.1" >> $GITHUB_ENV
