@@ -19,7 +19,8 @@
     "scripts": {
         "cs": "phpcs --standard=PSR2 -n src",
         "cbf": "phpcbf --standard=PSR2 -n src",
-        "lint": "find src -name '*.php' -print0 | xargs -0 -n1 php -d error_reporting=E_ALL -l 2>&1 | tee /dev/stderr | grep -q 'Deprecated' && exit 1",
+        "lint": "find src -name '*.php' -print0 | xargs -0 -n1 php -l",
+        "deprecations": "find src -name '*.php' -print0 | xargs -0 -n1 php -l 2>&1 >/dev/null | tee /tmp/deprecations ; [ ! -s /tmp/deprecations ]",
         "functional": "phpunit --colors=always tests",
         "fix":[
             "phpcbf --standard=psr2 ./src"

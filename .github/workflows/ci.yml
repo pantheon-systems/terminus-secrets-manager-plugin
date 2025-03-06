@@ -51,6 +51,8 @@ jobs:
         run: composer install
       - name: Lint check
         run: composer lint
+      - name: Deprecations check
+        run: composer deprecations
       - name: Install jq and coreutils
         run: brew install jq coreutils
       - name: Pick Terminus version to use.
