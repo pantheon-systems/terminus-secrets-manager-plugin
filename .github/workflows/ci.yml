@@ -58,7 +58,7 @@ jobs:
       - name: Pick Terminus version to use.
         run: |
           if [[ "${{ matrix.php-versions }}" = "8.4" ]]; then
-            echo "TERMINUS_VERSION=4.x-dev" >> $GITHUB_ENV
+            echo "TERMINUS_VERSION=4.0.0-alpha1" >> $GITHUB_ENV
           else
             echo "TERMINUS_VERSION=3.6.1" >> $GITHUB_ENV
           fi
