@@ -57,7 +57,7 @@ jobs:
         run: brew install jq coreutils
       - name: Pick Terminus version to use.
         run: |
-          if [[ "${{ matrix.php-versions }}" -eq "8.4" ]]; then
+          if [[ "${{ matrix.php-versions }}" = "8.4" ]]; then
             echo "TERMINUS_VERSION=4.x-dev" >> $GITHUB_ENV
           else
             echo "TERMINUS_VERSION=3.6.1" >> $GITHUB_ENV
