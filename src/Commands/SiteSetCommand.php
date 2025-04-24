@@ -56,7 +56,7 @@ class SiteSetCommand extends SecretBaseCommand implements SiteAwareInterface
             $env_name = null;
         }
 
-        $site = $this->getSite($site_id);
+        $site = $this->getSiteById($site_id);
         $env_to_check = $env_name ?? 'dev';
         $env = $site->getEnvironments()->get($env_to_check);
         $php_version = $env->getPHPVersion();
