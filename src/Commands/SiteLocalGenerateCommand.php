@@ -49,7 +49,7 @@ class SiteLocalGenerateCommand extends SecretBaseCommand implements SiteAwareInt
         if (strpos($site_id, '.') !== false) {
             list($site_id, $env_name) = explode('.', $site_id, 2);
         }
-        $site = $this->getSite($site_id);
+        $site = $this->getSiteById($site_id);
         $this->setupRequest();
         $result = $this->secretsApi->fetchSecrets($site->id);
         if ($result->getStatusCode() != 200) {

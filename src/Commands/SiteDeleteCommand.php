@@ -48,7 +48,7 @@ class SiteDeleteCommand extends SecretBaseCommand implements SiteAwareInterface
             $env_name = null;
         }
 
-        $site = $this->getSite($site_id);
+        $site = $this->getSiteById($site_id);
         $this->setupRequest();
         $result = $this->secretsApi->deleteSecret($site->id, $name, $env_name, $options['debug']);
         if ($result->isError()) {
