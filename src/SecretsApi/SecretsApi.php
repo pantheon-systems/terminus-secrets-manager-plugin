@@ -160,9 +160,9 @@ class SecretsApi
         string $workspaceId,
         string $name,
         string $value,
-        string $env_name = null,
-        string $type = null,
-        string $scopes = null,
+        ?string $env_name = null,
+        ?string $type = null,
+        ?string $scopes = null,
         bool $debug = false,
         string $workspaceType = "sites"
     ): RequestOperationResult {
@@ -244,7 +244,7 @@ class SecretsApi
     public function deleteSecret(
         string $workspaceId,
         string $name,
-        string $env = null,
+        ?string $env = null,
         bool $debug = false,
         string $workspaceType = "sites"
     ): RequestOperationResult {
