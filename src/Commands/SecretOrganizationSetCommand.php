@@ -19,7 +19,7 @@ class SecretOrganizationSetCommand extends SecretBaseCommand
      * @authorize
      *
      * @command secret:org:set
-     * @aliases secret-org-set, secret:org:set
+     * @aliases secret-org-set
      *
      * @option string $type Secret type. Available options are env, runtime, composer, file and vcs.
      * @option array $scope Secret scope. Available options are ic (integrated composer), user, and web.
