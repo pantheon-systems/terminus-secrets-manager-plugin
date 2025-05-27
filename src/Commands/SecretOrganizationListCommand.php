@@ -22,7 +22,7 @@ class SecretOrganizationListCommand extends SecretBaseCommand
      * @filter-output
      *
      * @command secret:org:list
-     * @aliases secrets, secret:list
+     * @aliases secret-org-list
      *
      * @field-labels
      *   name: Secret name
