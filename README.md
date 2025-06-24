@@ -253,8 +253,8 @@ The secrets `list` command provides a list of all secrets available for a site. 
 - `Scope`
 - `Type`
 - `Value`
-- `Environment Override Values`
-- `Org Values`
+- `Environment override values`
+- `Org values`
 
 Note that the `value` field will contain a placeholder value unless the `user` scope was specified when the secret was set.
 
@@ -376,7 +376,7 @@ The secrets `list` command provides a list of all secrets available for an organ
 - `Scope`
 - `Type`
 - `Value`
-- `Environment Override Values`
+- `Environment override values`
 
 Note that the `value` field will contain a placeholder value unless the `user` scope was specified when the secret was set.
 
