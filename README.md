@@ -175,7 +175,7 @@ On the other hand, when Integrated Composer attempts to get secrets for `my-site
 Secrets Manager requires the following:
 
 - A Pantheon account
-- A site that uses [Integrated Composer](https://docs.pantheon.io/guides/integrated-composer) and runs PHP >= 8.0
+- A site that runs PHP >= 7.4
 - Terminus 3.0+
 
 ### Installation
