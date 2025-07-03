@@ -19,7 +19,7 @@ class SecretOrganizationDeleteCommand extends SecretBaseCommand
      * @authorize
      *
      * @command secret:org:delete
-     * @aliases secret-org-delete, secret:org:delete
+     * @aliases secret-org-delete
      *
      * @option env string The environment to delete the secret from
      * @option boolean $debug Run command in debug mode

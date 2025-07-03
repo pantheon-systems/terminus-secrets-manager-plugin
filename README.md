@@ -249,12 +249,12 @@ Note: You can add an environment override only to existing secrets; otherwise, i
 
 The secrets `list` command provides a list of all secrets available for a site. The following fields are available:
 
-- `Name`
-- `Scope`
-- `Type`
-- `Value`
-- `Environment Override Values`
-- `Org Values`
+- `Secret name`
+- `Secret scopes`
+- `Secret type`
+- `Secret value`
+- `Environment override values`
+- `Org values`
 
 Note that the `value` field will contain a placeholder value unless the `user` scope was specified when the secret was set.
 
@@ -372,11 +372,11 @@ Note: You can add an environment override only to existing secrets; otherwise, i
 
 The secrets `list` command provides a list of all secrets available for an organization. The following fields are available:
 
-- `Name`
-- `Scope`
-- `Type`
-- `Value`
-- `Environment Override Values`
+- `Secret name`
+- `Secret scopes`
+- `Secret type`
+- `Secret value`
+- `Environment override values`
 
 Note that the `value` field will contain a placeholder value unless the `user` scope was specified when the secret was set.
 

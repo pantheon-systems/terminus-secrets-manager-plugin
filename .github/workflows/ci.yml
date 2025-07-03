@@ -73,3 +73,18 @@ jobs:
           pantheon-machine-token: ${{ secrets.TERMINUS_TOKEN }}
           terminus-version: ${{ env.TERMINUS_VERSION }}
           test-versions: 7.4-
+  tag-release:
+    runs-on: ubuntu-latest
+    needs: functional
+    name: Tag Release
+    # Only run this job if the repository is owned by 'pantheon-systems' and the branch is the default branch
+    if: ${{ github.repository_owner == 'pantheon-systems' && github.ref_name == github.event.repository.default_branch }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pantheon-systems/action-autotag@v1
+        with:
+          v-prefix: false
