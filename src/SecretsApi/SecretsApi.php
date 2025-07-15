@@ -37,7 +37,7 @@ class SecretsApi
         }
         // If host is still not set, use the default host.
         if (!$host) {
-            $host = 'api.pantheon.io';
+            $host = 'terminus.pantheon.io';
         }
 
         return sprintf(
