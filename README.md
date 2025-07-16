@@ -69,8 +69,6 @@ This is a field on the secret record. It defines the usage for this secret and h
 
 - `composer`: this secret type is used for composer authentication to private packages.
 
-- `file`: this type allows you to store files in the secrets. This type is not yet in use in Early Access.
-
 Note that you can only set one type per secret and this cannot be changed later (unless you delete and recreate the secret).
 
 ### Secret scope
