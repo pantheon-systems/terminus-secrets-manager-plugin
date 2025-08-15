@@ -445,11 +445,16 @@ You must configure your private repository and provide an authentication token b
 
 #### GitHub Repository
 
-1. [Generate a Github token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token). The Github token must have all "repo" permissions selected.
+1. [Generate a Github token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
+   - Fine-grained personal access token:
+     - Select required repositories ![image](https://github.com/user-attachments/assets/04361790-1b15-4677-a484-ec10804f1b43)
+     - Provide Read-only 'Contents' access ![image](https://github.com/user-attachments/assets/6703f100-6281-4390-ba7d-676453fe56d5)
+   - Personal access token (classic):
+     The Github token must have all "repo" permissions selected.
 
-    NOTE: Check the repo box that selects all child boxes. **Do not** check all child boxes individually as this does not set the correct permissions.
+     NOTE: Check the repo box that selects all child boxes. **Do not** check all child boxes individually as this does not set the correct permissions.
 
-    ![image](https://user-images.githubusercontent.com/87093053/191616923-67732035-08aa-41c3-9a69-4d954ca02560.png) 
+     ![image](https://user-images.githubusercontent.com/87093053/191616923-67732035-08aa-41c3-9a69-4d954ca02560.png) 
 
 1. Set the secret value to the token via terminus: `terminus secret:site:set <site> github-oauth.github.com <github_token> --type=composer --scope=user,ic`
 
