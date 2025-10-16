@@ -202,6 +202,9 @@ The secrets `set` command takes the following format:
 
 **Run the command below to set a new secret in Terminus:**
 
+> Notes: When creating a new secret, you must provide only the site id,
+> then you can override the value for whatever environment you need to override
+
 ```
 terminus secret:site:set <site> <secret-name> <secret-value>
 
@@ -220,7 +223,7 @@ terminus secret:site:set <site> <secret-name> --scope=user,ic
 [notice] Success
 ```
 
-Note: If you do not include a `type` or `scope` flag, these values will be set to the defaults (`runtime` and `user` respectively).
+> Notes: If you do not include a `type` or `scope` flag, these values will be set to the defaults (`runtime` and `user` respectively).
 
 
 **Run the command below to update an existing secret in Terminus:**
