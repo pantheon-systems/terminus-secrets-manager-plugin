@@ -1,5 +1,7 @@
 # Terminus Secrets Manager Plugin
 
+[![Limited Availability](https://img.shields.io/badge/Pantheon-Limited_Availability-yellow?logo=pantheon&color=FFDC28)](https://docs.pantheon.io/oss-support-levels#limited-availability)
+
 Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best practices for secure builds and application implementation. Secrets Manager provides a convenient mechanism for you to manage your secrets and API keys directly on the Pantheon platform.
 
 ## Table of Contents
@@ -49,9 +51,9 @@ Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best
 
 - Secrets are encrypted at rest
 
-### Early Access
+### Limited Availability
 
-The Secrets Manager plugin is available for Early Access participants. Features for Secrets Manager are in active development. Pantheon's development team is rolling out new functionality often while this product is in Early Access. Visit the [Pantheon Slack channel](https://slackin.pantheon.io/) (or sign up for the channel if you don't already have an account) to learn how you can enroll in our Early Access program. Please review [Pantheon's Software Evaluation Licensing Terms](https://legal.pantheon.io/#contract-hkqlbwpxo) for more information about access to our software.
+The Secrets Manager plugin is available for use for Pantheon customers but is currently considered [Limited Access](https://docs.pantheon.io/oss-support-levels#limited-availability) in terms of support. Features for Secrets Manager are in active development. Pantheon's development team is rolling out new functionality often while this product is in Limited Availability. There is no requirement to opt into using Pantheon Secrets, the Terminus Secrets Manager Plugin is available for use on all Pantheon sites. Please review [Pantheon's Software Evaluation Licensing Terms](https://legal.pantheon.io/#contract-hkqlbwpxo) for more information about access to our software.
 
 ## Concepts
 
