@@ -94,6 +94,19 @@ This is a field on the secret record. It defines the components that have access
 - `--scope=ic,user`: Private repository credentials you want to view later
 - `--scope=web`: API keys you never need to read back (most secure)
 
+### Quick reference: Which type and scope should I use?
+
+| Use case | Type | Scope | Example |
+|----------|------|-------|---------|
+| API key for third-party service | `runtime` | `web,user` | Stripe, SendGrid, Twilio |
+| Database password | `runtime` | `web` | External DB credentials |
+| Private GitHub repository | `composer` | `ic,user` | Company private packages |
+| Private GitLab repository | `composer` | `ic,user` | Team modules/plugins |
+| Config file (JSON, XML, etc.) | `file` | `web,user` | Service account keys |
+| Environment variables (future) | `env` | varies | Not yet available |
+
+**Tip:** Start with `user` scope included during development so you can verify the secret was set correctly. You can remove `user` scope later for maximum security by deleting and recreating the secret.
+
 **Note:** For information about organization-wide secrets and environment-specific overrides, see the [Advanced Topics](#advanced-topics) section.
 
 ## Plugin Usage
