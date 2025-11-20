@@ -15,6 +15,7 @@ Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best
   * [Secrets Manager Plugin Requirements](#secrets-manager-plugin-requirements)
   * [Installation](#installation)
   * [Quick Start](#quick-start)
+  * [Common Workflows](#common-workflows)
   * [Site secrets Commands](#site-secrets-commands)
   * [Help](#help)
 - [Rate Limiting](#rate-limiting)
@@ -146,6 +147,77 @@ That's it! Your secret is now encrypted at rest and accessible only to your site
 - Use `--scope=web` to make secrets accessible in your site code
 - Add `user` scope if you want to retrieve the secret value via Terminus later
 - Secrets are cached for up to 15 minutes
+
+### Common Workflows
+
+#### Workflow 1: Using environment-specific API keys
+
+Use a sandbox API key for development and testing, but a production key for live:
+
+```bash
+# Set the base secret with your sandbox key
+terminus secret:site:set my-site sendgrid-api-key "SG.sandbox_abc..." --type=runtime --scope=web,user
+
+# Override with production key for live environment
+terminus secret:site:set my-site.live sendgrid-api-key "SG.production_xyz..."
+```
+
+In your code:
+```php
+// Automatically gets the right key based on environment
+$api_key = pantheon_get_secret('sendgrid-api-key');
+$sendgrid = new \SendGrid($api_key);
+```
+
+#### Workflow 2: Accessing a private GitHub repository
+
+Set up Composer authentication for a private repository:
+
+```bash
+# Store your GitHub personal access token
+terminus secret:site:set my-site github-oauth.github.com "ghp_abc123..." --type=composer --scope=ic,user
+```
+
+Add the repository to `composer.json`:
+```json
+{
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/mycompany/private-package"
+    }
+  ]
+}
+```
+
+Require the package:
+```bash
+composer require mycompany/private-package
+git add composer.json composer.lock
+git commit -m "Add private package"
+git push origin master
+```
+
+Integrated Composer will use your secret token to authenticate.
+
+#### Workflow 3: Migrating from the legacy secrets system
+
+If you're currently using the old file-based secrets system, here's how to migrate:
+
+```bash
+# 1. Create secrets for each value in your old secrets.json
+terminus secret:site:set my-site stripe-key "sk_live_..." --type=runtime --scope=web
+terminus secret:site:set my-site sendgrid-key "SG...." --type=runtime --scope=web
+terminus secret:site:set my-site db-password "..." --type=runtime --scope=web
+
+# 2. Update your code from the old method
+# Old: json_decode(file_get_contents('/path/to/secrets.json'))
+# New: pantheon_get_secret('stripe-key')
+
+# 3. Remove the old secrets file from your repository
+git rm sites/default/files/private/secrets.json
+git commit -m "Remove legacy secrets file"
+```
 
 ### Site secrets Commands
 
