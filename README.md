@@ -159,49 +159,43 @@ The secrets `set` command takes the following format:
 - `One or more scopes`
 
 
-**Run the command below to set a new secret in Terminus:**
+**Examples:**
 
-```
-terminus secret:site:set <site> <secret-name> <secret-value>
-
-[notice] Success
-```
-
-```
-terminus secret:site:set <site> file.json "{}" --type=file
-
-[notice] Success
+```bash
+# Set an API key for use in site code
+terminus secret:site:set my-site stripe-api-key "sk_live_abc123..." --type=runtime --scope=web,user
 ```
 
-```
-terminus secret:site:set <site> <secret-name> --scope=user,ic
-
-[notice] Success
-```
-
-Note: If you do not include a `type` or `scope` flag, these values will be set to the defaults (`runtime` and `user` respectively).
-
-
-**Run the command below to update an existing secret in Terminus:**
-
-```
-terminus secret:site:set <site> <secret-name> <secret-value>
-
-[notice] Success
+```bash
+# Set a GitHub token for private Composer repositories
+terminus secret:site:set my-site github-oauth.github.com "ghp_abc123..." --type=composer --scope=ic,user
 ```
 
-Note: When updating an existing secret, `type` and `scope` should NOT be passed as they are immutable. You should delete and recreate the secret if you need to update those properties.
-
-
-**Add or update an environment override for an existing secret in Terminus:**
-
-```
-terminus secret:site:set <site>.<env> <secret-name> <secret-value>
-
-[notice] Success
+```bash
+# Set a file secret
+terminus secret:site:set my-site credentials.json '{"key": "value"}' --type=file --scope=web
 ```
 
-Note: You can add an environment override only to existing secrets; otherwise, it will fail.
+**Default behavior:** If you do not include `--type` or `--scope` flags, they default to `runtime` and `user` respectively.
+
+**Update an existing secret:**
+
+```bash
+# Update the value (type and scope cannot be changed)
+terminus secret:site:set my-site stripe-api-key "sk_live_new_value..."
+```
+
+Note: When updating an existing secret, do NOT pass `--type` or `--scope` flags, as these fields are immutable. To change type or scope, delete and recreate the secret.
+
+**Set an environment-specific override:**
+
+```bash
+# Use a sandbox API key in dev, production key in live
+terminus secret:site:set my-site.dev sendgrid-api-key "SG.sandbox_key..."
+terminus secret:site:set my-site.live sendgrid-api-key "SG.production_key..."
+```
+
+Note: You can only add an environment override to an existing secret. Create the base secret first.
 
 
 #### List secrets
@@ -217,61 +211,76 @@ The secrets `list` command provides a list of all secrets available for a site. 
 
 Note that the `value` field will contain a placeholder value unless the `user` scope was specified when the secret was set.
 
-**Run the command below to list a site’s secrets:**
+**Examples:**
 
-
-```
-terminus secret:site:list <site>
-
- ------------- ------------- ---------------------------
-  Secret name   Secret type   Secret value
- ------------- ------------- ---------------------------
-  secret-name   env           secrets-content
- ------------- ------------- ---------------------------
+```bash
+# List all secrets for a site (basic view)
+terminus secret:site:list my-site
 ```
 
+Output:
 ```
-terminus secret:site:list <site> --fields="*"
+ ------------------- ------------- ---------------------------
+  Secret name         Secret type   Secret value
+ ------------------- ------------- ---------------------------
+  stripe-api-key      runtime       sk_live_abc123...
+  github-oauth...     composer      ***
+  sendgrid-api-key    runtime       ***
+ ------------------- ------------- ---------------------------
+```
 
- ---------------- ------------- ------------------------------------------ --------------- ----------------------------- --------------------
-  Secret name      Secret type   Secret value                               Secret scopes   Environment override values   Org values
- ---------------- ------------- ------------------------------------------ --------------- ----------------------------- --------------------
-  foo              env           ***                                        web, user
-  foo2             runtime       bar2                                       web, user                                     default=barorg
-  foo3             env           dummykey                                   web, user       live=sendgrid-live
- ---------------- ------------- ------------------------------------------ --------------- ----------------------------- --------------------
- ```
+```bash
+# List with all fields (including overrides and org inheritance)
+terminus secret:site:list my-site --fields="*"
+```
+
+Output:
+```
+ ------------------- ------------- ----------------- --------------- ----------------------------- --------------------
+  Secret name         Secret type   Secret value      Secret scopes   Environment override values   Org values
+ ------------------- ------------- ----------------- --------------- ----------------------------- --------------------
+  stripe-api-key      runtime       sk_live_abc...    web, user
+  github-oauth...     composer      ***               ic, user
+  sendgrid-api-key    runtime       ***               web, user       live=SG.prod_key...
+ ------------------- ------------- ----------------- --------------- ----------------------------- --------------------
+```
+
+Note: The `value` field shows `***` unless the secret has `user` scope.
 
 #### Delete a secret
 
 The secrets `delete` command will remove a secret and all of its overrides.
 
-**Run the command below to delete a secret:**
+**Examples:**
 
+```bash
+# Delete a secret entirely
+terminus secret:site:delete my-site stripe-api-key
 ```
-terminus secret:site:delete <site> <secret-name>
 
-[notice] Success
+```bash
+# Delete only an environment-specific override
+terminus secret:site:delete my-site.live sendgrid-api-key
 ```
 
-**Run the command below to delete an environment override for a secret:**
-
-```
-terminus secret:site:delete <site>.<env> <secret-name>
-
-[notice] Success
-```
+Note: Deleting the base secret removes all environment overrides. Deleting an environment override leaves the base secret intact.
 
 #### Generate file for local development
 
 The secrets `local-generate` command will generate a json file useful for local development emulation of secrets.
 
-**Run the command below to get a json file:**
+**Example:**
 
+```bash
+terminus secret:site:local-generate my-site --filepath=./secrets.json
 ```
-terminus secret:site:local-generate <site> --filepath=./secrets.json
+
+Output:
+```
 [notice] Secrets file written to: ./secrets.json. Please review this file and adjust accordingly for your local usage.
 ```
+
+This generates a JSON file with your secrets for local development. See the [SDK documentation](https://github.com/pantheon-systems/customer-secrets-php-sdk) for how to use this file with Lando or other local environments.
 
 ### Help
 
@@ -298,7 +307,10 @@ You must configure your private repository and provide an authentication token b
 
     ![image](https://user-images.githubusercontent.com/87093053/191616923-67732035-08aa-41c3-9a69-4d954ca02560.png) 
 
-1. Set the secret value to the token via terminus: `terminus secret:site:set <site> github-oauth.github.com <github_token> --type=composer --scope=user,ic`
+1. Set the secret value to the token via terminus:
+   ```bash
+   terminus secret:site:set my-site github-oauth.github.com "ghp_abc123..." --type=composer --scope=user,ic
+   ```
 
 1. Add your private repository to the `repositories` section of `composer.json`:
 
@@ -323,7 +335,10 @@ You must configure your private repository and provide an authentication token b
 
 1. [Generate a GitLab token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html). Ensure that `read_repository` scope is selected for the token.
 
-1. Set the secret value to the token via Terminus: `terminus secret:site:set <site> gitlab-oauth.gitlab.com <gitlab_token> --type=composer --scope=user,ic`
+1. Set the secret value to the token via Terminus:
+   ```bash
+   terminus secret:site:set my-site gitlab-oauth.gitlab.com "glpat-abc123..." --type=composer --scope=user,ic
+   ```
 
 1. Add your private repository to the `repositories` section of `composer.json`:
 
@@ -348,7 +363,10 @@ You must configure your private repository and provide an authentication token b
 
 1. [Generate a Bitbucket oauth consumer](https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud/). Ensure that Read repositories permission is selected for the consumer. Also, set the consumer as private and put a (dummy) callback URL.
 
-1. Set the secret value to the consumer info via Terminus: `terminus secret:site:set <site> bitbucket-oauth.bitbucket.org "<consumer_key> <consumer_secret>" --type=composer --scope=user,ic`
+1. Set the secret value to the consumer info via Terminus:
+   ```bash
+   terminus secret:site:set my-site bitbucket-oauth.bitbucket.org "consumer_key consumer_secret" --type=composer --scope=user,ic
+   ```
 
 1. Add your private repository to the `repositories` section of `composer.json`:
 
