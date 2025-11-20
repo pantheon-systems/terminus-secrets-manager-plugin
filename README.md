@@ -26,6 +26,9 @@ Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best
 - [Use Secrets with Integrated Composer](#use-secrets-with-integrated-composer)
   * [Mechanism 1: Oauth Composer authentication](#mechanism-1-oauth-composer-authentication)
   * [Mechanism 2: HTTP Basic Authentication](#mechanism-2-http-basic-authentication)
+- [Using Secrets in Your Site Code](#using-secrets-in-your-site-code)
+  * [Using pantheon_get_secret()](#using-pantheon_get_secret)
+  * [Using the Customer Secrets PHP SDK](#using-the-customer-secrets-php-sdk)
 - [Use Secrets in Drupal through the Key module](#use-secrets-in-drupal-through-the-key-module)
 
 
@@ -63,7 +66,7 @@ A key-value pair that should not be exposed to the general public, typically som
 
 This is a field on the secret record. It defines the usage for this secret and how it is consumed. Current types are:
 
-- `runtime`: this secret will be used to retrieve it in application runtime using API calls to the secret service. This type is not yet in use in Early Access, but will be the recommended way to set information like API keys for third-party integrations in your application.
+- `runtime`: this secret will be used to retrieve it in application runtime using the `pantheon_get_secret()` function or the Customer Secrets PHP SDK. This is the recommended way to set information like API keys for third-party integrations in your application.
 
 - `env`: this secret will be used to set environment variables in the application runtime. This type is not yet in use in Early Access.
 
@@ -553,6 +556,69 @@ EOF
 
 `terminus secret:site:set ${SITE_NAME} COMPOSER_AUTH ${COMPOSER_AUTH_JSON} --type=env --scope=user,ic`
 ```
+
+## Using Secrets in Your Site Code
+
+Once you've set secrets with the `runtime` type and `web` scope, you can retrieve them in your site's PHP code.
+
+### Using pantheon_get_secret()
+
+The simplest way to access secrets is with the `pantheon_get_secret()` function, which is automatically available in all Pantheon environments—no includes or dependencies required.
+
+**Example usage:**
+
+```php
+// Retrieve a secret value
+$api_key = pantheon_get_secret('my-api-key');
+
+// Use the secret in your application
+$client = new ThirdPartyApiClient($api_key);
+```
+
+**Important:** Secrets must have `web` scope to be accessible via `pantheon_get_secret()`. Set secrets with the appropriate scope:
+
+```bash
+terminus secret:site:set <site> my-api-key "<value>" --type=runtime --scope=web
+```
+
+Note: If you want to be able to retrieve the secret value later via Terminus, add `user` scope:
+
+```bash
+terminus secret:site:set <site> my-api-key "<value>" --type=runtime --scope=web,user
+```
+
+### Using the Customer Secrets PHP SDK
+
+For more advanced features, including local development support, use the [Customer Secrets PHP SDK](https://packagist.org/packages/pantheon-systems/customer-secrets-php-sdk). This is a separate Composer package that provides additional functionality beyond the basic `pantheon_get_secret()` function.
+
+**Installation:**
+
+```bash
+composer require pantheon-systems/customer-secrets-php-sdk
+```
+
+**Example usage:**
+
+```php
+use PantheonSystems\CustomerSecrets\CustomerSecrets;
+
+$client = CustomerSecrets::create()->getClient();
+$secret = $client->getSecret('my-api-key');
+$secret_value = $secret->getValue();
+
+// Or get all secrets at once
+$secrets = $client->getSecrets();
+```
+
+**Local development:** The SDK includes a fake client implementation for local development. Generate a local secrets file with:
+
+```bash
+terminus secret:site:local-generate <site> --filepath=./secrets.json
+```
+
+Then configure your local environment to use it. See the [SDK documentation](https://github.com/pantheon-systems/customer-secrets-php-sdk) for detailed local setup instructions, including examples for Lando and other development environments.
+
+**Note:** Secrets are cached for up to 15 minutes. If you modify a secret, allow up to 15 minutes for the change to take effect in your application.
 
 ## Use Secrets in Drupal through the Key module
 
