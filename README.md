@@ -19,6 +19,7 @@ Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best
 - [Plugin Usage](#plugin-usage)
   * [Secrets Manager Plugin Requirements](#secrets-manager-plugin-requirements)
   * [Installation](#installation)
+  * [Quick Start](#quick-start)
   * [Site secrets Commands](#site-secrets-commands)
   * [Organization secrets Commands](#organization-secrets-commands)
   * [Help](#help)
@@ -190,6 +191,39 @@ Run the command below to install Terminus Secrets Manager.
 ```
 terminus self:plugin:install terminus-secrets-manager-plugin
 ```
+
+### Quick Start
+
+The most common use case is storing API keys or credentials and using them in your site code. Here's how to do it:
+
+**Step 1: Store your secret**
+
+```bash
+terminus secret:site:set my-site sendgrid-api-key "SG.abc123xyz..." --type=runtime --scope=web,user
+```
+
+**Step 2: Use it in your PHP code**
+
+```php
+// The pantheon_get_secret() function is automatically available
+$api_key = pantheon_get_secret('sendgrid-api-key');
+
+// Use it in your application
+$sendgrid = new \SendGrid($api_key);
+```
+
+**Step 3: Verify your secret was stored**
+
+```bash
+terminus secret:site:list my-site
+```
+
+That's it! Your secret is now encrypted at rest and accessible only to your site's code.
+
+**Notes:**
+- Use `--scope=web` to make secrets accessible in your site code
+- Add `user` scope if you want to retrieve the secret value via Terminus later
+- Secrets are cached for up to 15 minutes
 
 ### Site secrets Commands
 
