@@ -79,15 +79,18 @@ Note that you can only set one type per secret and this cannot be changed later 
 
 ### Secret scope
 
-This is a field on the secret record. It defines the components that have access to the secret value. Current scopes are:
+This is a field on the secret record. It defines the components that have access to the secret value. You can set multiple scopes per secret (for example, `--scope=web,user`), but scopes cannot be changed after creation. To change scopes, you must delete and recreate the secret.
 
-- `ic`: this secret will be readable by the Integrated Composer runtime. You should use this scope to get access to your private repositories.
+| Scope | Makes secret accessible to | When to use |
+|-------|----------------------------|-------------|
+| `web` | Your site's PHP code via `pantheon_get_secret()` | API keys, credentials, runtime secrets |
+| `ic` | Integrated Composer builds | Private repository authentication |
+| `user` | Terminus commands (allows you to read the value back) | When you need to retrieve the secret value later via `terminus secret:site:list` |
 
-- `web`: this secret will be readable by the application runtime.
-
-- `user`: this secret will be readable by the user. This scope should be set if you need to retrieve the secret value at a later stage.
-
-Note that you can set multiple scopes per secret, but scopes cannot be changed later (unless you delete and recreate the secret).
+**Common scope combinations:**
+- `--scope=web,user`: API keys you want to use in code AND view later in Terminus
+- `--scope=ic,user`: Private repository credentials you want to view later
+- `--scope=web`: API keys you never need to read back (most secure)
 
 ### Owning entity
 
