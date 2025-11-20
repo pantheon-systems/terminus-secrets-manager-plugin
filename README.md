@@ -25,6 +25,7 @@ Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best
 - [Using Secrets in Your Site Code](#using-secrets-in-your-site-code)
   * [Using pantheon_get_secret()](#using-pantheon_get_secret)
   * [Using the Customer Secrets PHP SDK](#using-the-customer-secrets-php-sdk)
+- [Troubleshooting](#troubleshooting)
 - [Use Secrets in Drupal through the Key module](#use-secrets-in-drupal-through-the-key-module)
 - [Advanced Topics](#advanced-topics)
   * [Organization-owned secrets](#organization-owned-secrets)
@@ -553,6 +554,90 @@ terminus secret:site:local-generate <site> --filepath=./secrets.json
 Then configure your local environment to use it. See the [SDK documentation](https://github.com/pantheon-systems/customer-secrets-php-sdk) for detailed local setup instructions, including examples for Lando and other development environments.
 
 **Note:** Secrets are cached for up to 15 minutes. If you modify a secret, allow up to 15 minutes for the change to take effect in your application.
+
+## Troubleshooting
+
+### I can't see my secret value when I run `terminus secret:site:list`
+
+**Problem:** The secret value shows `***` instead of the actual value.
+
+**Solution:** The secret was created without `user` scope. To view secret values in Terminus, you must include `user` scope when creating the secret:
+
+```bash
+terminus secret:site:set my-site api-key "value" --type=runtime --scope=web,user
+```
+
+If you already created the secret without `user` scope, you must delete and recreate it with the correct scope (scopes are immutable).
+
+### My secret isn't available in my site code
+
+**Problem:** `pantheon_get_secret('my-key')` returns null or empty.
+
+**Possible causes:**
+
+1. **Missing `web` scope:** Secrets need `web` scope to be accessible in site code.
+   ```bash
+   # Check the secret's scopes
+   terminus secret:site:list my-site --fields="*"
+
+   # If web scope is missing, recreate the secret
+   terminus secret:site:delete my-site my-key
+   terminus secret:site:set my-site my-key "value" --type=runtime --scope=web,user
+   ```
+
+2. **Cache delay:** Secrets are cached for up to 15 minutes. If you just created or updated the secret, wait a few minutes and try again.
+
+3. **Wrong secret name:** Secret names are case-sensitive. Verify the exact name with `terminus secret:site:list my-site`.
+
+### I'm getting rate limit errors (429)
+
+**Problem:** API returns `429` error code when using Terminus commands.
+
+**Solution:** The service limits Terminus to 3 requests per second per user. If you're setting multiple secrets, add a brief pause between commands:
+
+```bash
+terminus secret:site:set my-site key1 "value1"
+sleep 1
+terminus secret:site:set my-site key2 "value2"
+sleep 1
+terminus secret:site:set my-site key3 "value3"
+```
+
+Note: The `pantheon_get_secret()` function and PHP SDK are not affected by this rate limit.
+
+### I need to change a secret's type or scope
+
+**Problem:** You want to change a secret from `runtime` to `composer` type, or add a scope.
+
+**Solution:** Type and scope are immutable fields and cannot be changed. This is intentional to prevent secrets from being accessible in unintended places. You must delete and recreate the secret:
+
+```bash
+# Delete the existing secret
+terminus secret:site:delete my-site my-key
+
+# Create it again with the correct type and scope
+terminus secret:site:set my-site my-key "value" --type=composer --scope=ic,user
+```
+
+### Integrated Composer can't access my private repository
+
+**Problem:** Composer builds fail with authentication errors.
+
+**Checklist:**
+
+1. Verify the secret has `ic` scope:
+   ```bash
+   terminus secret:site:list my-site --fields="*"
+   ```
+
+2. Check the secret name matches the expected format:
+   - GitHub: `github-oauth.github.com`
+   - GitLab: `gitlab-oauth.gitlab.com`
+   - Bitbucket: `bitbucket-oauth.bitbucket.org`
+
+3. Verify your token has the correct permissions (see the Integrated Composer section for details).
+
+4. Check for typos in the repository URL in your `composer.json`.
 
 ## Use Secrets in Drupal through the Key module
 
