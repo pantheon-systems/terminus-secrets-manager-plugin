@@ -11,17 +11,11 @@ Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best
   * [Secret](#secret)
   * [Secret type](#secret-type)
   * [Secret scope](#secret-scope)
-  * [Owning entity](#owning-entity)
-  * [Site-owned secrets](#site-owned-secrets)
-  * [Organization-owned secrets](#organization-owned-secrets)
-  * [Environment override](#environment-override)
-- [The life of a secret](#the-life-of-a-secret)
 - [Plugin Usage](#plugin-usage)
   * [Secrets Manager Plugin Requirements](#secrets-manager-plugin-requirements)
   * [Installation](#installation)
   * [Quick Start](#quick-start)
   * [Site secrets Commands](#site-secrets-commands)
-  * [Organization secrets Commands](#organization-secrets-commands)
   * [Help](#help)
 - [Rate Limiting](#rate-limiting)
 - [Use Secrets with Integrated Composer](#use-secrets-with-integrated-composer)
@@ -31,6 +25,12 @@ Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best
   * [Using pantheon_get_secret()](#using-pantheon_get_secret)
   * [Using the Customer Secrets PHP SDK](#using-the-customer-secrets-php-sdk)
 - [Use Secrets in Drupal through the Key module](#use-secrets-in-drupal-through-the-key-module)
+- [Advanced Topics](#advanced-topics)
+  * [Organization-owned secrets](#organization-owned-secrets)
+  * [Environment overrides](#environment-overrides)
+  * [The life of a secret](#the-life-of-a-secret)
+  * [Secret inheritance diagram](#secret-inheritance-diagram)
+  * [Organization secrets Commands](#organization-secrets-commands)
 
 
 ## Overview
@@ -92,88 +92,7 @@ This is a field on the secret record. It defines the components that have access
 - `--scope=ic,user`: Private repository credentials you want to view later
 - `--scope=web`: API keys you never need to read back (most secure)
 
-### Owning entity
-
-Secrets are currently either owned by a site or an organization. Within that owning entity, the secret may have zero or more environment overrides.
-
-### Site-owned secrets
-
-This is a secret set for a specific site using the site ID. Based on the type and scope, this secret will be loaded on the different scenarios that will be supported by Secrets in Pantheon.
-
-### Organization-owned secrets
-
-This is a secret set not for a given site but for an organization. This secret will be inherited by ALL sites OWNED by this organization. 
-
-**Note**: Secrets owned by [Supporting Organizations](https://docs.pantheon.io/agency-tips#become-a-supporting-organization) won't apply to sites they support. Only the Owner organization's secrets will apply.
-
-### Environment override
-
-In some cases it will be necessary to have different values for the secret when that secret is accessed in different Pantheon environments. You may set an environment override value for any existing secret value. 
-
-**Note**: If the secret does not exist, there is no secret environment to override, and you will get an error.
-
-```mermaid
-classDiagram
-OrganizationSecretAPIPassword --> SiteSecretAPIPassword 
-SiteSecretAPIPassword  --> IntegratedComposerAPIPassword : no overrides
-OrganizationSecretAPIPassword : string name apipassword
-OrganizationSecretAPIPassword : string value ball00n
-SiteSecretAPIPassword : Inherits value from Org 
-SiteSecretAPIPassword : No Overrides
-IntegratedComposerAPIPassword: value ball00n
-
-OrganizationSecretOverrideExample --> SiteSecretOverrideExample
-SiteSecretOverrideExample --> SiteSecretOverrideExampleDev : default value
-SiteSecretOverrideExample --> SiteSecretOverrideExampleTest : env override value
-SiteSecretOverrideExample --> SiteSecretOverrideExampleLive : env override value
-OrganizationSecretOverrideExample : string name apipassword
-OrganizationSecretOverrideExample : string value ball00n
-SiteSecretOverrideExample : Inherits value from Org 
-SiteSecretOverrideExample : No Site Overrides
-SiteSecretOverrideExampleDev: value ball00n
-SiteSecretOverrideExampleDev: defaultValue()
-SiteSecretOverrideExampleTest: value ball00n2
-SiteSecretOverrideExampleTest: overridden()
-SiteSecretOverrideExampleLive: value ball00n3
-SiteSecretOverrideExampleLive: overridden()
-```
-
-## The life of a secret
-
-When a given runtime (e.g. Integrated Composer or an environment php runtime) fetches secrets for a given site (and env), the process will be as follows:
-
-- Fetch secrets for site (of the given type and scopes).
-
-- Apply environment overrides (if any) based on the requesting site environment.
-
-- If the site is owned by an organization:
-
-    - Fetch the organization secrets.
-
-    - Apply environment overrides (if any) based on the requesting site environment.
-
-    - Merge the organization secrets with the site secrets (the following example will describe this process in more detail).
-
-Let's go through this with an example: assume you have a site named `my-site` which belongs to an organization `my-org`. You also have another site `my-other-site` which belongs to your personal Pantheon account.
-
-When Integrated Composer attempts to get secrets for `my-other-site` it will go like this:
-- Get the secrets of scope `ic` for `my-other-site`.
-- Apply environment overrides for the current environment (see **Note** below).
-- Look at `my-other-site` owner. In this case, it is NOT an organization so there are no organization secrets to merge.
-- Process the resulting secrets to make them available to Composer.
-
-On the other hand, when Integrated Composer attempts to get secrets for `my-site`, it will go like this:
-- Get the secrets of scope `ic` for `my-site`.
-- Apply environment overrides for the current environment (see **Note** below).
-- Look at the site owner. It determines it is the organization `my-org`.
-- Get the secrets for the organization `my-org` with scope `ic`.
-- Apply the environment overrides to those secrets for the current environment (see **Note** below).
-- Merge the resulting organization secrets with the site secrets with the following caveats:
-    - Site secrets take precedence over organization secrets. This means that the value for site-owned secret named `foo` will be used instead of the value for an org-owned secret with the same name `foo`.
-    - Only the secrets for the OWNER organization are being merged. If the site has a Supporting Organization, it will be ignored.
-- Process the resulting secrets to make them available to Composer.
-
-**Note:** Due to platform design, the "environment" for Integrated Composer will always be either `dev` or a multidev. It will never be `test` or `live`. Therefore we do not recommend using environment overrides for Composer access. The primary use-case for environment overrides is for the CMS key-values and environment variables that need to be different between your live and non-live environments.
+**Note:** For information about organization-wide secrets and environment-specific overrides, see the [Advanced Topics](#advanced-topics) section.
 
 ## Plugin Usage
 
@@ -352,118 +271,6 @@ The secrets `local-generate` command will generate a json file useful for local 
 ```
 terminus secret:site:local-generate <site> --filepath=./secrets.json
 [notice] Secrets file written to: ./secrets.json. Please review this file and adjust accordingly for your local usage.
-```
-
-### Organization secrets Commands
-
-#### Set a secret
-
-The secrets `set` command takes the following format:
-
-- `Name`
-- `Value`
-- `Type`
-- `One or more scopes`
-
-**Run the command below to set a new secret in Terminus:**
-
-```
-terminus secret:org:set <org> <secret-name> <secret-value>
-
-[notice] Success
-```
-
-```
-terminus secret:org:set <org> file.json "{}" --type=file
-
-[notice] Success
-```
-
-```
-terminus secret:org:set <org> <secret-name> --scope=user,ic
-
-[notice] Success
-```
-
-Note: If you do not include a `type` or `scope` flag, their defaults will be `runtime` and `user` respectively.
-
-**Run the command below to update an existing secret in Terminus:**
-
-```
-terminus secret:org:set <org> <secret-name> <secret-value>
-
-[notice] Success
-```
-
-Note: When updating an existing secret, `type` and `scope` should NOT be passed as they are immutable. You should delete and recreate the secret if you need to update those properties.
-
-**Add or update an environment override for an existing secret in Terminus:**
-
-```
-terminus secret:org:set --env=<env> <org> <secret-name> <secret-value>
-
-[notice] Success
-```
-
-Note: You can add an environment override only to existing secrets; otherwise, it will fail.
-
-
-#### List secrets
-
-The secrets `list` command provides a list of all secrets available for an organization. The following fields are available:
-
-- `Secret name`
-- `Secret scopes`
-- `Secret type`
-- `Secret value`
-- `Environment override values`
-
-Note that the `value` field will contain a placeholder value unless the `user` scope was specified when the secret was set.
-
-**Run the command below to list a site’s secrets:**
-
-
-```
-terminus secret:org:list <org>
-
- ------------- ------------- ---------------------------
-  Secret name   Secret type   Secret value
- ------------- ------------- ---------------------------
-  secret-name   env           secrets-content
- ------------- ------------- ---------------------------
-```
-
-
-```
-terminus secret:org:list <org> --fields="*"
-
- ---------------- ------------- ------------------------------------------ --------------- -----------------------------
-  Secret name      Secret type   Secret value                               Secret scopes   Environment override values
- ---------------- ------------- ------------------------------------------ --------------- -----------------------------
-  foo              env           bar                                        web, user
-  foo2             runtime       bar2                                       web, user
-  foo3             env           dummykey                                   web, user       live=sendgrid-live
- ---------------- ------------- ------------------------------------------ --------------- -----------------------------
- ```
-
-#### Delete a secret
-
-The secrets `delete` command will remove a secret and all of its overrides.
-
-**Run the command below to delete a secret:**
-
-```
-terminus secret:org:delete <org> <secret-name>
-
-[notice] Success
-```
-
-**Run the command below to delete an environment override for a secret:**
-
-```
-terminus secret:org:delete --env=<env> <org> <secret-name>
-
-[notice] Success
 ```
 
 ### Help
@@ -660,3 +467,169 @@ Then configure your local environment to use it. See the [SDK documentation](htt
 ## Use Secrets in Drupal through the Key module
 
 If you want to use Pantheon Secrets in your Drupal application through the [Key module](https://www.drupal.org/project/key), you should use the [Pantheon Secrets](https://www.drupal.org/project/pantheon_secrets) module.
+
+## Advanced Topics
+
+### Organization-owned secrets
+
+Organization secrets allow you to set a secret once at the organization level and have it automatically inherited by all sites owned by that organization. This is useful for sharing common credentials across multiple sites.
+
+**Key points:**
+- Organization secrets apply to ALL sites owned by the organization
+- Site-level secrets with the same name will override organization secrets
+- Secrets from Supporting Organizations do not apply (only Owner organization secrets)
+- Organization secrets use the same type and scope rules as site secrets
+
+See the [Organization Secrets Commands](#organization-secrets-commands) section below for usage details.
+
+### Environment overrides
+
+Environment overrides allow you to set different values for a secret in different Pantheon environments (dev, test, live, multidev). For example, you might want to use a sandbox API key in dev and test, but a production API key in live.
+
+**Key points:**
+- You can only create an override for an existing secret (create the base secret first)
+- Environment overrides work for both site-owned and organization-owned secrets
+- To delete an override, use the delete command with the environment specified
+- Type and scope cannot be changed with overrides
+
+**Important:** Due to platform design, Integrated Composer always runs in `dev` or multidev environments, never in `test` or `live`. Therefore, environment overrides are not recommended for Composer authentication. The primary use case is for runtime secrets that need different values between live and non-live environments.
+
+### The life of a secret
+
+When your application or Integrated Composer fetches secrets, the following process occurs:
+
+1. Fetch secrets for the site with the requested type and scopes
+2. Apply environment overrides (if any) based on the current environment
+3. If the site is owned by an organization:
+   - Fetch the organization secrets with the requested type and scopes
+   - Apply environment overrides (if any) to organization secrets
+   - Merge organization secrets with site secrets (site secrets take precedence)
+4. Make the resulting secrets available to the requesting runtime
+
+**Example scenario:**
+
+You have a site `my-site` owned by organization `my-org`, and another site `personal-site` owned by your personal account.
+
+When Integrated Composer runs for `personal-site`:
+- Fetches site secrets with scope `ic`
+- Applies environment overrides for current environment
+- No organization secrets to merge (personal account)
+- Provides secrets to Composer
+
+When Integrated Composer runs for `my-site`:
+- Fetches site secrets with scope `ic`
+- Applies environment overrides for current environment
+- Fetches organization `my-org` secrets with scope `ic`
+- Applies environment overrides to organization secrets
+- Merges both (site secrets win if there are duplicates)
+- Provides merged secrets to Composer
+
+### Secret inheritance diagram
+
+```mermaid
+classDiagram
+OrganizationSecretAPIPassword --> SiteSecretAPIPassword
+SiteSecretAPIPassword  --> IntegratedComposerAPIPassword : no overrides
+OrganizationSecretAPIPassword : string name apipassword
+OrganizationSecretAPIPassword : string value ball00n
+SiteSecretAPIPassword : Inherits value from Org
+SiteSecretAPIPassword : No Overrides
+IntegratedComposerAPIPassword: value ball00n
+
+OrganizationSecretOverrideExample --> SiteSecretOverrideExample
+SiteSecretOverrideExample --> SiteSecretOverrideExampleDev : default value
+SiteSecretOverrideExample --> SiteSecretOverrideExampleTest : env override value
+SiteSecretOverrideExample --> SiteSecretOverrideExampleLive : env override value
+OrganizationSecretOverrideExample : string name apipassword
+OrganizationSecretOverrideExample : string value ball00n
+SiteSecretOverrideExample : Inherits value from Org
+SiteSecretOverrideExample : No Site Overrides
+SiteSecretOverrideExampleDev: value ball00n
+SiteSecretOverrideExampleDev: defaultValue()
+SiteSecretOverrideExampleTest: value ball00n2
+SiteSecretOverrideExampleTest: overridden()
+SiteSecretOverrideExampleLive: value ball00n3
+SiteSecretOverrideExampleLive: overridden()
+```
+
+### Organization secrets Commands
+
+#### Set a secret
+
+The organization secrets `set` command takes the following format:
+
+- `Organization name or UUID`
+- `Name`
+- `Value`
+- `Type`
+- `One or more scopes`
+
+**Run the command below to set a new secret in Terminus:**
+
+```bash
+terminus secret:org:set <org> <secret-name> <secret-value>
+```
+
+```bash
+terminus secret:org:set <org> file.json "{}" --type=file
+```
+
+```bash
+terminus secret:org:set <org> <secret-name> --scope=user,ic
+```
+
+Note: If you do not include a `type` or `scope` flag, their defaults will be `runtime` and `user` respectively.
+
+**Run the command below to update an existing secret in Terminus:**
+
+```bash
+terminus secret:org:set <org> <secret-name> <secret-value>
+```
+
+Note: When updating an existing secret, `type` and `scope` should NOT be passed as they are immutable. You should delete and recreate the secret if you need to update those properties.
+
+**Add or update an environment override for an existing secret in Terminus:**
+
+```bash
+terminus secret:org:set --env=<env> <org> <secret-name> <secret-value>
+```
+
+Note: You can add an environment override only to existing secrets; otherwise, it will fail.
+
+#### List secrets
+
+The secrets `list` command provides a list of all secrets available for an organization. The following fields are available:
+
+- `Secret name`
+- `Secret scopes`
+- `Secret type`
+- `Secret value`
+- `Environment override values`
+
+Note that the `value` field will contain a placeholder value unless the `user` scope was specified when the secret was set.
+
+**Run the command below to list an organization's secrets:**
+
+```bash
+terminus secret:org:list <org>
+```
+
+```bash
+terminus secret:org:list <org> --fields="*"
+```
+
+#### Delete a secret
+
+The secrets `delete` command will remove a secret and all of its overrides.
+
+**Run the command below to delete a secret:**
+
+```bash
+terminus secret:org:delete <org> <secret-name>
+```
+
+**Run the command below to delete an environment override for a secret:**
+
+```bash
+terminus secret:org:delete --env=<env> <org> <secret-name>
+```
