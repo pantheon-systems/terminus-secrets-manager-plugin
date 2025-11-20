@@ -11,22 +11,28 @@ Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best
   * [Secret](#secret)
   * [Secret type](#secret-type)
   * [Secret scope](#secret-scope)
-  * [Owning entity](#owning-entity)
-  * [Site-owned secrets](#site-owned-secrets)
-  * [Organization-owned secrets](#organization-owned-secrets)
-  * [Environment override](#environment-override)
-- [The life of a secret](#the-life-of-a-secret)
 - [Plugin Usage](#plugin-usage)
   * [Secrets Manager Plugin Requirements](#secrets-manager-plugin-requirements)
   * [Installation](#installation)
+  * [Quick Start](#quick-start)
+  * [Common Workflows](#common-workflows)
   * [Site secrets Commands](#site-secrets-commands)
-  * [Organization secrets Commands](#organization-secrets-commands)
   * [Help](#help)
 - [Rate Limiting](#rate-limiting)
 - [Use Secrets with Integrated Composer](#use-secrets-with-integrated-composer)
   * [Mechanism 1: Oauth Composer authentication](#mechanism-1-oauth-composer-authentication)
   * [Mechanism 2: HTTP Basic Authentication](#mechanism-2-http-basic-authentication)
+- [Using Secrets in Your Site Code](#using-secrets-in-your-site-code)
+  * [Using pantheon_get_secret()](#using-pantheon_get_secret)
+  * [Using the Customer Secrets PHP SDK](#using-the-customer-secrets-php-sdk)
+- [Troubleshooting](#troubleshooting)
 - [Use Secrets in Drupal through the Key module](#use-secrets-in-drupal-through-the-key-module)
+- [Advanced Topics](#advanced-topics)
+  * [Organization-owned secrets](#organization-owned-secrets)
+  * [Environment overrides](#environment-overrides)
+  * [The life of a secret](#the-life-of-a-secret)
+  * [Secret inheritance diagram](#secret-inheritance-diagram)
+  * [Organization secrets Commands](#organization-secrets-commands)
 
 
 ## Overview
@@ -63,7 +69,7 @@ A key-value pair that should not be exposed to the general public, typically som
 
 This is a field on the secret record. It defines the usage for this secret and how it is consumed. Current types are:
 
-- `runtime`: this secret will be used to retrieve it in application runtime using API calls to the secret service. This type is not yet in use in Early Access, but will be the recommended way to set information like API keys for third-party integrations in your application.
+- `runtime`: this secret will be used to retrieve it in application runtime using the `pantheon_get_secret()` function or the Customer Secrets PHP SDK. This is the recommended way to set information like API keys for third-party integrations in your application.
 
 - `env`: this secret will be used to set environment variables in the application runtime. This type is not yet in use in Early Access.
 
@@ -75,98 +81,33 @@ Note that you can only set one type per secret and this cannot be changed later 
 
 ### Secret scope
 
-This is a field on the secret record. It defines the components that have access to the secret value. Current scopes are:
+This is a field on the secret record. It defines the components that have access to the secret value. You can set multiple scopes per secret (for example, `--scope=web,user`), but scopes cannot be changed after creation. To change scopes, you must delete and recreate the secret.
 
-- `ic`: this secret will be readable by the Integrated Composer runtime. You should use this scope to get access to your private repositories.
+| Scope | Makes secret accessible to | When to use |
+|-------|----------------------------|-------------|
+| `web` | Your site's PHP code via `pantheon_get_secret()` | API keys, credentials, runtime secrets |
+| `ic` | Integrated Composer builds | Private repository authentication |
+| `user` | Terminus commands (allows you to read the value back) | When you need to retrieve the secret value later via `terminus secret:site:list` |
 
-- `web`: this secret will be readable by the application runtime.
+**Common scope combinations:**
+- `--scope=web,user`: API keys you want to use in code AND view later in Terminus
+- `--scope=ic,user`: Private repository credentials you want to view later
+- `--scope=web`: API keys you never need to read back (most secure)
 
-- `user`: this secret will be readable by the user. This scope should be set if you need to retrieve the secret value at a later stage.
+### Quick reference: Which type and scope should I use?
 
-Note that you can set multiple scopes per secret, but scopes cannot be changed later (unless you delete and recreate the secret).
+| Use case | Type | Scope | Example |
+|----------|------|-------|---------|
+| API key for third-party service | `runtime` | `web,user` | Stripe, SendGrid, Twilio |
+| Database password | `runtime` | `web` | External DB credentials |
+| Private GitHub repository | `composer` | `ic,user` | Company private packages |
+| Private GitLab repository | `composer` | `ic,user` | Team modules/plugins |
+| Config file (JSON, XML, etc.) | `file` | `web,user` | Service account keys |
+| Environment variables (future) | `env` | varies | Not yet available |
 
-### Owning entity
+**Tip:** Start with `user` scope included during development so you can verify the secret was set correctly. You can remove `user` scope later for maximum security by deleting and recreating the secret.
 
-Secrets are currently either owned by a site or an organization. Within that owning entity, the secret may have zero or more environment overrides.
-
-### Site-owned secrets
-
-This is a secret set for a specific site using the site ID. Based on the type and scope, this secret will be loaded on the different scenarios that will be supported by Secrets in Pantheon.
-
-### Organization-owned secrets
-
-This is a secret set not for a given site but for an organization. This secret will be inherited by ALL sites OWNED by this organization. 
-
-**Note**: Secrets owned by [Supporting Organizations](https://docs.pantheon.io/agency-tips#become-a-supporting-organization) won't apply to sites they support. Only the Owner organization's secrets will apply.
-
-### Environment override
-
-In some cases it will be necessary to have different values for the secret when that secret is accessed in different Pantheon environments. You may set an environment override value for any existing secret value. 
-
-**Note**: If the secret does not exist, there is no secret environment to override, and you will get an error.
-
-```mermaid
-classDiagram
-OrganizationSecretAPIPassword --> SiteSecretAPIPassword 
-SiteSecretAPIPassword  --> IntegratedComposerAPIPassword : no overrides
-OrganizationSecretAPIPassword : string name apipassword
-OrganizationSecretAPIPassword : string value ball00n
-SiteSecretAPIPassword : Inherits value from Org 
-SiteSecretAPIPassword : No Overrides
-IntegratedComposerAPIPassword: value ball00n
-
-OrganizationSecretOverrideExample --> SiteSecretOverrideExample
-SiteSecretOverrideExample --> SiteSecretOverrideExampleDev : default value
-SiteSecretOverrideExample --> SiteSecretOverrideExampleTest : env override value
-SiteSecretOverrideExample --> SiteSecretOverrideExampleLive : env override value
-OrganizationSecretOverrideExample : string name apipassword
-OrganizationSecretOverrideExample : string value ball00n
-SiteSecretOverrideExample : Inherits value from Org 
-SiteSecretOverrideExample : No Site Overrides
-SiteSecretOverrideExampleDev: value ball00n
-SiteSecretOverrideExampleDev: defaultValue()
-SiteSecretOverrideExampleTest: value ball00n2
-SiteSecretOverrideExampleTest: overridden()
-SiteSecretOverrideExampleLive: value ball00n3
-SiteSecretOverrideExampleLive: overridden()
-```
-
-## The life of a secret
-
-When a given runtime (e.g. Integrated Composer or an environment php runtime) fetches secrets for a given site (and env), the process will be as follows:
-
-- Fetch secrets for site (of the given type and scopes).
-
-- Apply environment overrides (if any) based on the requesting site environment.
-
-- If the site is owned by an organization:
-
-    - Fetch the organization secrets.
-
-    - Apply environment overrides (if any) based on the requesting site environment.
-
-    - Merge the organization secrets with the site secrets (the following example will describe this process in more detail).
-
-Let's go through this with an example: assume you have a site named `my-site` which belongs to an organization `my-org`. You also have another site `my-other-site` which belongs to your personal Pantheon account.
-
-When Integrated Composer attempts to get secrets for `my-other-site` it will go like this:
-- Get the secrets of scope `ic` for `my-other-site`.
-- Apply environment overrides for the current environment (see **Note** below).
-- Look at `my-other-site` owner. In this case, it is NOT an organization so there are no organization secrets to merge.
-- Process the resulting secrets to make them available to Composer.
-
-On the other hand, when Integrated Composer attempts to get secrets for `my-site`, it will go like this:
-- Get the secrets of scope `ic` for `my-site`.
-- Apply environment overrides for the current environment (see **Note** below).
-- Look at the site owner. It determines it is the organization `my-org`.
-- Get the secrets for the organization `my-org` with scope `ic`.
-- Apply the environment overrides to those secrets for the current environment (see **Note** below).
-- Merge the resulting organization secrets with the site secrets with the following caveats:
-    - Site secrets take precedence over organization secrets. This means that the value for site-owned secret named `foo` will be used instead of the value for an org-owned secret with the same name `foo`.
-    - Only the secrets for the OWNER organization are being merged. If the site has a Supporting Organization, it will be ignored.
-- Process the resulting secrets to make them available to Composer.
-
-**Note:** Due to platform design, the "environment" for Integrated Composer will always be either `dev` or a multidev. It will never be `test` or `live`. Therefore we do not recommend using environment overrides for Composer access. The primary use-case for environment overrides is for the CMS key-values and environment variables that need to be different between your live and non-live environments.
+**Note:** For information about organization-wide secrets and environment-specific overrides, see the [Advanced Topics](#advanced-topics) section.
 
 ## Plugin Usage
 
@@ -188,6 +129,110 @@ Run the command below to install Terminus Secrets Manager.
 terminus self:plugin:install terminus-secrets-manager-plugin
 ```
 
+### Quick Start
+
+The most common use case is storing API keys or credentials and using them in your site code. Here's how to do it:
+
+**Step 1: Store your secret**
+
+```bash
+terminus secret:site:set my-site sendgrid-api-key "SG.abc123xyz..." --type=runtime --scope=web,user
+```
+
+**Step 2: Use it in your PHP code**
+
+```php
+// The pantheon_get_secret() function is automatically available
+$api_key = pantheon_get_secret('sendgrid-api-key');
+
+// Use it in your application
+$sendgrid = new \SendGrid($api_key);
+```
+
+**Step 3: Verify your secret was stored**
+
+```bash
+terminus secret:site:list my-site
+```
+
+That's it! Your secret is now encrypted at rest and accessible only to your site's code.
+
+**Notes:**
+- Use `--scope=web` to make secrets accessible in your site code
+- Add `user` scope if you want to retrieve the secret value via Terminus later
+- Secrets are cached for up to 15 minutes
+
+### Common Workflows
+
+#### Workflow 1: Using environment-specific API keys
+
+Use a sandbox API key for development and testing, but a production key for live:
+
+```bash
+# Set the base secret with your sandbox key
+terminus secret:site:set my-site sendgrid-api-key "SG.sandbox_abc..." --type=runtime --scope=web,user
+
+# Override with production key for live environment
+terminus secret:site:set my-site.live sendgrid-api-key "SG.production_xyz..."
+```
+
+In your code:
+```php
+// Automatically gets the right key based on environment
+$api_key = pantheon_get_secret('sendgrid-api-key');
+$sendgrid = new \SendGrid($api_key);
+```
+
+#### Workflow 2: Accessing a private GitHub repository
+
+Set up Composer authentication for a private repository:
+
+```bash
+# Store your GitHub personal access token
+terminus secret:site:set my-site github-oauth.github.com "ghp_abc123..." --type=composer --scope=ic,user
+```
+
+Add the repository to `composer.json`:
+```json
+{
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/mycompany/private-package"
+    }
+  ]
+}
+```
+
+Require the package:
+```bash
+composer require mycompany/private-package
+git add composer.json composer.lock
+git commit -m "Add private package"
+git push origin master
+```
+
+Integrated Composer will use your secret token to authenticate.
+
+#### Workflow 3: Migrating from the legacy secrets system
+
+If you're currently using the old file-based secrets system, here's how to migrate:
+
+```bash
+# 1. Create secrets for each value in your old secrets.json
+terminus secret:site:set my-site stripe-key "sk_live_..." --type=runtime --scope=web
+terminus secret:site:set my-site sendgrid-key "SG...." --type=runtime --scope=web
+terminus secret:site:set my-site db-password "..." --type=runtime --scope=web
+
+# 2. Update your code from the old method
+# Old: json_decode(file_get_contents('/path/to/secrets.json'))
+# New: pantheon_get_secret('stripe-key')
+
+# 3. Remove the old secrets file from your repository
+git rm sites/default/files/private/secrets.json
+git commit -m "Remove legacy secrets file"
+```
+
 ### Site secrets Commands
 
 #### Set a secret
@@ -200,49 +245,43 @@ The secrets `set` command takes the following format:
 - `One or more scopes`
 
 
-**Run the command below to set a new secret in Terminus:**
+**Examples:**
 
-```
-terminus secret:site:set <site> <secret-name> <secret-value>
-
-[notice] Success
-```
-
-```
-terminus secret:site:set <site> file.json "{}" --type=file
-
-[notice] Success
+```bash
+# Set an API key for use in site code
+terminus secret:site:set my-site stripe-api-key "sk_live_abc123..." --type=runtime --scope=web,user
 ```
 
-```
-terminus secret:site:set <site> <secret-name> --scope=user,ic
-
-[notice] Success
-```
-
-Note: If you do not include a `type` or `scope` flag, these values will be set to the defaults (`runtime` and `user` respectively).
-
-
-**Run the command below to update an existing secret in Terminus:**
-
-```
-terminus secret:site:set <site> <secret-name> <secret-value>
-
-[notice] Success
+```bash
+# Set a GitHub token for private Composer repositories
+terminus secret:site:set my-site github-oauth.github.com "ghp_abc123..." --type=composer --scope=ic,user
 ```
 
-Note: When updating an existing secret, `type` and `scope` should NOT be passed as they are immutable. You should delete and recreate the secret if you need to update those properties.
-
-
-**Add or update an environment override for an existing secret in Terminus:**
-
-```
-terminus secret:site:set <site>.<env> <secret-name> <secret-value>
-
-[notice] Success
+```bash
+# Set a file secret
+terminus secret:site:set my-site credentials.json '{"key": "value"}' --type=file --scope=web
 ```
 
-Note: You can add an environment override only to existing secrets; otherwise, it will fail.
+**Default behavior:** If you do not include `--type` or `--scope` flags, they default to `runtime` and `user` respectively.
+
+**Update an existing secret:**
+
+```bash
+# Update the value (type and scope cannot be changed)
+terminus secret:site:set my-site stripe-api-key "sk_live_new_value..."
+```
+
+Note: When updating an existing secret, do NOT pass `--type` or `--scope` flags, as these fields are immutable. To change type or scope, delete and recreate the secret.
+
+**Set an environment-specific override:**
+
+```bash
+# Use a sandbox API key in dev, production key in live
+terminus secret:site:set my-site.dev sendgrid-api-key "SG.sandbox_key..."
+terminus secret:site:set my-site.live sendgrid-api-key "SG.production_key..."
+```
+
+Note: You can only add an environment override to an existing secret. Create the base secret first.
 
 
 #### List secrets
@@ -258,173 +297,76 @@ The secrets `list` command provides a list of all secrets available for a site. 
 
 Note that the `value` field will contain a placeholder value unless the `user` scope was specified when the secret was set.
 
-**Run the command below to list a site’s secrets:**
+**Examples:**
 
-
-```
-terminus secret:site:list <site>
-
- ------------- ------------- ---------------------------
-  Secret name   Secret type   Secret value
- ------------- ------------- ---------------------------
-  secret-name   env           secrets-content
- ------------- ------------- ---------------------------
+```bash
+# List all secrets for a site (basic view)
+terminus secret:site:list my-site
 ```
 
+Output:
 ```
-terminus secret:site:list <site> --fields="*"
+ ------------------- ------------- ---------------------------
+  Secret name         Secret type   Secret value
+ ------------------- ------------- ---------------------------
+  stripe-api-key      runtime       sk_live_abc123...
+  github-oauth...     composer      ***
+  sendgrid-api-key    runtime       ***
+ ------------------- ------------- ---------------------------
+```
 
- ---------------- ------------- ------------------------------------------ --------------- ----------------------------- --------------------
-  Secret name      Secret type   Secret value                               Secret scopes   Environment override values   Org values
- ---------------- ------------- ------------------------------------------ --------------- ----------------------------- --------------------
-  foo              env           ***                                        web, user
-  foo2             runtime       bar2                                       web, user                                     default=barorg
-  foo3             env           dummykey                                   web, user       live=sendgrid-live
- ---------------- ------------- ------------------------------------------ --------------- ----------------------------- --------------------
- ```
+```bash
+# List with all fields (including overrides and org inheritance)
+terminus secret:site:list my-site --fields="*"
+```
+
+Output:
+```
+ ------------------- ------------- ----------------- --------------- ----------------------------- --------------------
+  Secret name         Secret type   Secret value      Secret scopes   Environment override values   Org values
+ ------------------- ------------- ----------------- --------------- ----------------------------- --------------------
+  stripe-api-key      runtime       sk_live_abc...    web, user
+  github-oauth...     composer      ***               ic, user
+  sendgrid-api-key    runtime       ***               web, user       live=SG.prod_key...
+ ------------------- ------------- ----------------- --------------- ----------------------------- --------------------
+```
+
+Note: The `value` field shows `***` unless the secret has `user` scope.
 
 #### Delete a secret
 
 The secrets `delete` command will remove a secret and all of its overrides.
 
-**Run the command below to delete a secret:**
+**Examples:**
 
+```bash
+# Delete a secret entirely
+terminus secret:site:delete my-site stripe-api-key
 ```
-terminus secret:site:delete <site> <secret-name>
 
-[notice] Success
+```bash
+# Delete only an environment-specific override
+terminus secret:site:delete my-site.live sendgrid-api-key
 ```
 
-**Run the command below to delete an environment override for a secret:**
-
-```
-terminus secret:site:delete <site>.<env> <secret-name>
-
-[notice] Success
-```
+Note: Deleting the base secret removes all environment overrides. Deleting an environment override leaves the base secret intact.
 
 #### Generate file for local development
 
 The secrets `local-generate` command will generate a json file useful for local development emulation of secrets.
 
-**Run the command below to get a json file:**
+**Example:**
 
+```bash
+terminus secret:site:local-generate my-site --filepath=./secrets.json
 ```
-terminus secret:site:local-generate <site> --filepath=./secrets.json
+
+Output:
+```
 [notice] Secrets file written to: ./secrets.json. Please review this file and adjust accordingly for your local usage.
 ```
 
-### Organization secrets Commands
-
-#### Set a secret
-
-The secrets `set` command takes the following format:
-
-- `Name`
-- `Value`
-- `Type`
-- `One or more scopes`
-
-**Run the command below to set a new secret in Terminus:**
-
-```
-terminus secret:org:set <org> <secret-name> <secret-value>
-
-[notice] Success
-```
-
-```
-terminus secret:org:set <org> file.json "{}" --type=file
-
-[notice] Success
-```
-
-```
-terminus secret:org:set <org> <secret-name> --scope=user,ic
-
-[notice] Success
-```
-
-Note: If you do not include a `type` or `scope` flag, their defaults will be `runtime` and `user` respectively.
-
-**Run the command below to update an existing secret in Terminus:**
-
-```
-terminus secret:org:set <org> <secret-name> <secret-value>
-
-[notice] Success
-```
-
-Note: When updating an existing secret, `type` and `scope` should NOT be passed as they are immutable. You should delete and recreate the secret if you need to update those properties.
-
-**Add or update an environment override for an existing secret in Terminus:**
-
-```
-terminus secret:org:set --env=<env> <org> <secret-name> <secret-value>
-
-[notice] Success
-```
-
-Note: You can add an environment override only to existing secrets; otherwise, it will fail.
-
-
-#### List secrets
-
-The secrets `list` command provides a list of all secrets available for an organization. The following fields are available:
-
-- `Secret name`
-- `Secret scopes`
-- `Secret type`
-- `Secret value`
-- `Environment override values`
-
-Note that the `value` field will contain a placeholder value unless the `user` scope was specified when the secret was set.
-
-**Run the command below to list a site’s secrets:**
-
-
-```
-terminus secret:org:list <org>
-
- ------------- ------------- ---------------------------
-  Secret name   Secret type   Secret value
- ------------- ------------- ---------------------------
-  secret-name   env           secrets-content
- ------------- ------------- ---------------------------
-```
-
-
-```
-terminus secret:org:list <org> --fields="*"
-
- ---------------- ------------- ------------------------------------------ --------------- -----------------------------
-  Secret name      Secret type   Secret value                               Secret scopes   Environment override values
- ---------------- ------------- ------------------------------------------ --------------- -----------------------------
-  foo              env           bar                                        web, user
-  foo2             runtime       bar2                                       web, user
-  foo3             env           dummykey                                   web, user       live=sendgrid-live
- ---------------- ------------- ------------------------------------------ --------------- -----------------------------
- ```
-
-#### Delete a secret
-
-The secrets `delete` command will remove a secret and all of its overrides.
-
-**Run the command below to delete a secret:**
-
-```
-terminus secret:org:delete <org> <secret-name>
-
-[notice] Success
-```
-
-**Run the command below to delete an environment override for a secret:**
-
-```
-terminus secret:org:delete --env=<env> <org> <secret-name>
-
-[notice] Success
-```
+This generates a JSON file with your secrets for local development. See the [SDK documentation](https://github.com/pantheon-systems/customer-secrets-php-sdk) for how to use this file with Lando or other local environments.
 
 ### Help
 
@@ -451,7 +393,10 @@ You must configure your private repository and provide an authentication token b
 
     ![image](https://user-images.githubusercontent.com/87093053/191616923-67732035-08aa-41c3-9a69-4d954ca02560.png) 
 
-1. Set the secret value to the token via terminus: `terminus secret:site:set <site> github-oauth.github.com <github_token> --type=composer --scope=user,ic`
+1. Set the secret value to the token via terminus:
+   ```bash
+   terminus secret:site:set my-site github-oauth.github.com "ghp_abc123..." --type=composer --scope=user,ic
+   ```
 
 1. Add your private repository to the `repositories` section of `composer.json`:
 
@@ -476,7 +421,10 @@ You must configure your private repository and provide an authentication token b
 
 1. [Generate a GitLab token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html). Ensure that `read_repository` scope is selected for the token.
 
-1. Set the secret value to the token via Terminus: `terminus secret:site:set <site> gitlab-oauth.gitlab.com <gitlab_token> --type=composer --scope=user,ic`
+1. Set the secret value to the token via Terminus:
+   ```bash
+   terminus secret:site:set my-site gitlab-oauth.gitlab.com "glpat-abc123..." --type=composer --scope=user,ic
+   ```
 
 1. Add your private repository to the `repositories` section of `composer.json`:
 
@@ -501,7 +449,10 @@ You must configure your private repository and provide an authentication token b
 
 1. [Generate a Bitbucket oauth consumer](https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud/). Ensure that Read repositories permission is selected for the consumer. Also, set the consumer as private and put a (dummy) callback URL.
 
-1. Set the secret value to the consumer info via Terminus: `terminus secret:site:set <site> bitbucket-oauth.bitbucket.org "<consumer_key> <consumer_secret>" --type=composer --scope=user,ic`
+1. Set the secret value to the consumer info via Terminus:
+   ```bash
+   terminus secret:site:set my-site bitbucket-oauth.bitbucket.org "consumer_key consumer_secret" --type=composer --scope=user,ic
+   ```
 
 1. Add your private repository to the `repositories` section of `composer.json`:
 
@@ -554,6 +505,319 @@ EOF
 `terminus secret:site:set ${SITE_NAME} COMPOSER_AUTH ${COMPOSER_AUTH_JSON} --type=env --scope=user,ic`
 ```
 
+## Using Secrets in Your Site Code
+
+Once you've set secrets with the `runtime` type and `web` scope, you can retrieve them in your site's PHP code.
+
+### Using pantheon_get_secret()
+
+The simplest way to access secrets is with the `pantheon_get_secret()` function, which is automatically available in all Pantheon environments—no includes or dependencies required.
+
+**Example usage:**
+
+```php
+// Retrieve a secret value
+$api_key = pantheon_get_secret('my-api-key');
+
+// Use the secret in your application
+$client = new ThirdPartyApiClient($api_key);
+```
+
+**Important:** Secrets must have `web` scope to be accessible via `pantheon_get_secret()`. Set secrets with the appropriate scope:
+
+```bash
+terminus secret:site:set <site> my-api-key "<value>" --type=runtime --scope=web
+```
+
+Note: If you want to be able to retrieve the secret value later via Terminus, add `user` scope:
+
+```bash
+terminus secret:site:set <site> my-api-key "<value>" --type=runtime --scope=web,user
+```
+
+### Using the Customer Secrets PHP SDK
+
+For more advanced features, including local development support, use the [Customer Secrets PHP SDK](https://packagist.org/packages/pantheon-systems/customer-secrets-php-sdk). This is a separate Composer package that provides additional functionality beyond the basic `pantheon_get_secret()` function.
+
+**Installation:**
+
+```bash
+composer require pantheon-systems/customer-secrets-php-sdk
+```
+
+**Example usage:**
+
+```php
+use PantheonSystems\CustomerSecrets\CustomerSecrets;
+
+$client = CustomerSecrets::create()->getClient();
+$secret = $client->getSecret('my-api-key');
+$secret_value = $secret->getValue();
+
+// Or get all secrets at once
+$secrets = $client->getSecrets();
+```
+
+**Local development:** The SDK includes a fake client implementation for local development. Generate a local secrets file with:
+
+```bash
+terminus secret:site:local-generate <site> --filepath=./secrets.json
+```
+
+Then configure your local environment to use it. See the [SDK documentation](https://github.com/pantheon-systems/customer-secrets-php-sdk) for detailed local setup instructions, including examples for Lando and other development environments.
+
+**Note:** Secrets are cached for up to 15 minutes. If you modify a secret, allow up to 15 minutes for the change to take effect in your application.
+
+## Troubleshooting
+
+### I can't see my secret value when I run `terminus secret:site:list`
+
+**Problem:** The secret value shows `***` instead of the actual value.
+
+**Solution:** The secret was created without `user` scope. To view secret values in Terminus, you must include `user` scope when creating the secret:
+
+```bash
+terminus secret:site:set my-site api-key "value" --type=runtime --scope=web,user
+```
+
+If you already created the secret without `user` scope, you must delete and recreate it with the correct scope (scopes are immutable).
+
+### My secret isn't available in my site code
+
+**Problem:** `pantheon_get_secret('my-key')` returns null or empty.
+
+**Possible causes:**
+
+1. **Missing `web` scope:** Secrets need `web` scope to be accessible in site code.
+   ```bash
+   # Check the secret's scopes
+   terminus secret:site:list my-site --fields="*"
+
+   # If web scope is missing, recreate the secret
+   terminus secret:site:delete my-site my-key
+   terminus secret:site:set my-site my-key "value" --type=runtime --scope=web,user
+   ```
+
+2. **Cache delay:** Secrets are cached for up to 15 minutes. If you just created or updated the secret, wait a few minutes and try again.
+
+3. **Wrong secret name:** Secret names are case-sensitive. Verify the exact name with `terminus secret:site:list my-site`.
+
+### I'm getting rate limit errors (429)
+
+**Problem:** API returns `429` error code when using Terminus commands.
+
+**Solution:** The service limits Terminus to 3 requests per second per user. If you're setting multiple secrets, add a brief pause between commands:
+
+```bash
+terminus secret:site:set my-site key1 "value1"
+sleep 1
+terminus secret:site:set my-site key2 "value2"
+sleep 1
+terminus secret:site:set my-site key3 "value3"
+```
+
+Note: The `pantheon_get_secret()` function and PHP SDK are not affected by this rate limit.
+
+### I need to change a secret's type or scope
+
+**Problem:** You want to change a secret from `runtime` to `composer` type, or add a scope.
+
+**Solution:** Type and scope are immutable fields and cannot be changed. This is intentional to prevent secrets from being accessible in unintended places. You must delete and recreate the secret:
+
+```bash
+# Delete the existing secret
+terminus secret:site:delete my-site my-key
+
+# Create it again with the correct type and scope
+terminus secret:site:set my-site my-key "value" --type=composer --scope=ic,user
+```
+
+### Integrated Composer can't access my private repository
+
+**Problem:** Composer builds fail with authentication errors.
+
+**Checklist:**
+
+1. Verify the secret has `ic` scope:
+   ```bash
+   terminus secret:site:list my-site --fields="*"
+   ```
+
+2. Check the secret name matches the expected format:
+   - GitHub: `github-oauth.github.com`
+   - GitLab: `gitlab-oauth.gitlab.com`
+   - Bitbucket: `bitbucket-oauth.bitbucket.org`
+
+3. Verify your token has the correct permissions (see the Integrated Composer section for details).
+
+4. Check for typos in the repository URL in your `composer.json`.
+
 ## Use Secrets in Drupal through the Key module
 
 If you want to use Pantheon Secrets in your Drupal application through the [Key module](https://www.drupal.org/project/key), you should use the [Pantheon Secrets](https://www.drupal.org/project/pantheon_secrets) module.
+
+## Advanced Topics
+
+### Organization-owned secrets
+
+Organization secrets allow you to set a secret once at the organization level and have it automatically inherited by all sites owned by that organization. This is useful for sharing common credentials across multiple sites.
+
+**Key points:**
+- Organization secrets apply to ALL sites owned by the organization
+- Site-level secrets with the same name will override organization secrets
+- Secrets from Supporting Organizations do not apply (only Owner organization secrets)
+- Organization secrets use the same type and scope rules as site secrets
+
+See the [Organization Secrets Commands](#organization-secrets-commands) section below for usage details.
+
+### Environment overrides
+
+Environment overrides allow you to set different values for a secret in different Pantheon environments (dev, test, live, multidev). For example, you might want to use a sandbox API key in dev and test, but a production API key in live.
+
+**Key points:**
+- You can only create an override for an existing secret (create the base secret first)
+- Environment overrides work for both site-owned and organization-owned secrets
+- To delete an override, use the delete command with the environment specified
+- Type and scope cannot be changed with overrides
+
+**Important:** Due to platform design, Integrated Composer always runs in `dev` or multidev environments, never in `test` or `live`. Therefore, environment overrides are not recommended for Composer authentication. The primary use case is for runtime secrets that need different values between live and non-live environments.
+
+### The life of a secret
+
+When your application or Integrated Composer fetches secrets, the following process occurs:
+
+1. Fetch secrets for the site with the requested type and scopes
+2. Apply environment overrides (if any) based on the current environment
+3. If the site is owned by an organization:
+   - Fetch the organization secrets with the requested type and scopes
+   - Apply environment overrides (if any) to organization secrets
+   - Merge organization secrets with site secrets (site secrets take precedence)
+4. Make the resulting secrets available to the requesting runtime
+
+**Example scenario:**
+
+You have a site `my-site` owned by organization `my-org`, and another site `personal-site` owned by your personal account.
+
+When Integrated Composer runs for `personal-site`:
+- Fetches site secrets with scope `ic`
+- Applies environment overrides for current environment
+- No organization secrets to merge (personal account)
+- Provides secrets to Composer
+
+When Integrated Composer runs for `my-site`:
+- Fetches site secrets with scope `ic`
+- Applies environment overrides for current environment
+- Fetches organization `my-org` secrets with scope `ic`
+- Applies environment overrides to organization secrets
+- Merges both (site secrets win if there are duplicates)
+- Provides merged secrets to Composer
+
+### Secret inheritance diagram
+
+```mermaid
+classDiagram
+OrganizationSecretAPIPassword --> SiteSecretAPIPassword
+SiteSecretAPIPassword  --> IntegratedComposerAPIPassword : no overrides
+OrganizationSecretAPIPassword : string name apipassword
+OrganizationSecretAPIPassword : string value ball00n
+SiteSecretAPIPassword : Inherits value from Org
+SiteSecretAPIPassword : No Overrides
+IntegratedComposerAPIPassword: value ball00n
+
+OrganizationSecretOverrideExample --> SiteSecretOverrideExample
+SiteSecretOverrideExample --> SiteSecretOverrideExampleDev : default value
+SiteSecretOverrideExample --> SiteSecretOverrideExampleTest : env override value
+SiteSecretOverrideExample --> SiteSecretOverrideExampleLive : env override value
+OrganizationSecretOverrideExample : string name apipassword
+OrganizationSecretOverrideExample : string value ball00n
+SiteSecretOverrideExample : Inherits value from Org
+SiteSecretOverrideExample : No Site Overrides
+SiteSecretOverrideExampleDev: value ball00n
+SiteSecretOverrideExampleDev: defaultValue()
+SiteSecretOverrideExampleTest: value ball00n2
+SiteSecretOverrideExampleTest: overridden()
+SiteSecretOverrideExampleLive: value ball00n3
+SiteSecretOverrideExampleLive: overridden()
+```
+
+### Organization secrets Commands
+
+#### Set a secret
+
+The organization secrets `set` command takes the following format:
+
+- `Organization name or UUID`
+- `Name`
+- `Value`
+- `Type`
+- `One or more scopes`
+
+**Run the command below to set a new secret in Terminus:**
+
+```bash
+terminus secret:org:set <org> <secret-name> <secret-value>
+```
+
+```bash
+terminus secret:org:set <org> file.json "{}" --type=file
+```
+
+```bash
+terminus secret:org:set <org> <secret-name> --scope=user,ic
+```
+
+Note: If you do not include a `type` or `scope` flag, their defaults will be `runtime` and `user` respectively.
+
+**Run the command below to update an existing secret in Terminus:**
+
+```bash
+terminus secret:org:set <org> <secret-name> <secret-value>
+```
+
+Note: When updating an existing secret, `type` and `scope` should NOT be passed as they are immutable. You should delete and recreate the secret if you need to update those properties.
+
+**Add or update an environment override for an existing secret in Terminus:**
+
+```bash
+terminus secret:org:set --env=<env> <org> <secret-name> <secret-value>
+```
+
+Note: You can add an environment override only to existing secrets; otherwise, it will fail.
+
+#### List secrets
+
+The secrets `list` command provides a list of all secrets available for an organization. The following fields are available:
+
+- `Secret name`
+- `Secret scopes`
+- `Secret type`
+- `Secret value`
+- `Environment override values`
+
+Note that the `value` field will contain a placeholder value unless the `user` scope was specified when the secret was set.
+
+**Run the command below to list an organization's secrets:**
+
+```bash
+terminus secret:org:list <org>
+```
+
+```bash
+terminus secret:org:list <org> --fields="*"
+```
+
+#### Delete a secret
+
+The secrets `delete` command will remove a secret and all of its overrides.
+
+**Run the command below to delete a secret:**
+
+```bash
+terminus secret:org:delete <org> <secret-name>
+```
+
+**Run the command below to delete an environment override for a secret:**
+
+```bash
+terminus secret:org:delete --env=<env> <org> <secret-name>
+```
