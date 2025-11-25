@@ -54,7 +54,7 @@ Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best
 
 ### Early Access
 
-The Secrets Manager plugin is available for Early Access participants. Features for Secrets Manager are in active development. Pantheon's development team is rolling out new functionality often while this product is in Early Access. Visit the [Pantheon Slack channel](https://slackin.pantheon.io/) (or sign up for the channel if you don't already have an account) to learn how you can enroll in our Early Access program. Please review [Pantheon's Software Evaluation Licensing Terms](https://legal.pantheon.io/#contract-hkqlbwpxo) for more information about access to our software.
+The Secrets Manager plugin is available in Early Access. Visit the [Pantheon Slack channel](https://slackin.pantheon.io/) (or sign up for the channel if you don't already have an account) to learn more. Please review [Pantheon's Software Evaluation Licensing Terms](https://legal.pantheon.io/#contract-hkqlbwpxo) for more information about access to our software.
 
 ## Concepts
 
@@ -98,23 +98,23 @@ This is a secret set for a specific site using the site ID. Based on the type an
 
 ### Organization-owned secrets
 
-This is a secret set not for a given site but for an organization. This secret will be inherited by ALL sites OWNED by this organization. 
+This is a secret set not for a given site but for an organization. This secret will be inherited by ALL sites OWNED by this organization.
 
 **Note**: Secrets owned by [Supporting Organizations](https://docs.pantheon.io/agency-tips#become-a-supporting-organization) won't apply to sites they support. Only the Owner organization's secrets will apply.
 
 ### Environment override
 
-In some cases it will be necessary to have different values for the secret when that secret is accessed in different Pantheon environments. You may set an environment override value for any existing secret value. 
+In some cases it will be necessary to have different values for the secret when that secret is accessed in different Pantheon environments. You may set an environment override value for any existing secret value.
 
 **Note**: If the secret does not exist, there is no secret environment to override, and you will get an error.
 
 ```mermaid
 classDiagram
-OrganizationSecretAPIPassword --> SiteSecretAPIPassword 
+OrganizationSecretAPIPassword --> SiteSecretAPIPassword
 SiteSecretAPIPassword  --> IntegratedComposerAPIPassword : no overrides
 OrganizationSecretAPIPassword : string name apipassword
 OrganizationSecretAPIPassword : string value ball00n
-SiteSecretAPIPassword : Inherits value from Org 
+SiteSecretAPIPassword : Inherits value from Org
 SiteSecretAPIPassword : No Overrides
 IntegratedComposerAPIPassword: value ball00n
 
@@ -124,7 +124,7 @@ SiteSecretOverrideExample --> SiteSecretOverrideExampleTest : env override value
 SiteSecretOverrideExample --> SiteSecretOverrideExampleLive : env override value
 OrganizationSecretOverrideExample : string name apipassword
 OrganizationSecretOverrideExample : string value ball00n
-SiteSecretOverrideExample : Inherits value from Org 
+SiteSecretOverrideExample : Inherits value from Org
 SiteSecretOverrideExample : No Site Overrides
 SiteSecretOverrideExampleDev: value ball00n
 SiteSecretOverrideExampleDev: defaultValue()
@@ -452,7 +452,7 @@ You must configure your private repository and provide an authentication token b
 
     NOTE: Check the repo box that selects all child boxes. **Do not** check all child boxes individually as this does not set the correct permissions.
 
-    ![image](https://user-images.githubusercontent.com/87093053/191616923-67732035-08aa-41c3-9a69-4d954ca02560.png) 
+    ![image](https://user-images.githubusercontent.com/87093053/191616923-67732035-08aa-41c3-9a69-4d954ca02560.png)
 
 1. Set the secret value to the token via terminus: `terminus secret:site:set <site> github-oauth.github.com <github_token> --type=composer --scope=user,ic`
 
@@ -529,7 +529,7 @@ You must configure your private repository and provide an authentication token b
 
 You may create a `COMPOSER_AUTH json` and make it available via the `COMPOSER_AUTH` environment variable if you have multiple private repositories on multiple private domains.
 
-Composer has the ability to read private repository access information from the environment variable: `COMPOSER_AUTH`. The `COMPOSER_AUTH` variables must be in a [specific JSON format](https://getcomposer.org/doc/articles/authentication-for-private-packages.md#http-basic). 
+Composer has the ability to read private repository access information from the environment variable: `COMPOSER_AUTH`. The `COMPOSER_AUTH` variables must be in a [specific JSON format](https://getcomposer.org/doc/articles/authentication-for-private-packages.md#http-basic).
 
 Format example:
 
