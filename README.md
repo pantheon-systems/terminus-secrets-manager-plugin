@@ -554,7 +554,7 @@ read -e COMPOSER_AUTH_JSON <<< {
 }
 EOF
 
-`terminus secret:site:set ${SITE_NAME} COMPOSER_AUTH ${COMPOSER_AUTH_JSON} --type=env --scope=user,ic`
+terminus secret:site:set ${SITE_NAME} COMPOSER_AUTH ${COMPOSER_AUTH_JSON} --type=env --scope=user,ic
 ```
 
 ## Using Secrets in Your Site Code
