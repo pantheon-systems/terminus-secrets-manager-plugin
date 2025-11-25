@@ -559,7 +559,7 @@ EOF
 
 ## Using Secrets in Your Site Code
 
-Once you've set secrets with the `runtime` type and `web` scope, you can retrieve them in your site's PHP code.
+Once you've set secrets with the `web` scope, you can retrieve them in your site's PHP code.
 
 ### Using pantheon_get_secret()
 
