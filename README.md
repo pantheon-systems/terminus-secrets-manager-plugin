@@ -26,6 +26,9 @@ Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best
 - [Use Secrets with Integrated Composer](#use-secrets-with-integrated-composer)
   * [Mechanism 1: Oauth Composer authentication](#mechanism-1-oauth-composer-authentication)
   * [Mechanism 2: HTTP Basic Authentication](#mechanism-2-http-basic-authentication)
+- [Using Secrets in Your Site Code](#using-secrets-in-your-site-code)
+  * [Using pantheon_get_secret()](#using-pantheon_get_secret)
+  * [Using the Customer Secrets PHP SDK](#using-the-customer-secrets-php-sdk)
 - [Use Secrets in Drupal through the Key module](#use-secrets-in-drupal-through-the-key-module)
 
 
@@ -51,7 +54,7 @@ Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best
 
 ### Early Access
 
-The Secrets Manager plugin is available for Early Access participants. Features for Secrets Manager are in active development. Pantheon's development team is rolling out new functionality often while this product is in Early Access. Visit the [Pantheon Slack channel](https://slackin.pantheon.io/) (or sign up for the channel if you don't already have an account) to learn how you can enroll in our Early Access program. Please review [Pantheon's Software Evaluation Licensing Terms](https://legal.pantheon.io/#contract-hkqlbwpxo) for more information about access to our software.
+The Secrets Manager plugin is available in Early Access. Visit the [Pantheon Slack channel](https://slackin.pantheon.io/) (or sign up for the channel if you don't already have an account) to learn more. Please review [Pantheon's Software Evaluation Licensing Terms](https://legal.pantheon.io/#contract-hkqlbwpxo) for more information about access to our software.
 
 ## Concepts
 
@@ -63,7 +66,7 @@ A key-value pair that should not be exposed to the general public, typically som
 
 This is a field on the secret record. It defines the usage for this secret and how it is consumed. Current types are:
 
-- `runtime`: this secret will be used to retrieve it in application runtime using API calls to the secret service. This type is not yet in use in Early Access, but will be the recommended way to set information like API keys for third-party integrations in your application.
+- `runtime`: this secret will be used to retrieve it in application runtime using the `pantheon_get_secret()` function or the Customer Secrets PHP SDK. This is the recommended way to set information like API keys for third-party integrations in your application.
 
 - `env`: this secret will be used to set environment variables in the application runtime. This type is not yet in use in Early Access.
 
@@ -95,23 +98,23 @@ This is a secret set for a specific site using the site ID. Based on the type an
 
 ### Organization-owned secrets
 
-This is a secret set not for a given site but for an organization. This secret will be inherited by ALL sites OWNED by this organization. 
+This is a secret set not for a given site but for an organization. This secret will be inherited by ALL sites OWNED by this organization.
 
 **Note**: Secrets owned by [Supporting Organizations](https://docs.pantheon.io/agency-tips#become-a-supporting-organization) won't apply to sites they support. Only the Owner organization's secrets will apply.
 
 ### Environment override
 
-In some cases it will be necessary to have different values for the secret when that secret is accessed in different Pantheon environments. You may set an environment override value for any existing secret value. 
+In some cases it will be necessary to have different values for the secret when that secret is accessed in different Pantheon environments. You may set an environment override value for any existing secret value.
 
 **Note**: If the secret does not exist, there is no secret environment to override, and you will get an error.
 
 ```mermaid
 classDiagram
-OrganizationSecretAPIPassword --> SiteSecretAPIPassword 
+OrganizationSecretAPIPassword --> SiteSecretAPIPassword
 SiteSecretAPIPassword  --> IntegratedComposerAPIPassword : no overrides
 OrganizationSecretAPIPassword : string name apipassword
 OrganizationSecretAPIPassword : string value ball00n
-SiteSecretAPIPassword : Inherits value from Org 
+SiteSecretAPIPassword : Inherits value from Org
 SiteSecretAPIPassword : No Overrides
 IntegratedComposerAPIPassword: value ball00n
 
@@ -121,7 +124,7 @@ SiteSecretOverrideExample --> SiteSecretOverrideExampleTest : env override value
 SiteSecretOverrideExample --> SiteSecretOverrideExampleLive : env override value
 OrganizationSecretOverrideExample : string name apipassword
 OrganizationSecretOverrideExample : string value ball00n
-SiteSecretOverrideExample : Inherits value from Org 
+SiteSecretOverrideExample : Inherits value from Org
 SiteSecretOverrideExample : No Site Overrides
 SiteSecretOverrideExampleDev: value ball00n
 SiteSecretOverrideExampleDev: defaultValue()
@@ -449,7 +452,7 @@ You must configure your private repository and provide an authentication token b
 
     NOTE: Check the repo box that selects all child boxes. **Do not** check all child boxes individually as this does not set the correct permissions.
 
-    ![image](https://user-images.githubusercontent.com/87093053/191616923-67732035-08aa-41c3-9a69-4d954ca02560.png) 
+    ![image](https://user-images.githubusercontent.com/87093053/191616923-67732035-08aa-41c3-9a69-4d954ca02560.png)
 
 1. Set the secret value to the token via terminus: `terminus secret:site:set <site> github-oauth.github.com <github_token> --type=composer --scope=user,ic`
 
@@ -526,7 +529,7 @@ You must configure your private repository and provide an authentication token b
 
 You may create a `COMPOSER_AUTH json` and make it available via the `COMPOSER_AUTH` environment variable if you have multiple private repositories on multiple private domains.
 
-Composer has the ability to read private repository access information from the environment variable: `COMPOSER_AUTH`. The `COMPOSER_AUTH` variables must be in a [specific JSON format](https://getcomposer.org/doc/articles/authentication-for-private-packages.md#http-basic). 
+Composer has the ability to read private repository access information from the environment variable: `COMPOSER_AUTH`. The `COMPOSER_AUTH` variables must be in a [specific JSON format](https://getcomposer.org/doc/articles/authentication-for-private-packages.md#http-basic).
 
 Format example:
 
@@ -551,8 +554,71 @@ read -e COMPOSER_AUTH_JSON <<< {
 }
 EOF
 
-`terminus secret:site:set ${SITE_NAME} COMPOSER_AUTH ${COMPOSER_AUTH_JSON} --type=env --scope=user,ic`
+terminus secret:site:set ${SITE_NAME} COMPOSER_AUTH ${COMPOSER_AUTH_JSON} --type=env --scope=user,ic
 ```
+
+## Using Secrets in Your Site Code
+
+Once you've set secrets with the `web` scope, you can retrieve them in your site's PHP code.
+
+### Using pantheon_get_secret()
+
+The simplest way to access secrets is with the `pantheon_get_secret()` function, which is automatically available in all Pantheon environments—no includes or dependencies required.
+
+**Example usage:**
+
+```php
+// Retrieve a secret value
+$api_key = pantheon_get_secret('my-api-key');
+
+// Use the secret in your application
+$client = new ThirdPartyApiClient($api_key);
+```
+
+**Important:** Secrets must have `web` scope to be accessible via `pantheon_get_secret()`. Set secrets with the appropriate scope:
+
+```bash
+terminus secret:site:set <site> my-api-key "<value>" --type=runtime --scope=web
+```
+
+Note: If you want to be able to retrieve the secret value later via Terminus, add `user` scope:
+
+```bash
+terminus secret:site:set <site> my-api-key "<value>" --type=runtime --scope=web,user
+```
+
+### Using the Customer Secrets PHP SDK
+
+For more advanced features, including local development support, use the [Customer Secrets PHP SDK](https://packagist.org/packages/pantheon-systems/customer-secrets-php-sdk). This is a separate Composer package that provides additional functionality beyond the basic `pantheon_get_secret()` function.
+
+**Installation:**
+
+```bash
+composer require pantheon-systems/customer-secrets-php-sdk
+```
+
+**Example usage:**
+
+```php
+use PantheonSystems\CustomerSecrets\CustomerSecrets;
+
+$client = CustomerSecrets::create()->getClient();
+$secret = $client->getSecret('my-api-key');
+$secret_value = $secret->getValue();
+
+// Or get all secrets at once
+$secrets = $client->getSecrets();
+```
+
+**Local development:** The SDK includes a fake client implementation for local development. Generate a local secrets file with:
+
+```bash
+terminus secret:site:local-generate <site> --filepath=./secrets.json
+```
+
+Then configure your local environment to use it. See the [SDK documentation](https://github.com/pantheon-systems/customer-secrets-php-sdk) for detailed local setup instructions, including examples for Lando and other development environments.
+
+**Note:** Secrets are cached for up to 15 minutes. If you modify a secret, allow up to 15 minutes for the change to take effect in your application.
 
 ## Use Secrets in Drupal through the Key module
 

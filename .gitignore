@@ -2,5 +2,5 @@ vendor
 .envrc
 .phpunit.result.cache
 reports
+.DS_Store
 /.idea
-/.DS_Store
