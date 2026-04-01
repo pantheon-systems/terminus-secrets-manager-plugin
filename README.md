@@ -1,5 +1,9 @@
 # Terminus Secrets Manager Plugin
 
+[![Deprecated](https://img.shields.io/badge/Pantheon-Deprecated-yellow?logo=pantheon&color=FFDC28)](https://pantheon.io/docs/oss-support-levels#deprecated)
+
+**⚠️ This plugin is deprecated. Secrets management functionality has been absorbed into [Terminus](https://github.com/pantheon-systems/terminus) core. Please use the built-in Terminus secrets commands instead.**
+
 Pantheon’s Secrets Manager Terminus plugin is key to maintaining industry best practices for secure builds and application implementation. Secrets Manager provides a convenient mechanism for you to manage your secrets and API keys directly on the Pantheon platform.
 
 ## Table of Contents
